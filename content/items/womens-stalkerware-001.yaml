@@ -1,0 +1,126 @@
+id: "womens-stalkerware-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+title: "Check your devices for stalkerware and covert tracking apps"
+description: "Stalkerware is software installed on a device without the owner's knowledge to monitor their location, messages, calls, and photos. Unlike malware from outside attackers, it is typically installed by someone the victim knows and trusts — often a current or former intimate partner — during brief unsupervised access to an unlocked device."
+threat_narrative: "Stalkerware gives an abusive person real-time access to every message, call, location, and photo on your device, often without triggering any visible notification. Victims frequently don't know it's installed for months or years. It is commonly installed when you briefly hand your phone to someone, leave it unlocked, or share your account credentials. Detection is hard because stalkerware is specifically designed to be invisible. The presence of stalkerware does not mean you are in immediate danger — but it does mean someone has decided to surveil you without your knowledge."
+category: "device_security"
+subcategory: "malware_protection"
+tracks:
+  - "womens_safety"
+platforms:
+  - "android"
+  - "ios"
+platform_notes:
+  android: |
+    ⚠ SAFETY FIRST: If you think you may be in danger, do not research this on the device you suspect is monitored. Use a trusted friend's phone, a library computer, or a brand new incognito session on a different device.
+
+    Signs stalkerware may be present: battery draining faster than normal, mobile data usage spiking, device warm when idle, unfamiliar apps in the app list.
+
+    How to check:
+    1. Settings → Apps (or Application Manager) → Show all / Show system apps → scroll through. Look for anything you don't recognise.
+    2. Settings → Accessibility → Downloaded Apps — stalkerware almost always requests Accessibility permissions because that's how it reads messages. Remove anything you didn't install.
+    3. Settings → Battery → Battery Usage — look for apps using battery in the background that you don't use or recognise.
+    4. Settings → Device Admin Apps — stalkerware may register as a device administrator to resist uninstall. Remove it here before uninstalling.
+
+    Safest resolution: factory reset. Only do this if it is safe to do so — see the safety planning note in legal_notes.
+
+    For guided help: Coalition Against Stalkerware (stopstalkerware.org) has vetted resources and can connect you with support organisations.
+  ios: |
+    ⚠ SAFETY FIRST: If you think you may be in danger, do not research this on the device you suspect is monitored.
+
+    iOS is more resistant to stalkerware than Android, but surveillance still happens via:
+
+    1. iCloud account access — if someone knows your Apple ID and password, they can see your iCloud backups, location, messages synced to iCloud, and Photos.
+       Fix: Settings → [Your Name] → Password & Security → Change Password. Then sign out all other devices: Settings → [Your Name] → scroll down → tap each device → Remove from Account.
+
+    2. MDM (Device Management) profile — an abuser with brief access can install a monitoring profile.
+       Check: Settings → General → VPN & Device Management → look for any profile you didn't install yourself. Delete it.
+
+    3. Shared Apple ID — if you share an Apple ID with someone, they can see your location, messages, and purchases.
+       Fix: set up your own independent Apple ID.
+
+    4. Find My — check who can see your location: Settings → [Your Name] → Find My → Share My Location → see the list in the Find My app under People.
+platform_notes_verified:
+  android: "2026-03-04"
+  ios: "2026-03-04"
+not_applicable_if: []
+sensitive: true
+difficulty:
+  technical: 2
+  disruption: 2
+  reversibility: 2
+time_estimate:
+  setup: "2hr"
+  ongoing: "low"
+maturity_level: 2
+adversaries:
+  - "intimate_partner"
+  - "targeted_individual"
+attack_vectors:
+  - "malware"
+  - "physical_access"
+  - "insider_access"
+assets_protected:
+  - "location"
+  - "communications"
+  - "local_data"
+  - "relationships"
+  - "behavioral_data"
+controls_implemented: []
+score_weight: 9.0
+threat_model_multipliers:
+  intimate_partner: 2.0
+  targeted_individual: 1.5
+  opportunistic: 0.1
+  criminal_org: 0.2
+compensating_controls: []
+depends_on:
+  - id: "device-screenlock-001"
+    reason: "A strong screen lock is the primary barrier to stalkerware installation via physical access. Without it, detection after the fact is less effective than prevention."
+    hard_dependency: false
+related_items:
+  - id: "womens-location-001"
+    relationship: "required_companion"
+    note: "Stalkerware and covert location sharing are both surveillance tools — address both in the same audit."
+  - id: "device-screenlock-001"
+    relationship: "complementary"
+    note: "A strong screen lock prevents the most common stalkerware installation vector."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://stopstalkerware.org/information-for-survivors/"
+    title: "Information for Survivors — Coalition Against Stalkerware"
+    type: "primary"
+    accessed: "2026-03-06"
+  - url: "https://stopstalkerware.org/resources/"
+    title: "Resources — Coalition Against Stalkerware"
+    type: "supporting"
+    accessed: "2026-03-04"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      SAFETY PLANNING NOTE: If you believe you are being monitored and you are in an unsafe situation,
+      do not remove stalkerware without a safety plan. Removing it may alert the person monitoring you,
+      which could escalate danger. Contact a domestic abuse resource or the Coalition Against Stalkerware
+      (stopstalkerware.org) for guidance before taking action.
+      Your physical safety comes before your device security.
+  - jurisdiction: "global"
+    note: "Installing monitoring software on another person's device without their knowledge or consent is illegal in most jurisdictions."
+emotional_register: null
+tags:
+  - "sensitive"
+  - "intimate_partner_threat"
+  - "safety_planning_required"
+  - "high_impact"
+created_at: "2026-03-04"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-04"
+    changes: "Initial item. Reviewed for trauma-informed framing."
+    author: "github:@fpszero"

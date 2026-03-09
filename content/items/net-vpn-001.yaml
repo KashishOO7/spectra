@@ -1,0 +1,87 @@
+id: "net-vpn-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+title: "Use a verified, no-log VPN on untrusted networks"
+description: "A VPN encrypts all traffic between your device and the VPN server, hiding your activity from your ISP and anyone on the same network. On public WiFi — cafes, airports, hotels — this is essential. At home, it shifts trust from your ISP to the VPN provider, which is a trade-off worth understanding."
+threat_narrative: "Public WiFi is fundamentally untrusted. Anyone on the same network can observe unencrypted traffic and attempt man-in-the-middle attacks on encrypted connections. ISPs log DNS queries and connection metadata even when HTTPS is used. A VPN on public networks is not optional for anyone handling sensitive information — it is the minimum viable protection."
+category: "network_security"
+subcategory: "vpn"
+tracks:
+  - "general"
+  - "journalist"
+platforms:
+  - "all"
+platform_notes:
+  android: "Mullvad VPN and Proton VPN have first-class Android apps. Enable 'Always-on VPN' in Settings > Network > VPN to prevent leaks when VPN drops."
+  ios: "Mullvad and Proton VPN on App Store. Enable 'Connect On Demand' in VPN settings for automatic protection."
+  windows: "Mullvad or Proton VPN desktop apps. Enable kill switch to block traffic if VPN drops. Test for DNS leaks at dnsleaktest.com."
+  macos: "Same as Windows. Mullvad app has a built-in firewall kill switch. Test after setup."
+  linux: "Mullvad has a Linux CLI and GUI. Proton VPN supports Linux. WireGuard is available for manual configuration with any provider."
+platform_notes_verified:
+  all: "2025-02"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "30min"
+  ongoing: "negligible"
+maturity_level: 2
+adversaries:
+  - "isp_network"
+  - "data_broker"
+  - "employer"
+attack_vectors:
+  - "network_interception"
+  - "metadata_analysis"
+assets_protected:
+  - "metadata"
+  - "communications"
+  - "behavioral_data"
+controls_implemented: []
+score_weight: 7.5
+threat_model_multipliers:
+  isp_network: 1.8
+  data_broker: 1.5
+  employer: 1.6
+  domestic_government: 1.2
+  foreign_government: 1.0
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "net-dns-001"
+    relationship: "stronger_alternative"
+    note: "A VPN with its own DNS handling makes separate encrypted DNS less necessary."
+status: "active"
+superseded_by: null
+last_verified: "2025-02-01"
+verified_by:
+  - "org:privacyguides.org"
+sources:
+  - url: "https://privacyguides.org/en/vpn/"
+    title: "VPN Services — Privacy Guides"
+    type: "primary"
+    accessed: "2025-02-01"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: "Educational purposes only. VPN legality and logging requirements vary by jurisdiction and VPN provider's country of incorporation. A VPN does not make you anonymous — it shifts trust to the VPN provider. Use providers with verified no-log policies and ideally open-source clients."
+  - jurisdiction: "CN"
+    note: "VPN use without a government-approved provider may be illegal in China."
+  - jurisdiction: "RU"
+    note: "VPN restrictions exist in Russia. Research current regulations."
+emotional_register: null
+tags:
+  - "paid_options"
+  - "privacy"
+  - "network"
+  - "public_wifi"
+created_at: "2025-01-01"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2025-01-01"
+    changes: "Initial item."
+    author: "github:@fpszero"

@@ -1,0 +1,100 @@
+id: "data-broker-optout-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Remove yourself from data broker databases"
+description: |
+  Data brokers aggregate your name, address history, phone numbers, relatives, and 
+  purchasing history into profiles sold to anyone willing to pay. Opting out significantly 
+  reduces your findability and the richness of profiles available to attackers.
+threat_narrative: |
+  Stalkers, scammers, and social engineers routinely use data broker sites to find 
+  your current address, phone number, and daily patterns — often for free. In documented 
+  cases, perpetrators have used these lookups to track individuals who had moved. 
+  Removal is an ongoing process that raises the cost of finding you significantly.
+category: "data_management"
+subcategory: "data_deletion"
+tracks:
+  - "general"
+  - "womens_safety"
+  - "journalist"
+platforms:
+  - "web"
+platform_notes:
+  web: |
+    TIER 1 — Manual & Free (Time intensive)
+    Use the EFF's Data Broker Opt-Out Guide or Michael Bazzell's IntelTechniques workbook.
+    • Search yourself on top sites: Spokeo, WhitePages, Intelius, BeenVerified, TruePeopleSearch.
+    • Submit manual opt-out requests. Never pay a fee to opt out, and never provide a real 
+      ID unless legally required (use a redacted copy).
+
+    TIER 2 — Automated Paid Services (Recommended for efficiency)
+    If you lack the time, these services automate the legal requests and monitor for reappearance.
+    • EasyOptOuts: Highly rated, budget-friendly, effective for US residents.
+    • DeleteMe or Incogni: More expensive but cover a broader international spectrum.
+platform_notes_verified:
+  web: "2026-03-04"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "2hr"
+  ongoing: "ongoing_low"
+maturity_level: 2
+adversaries:
+  - "targeted_individual"
+  - "data_broker"
+  - "intimate_partner"
+  - "opportunistic"
+attack_vectors:
+  - "data_broker_aggregation"
+  - "osint_passive"
+assets_protected:
+  - "location"
+  - "identity"
+  - "relationships"
+controls_implemented: []
+score_weight: 8.0
+threat_model_multipliers:
+  targeted_individual: 2.0
+  data_broker: 2.0
+  intimate_partner: 2.0
+  opportunistic: 1.2
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "osint-self-001"
+    relationship: "required_companion"
+    note: "You must run an OSINT audit to know what brokers hold your data."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+  - "org:privacyguides.org"
+sources:
+  - url: "https://privacyguides.org/en/data-broker-removals/"
+    title: "Data Broker Removals — Privacy Guides"
+    type: "primary"
+    accessed: "2026-03-04"
+  - url: "https://www.eff.org/deeplinks/2025/09/opt-out-october-daily-tips-protect-your-privacy-and-security"
+    title: "Opt Out October: Daily Tips to Protect Your Privacy — EFF"
+    type: "supporting"
+    accessed: "2026-03-05"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: "Effectiveness varies wildly. US CCPA/CPRA and EU GDPR provide strong legal backing for erasure requests."
+emotional_register: null
+tags:
+  - "privacy"
+  - "anti_doxxing"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-04"
+    changes: "Added tiering for Manual vs Automated services. Added Privacy Guides sourcing."
+    author: "github:@fpszero"

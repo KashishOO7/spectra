@@ -1,0 +1,87 @@
+id: "threat-ai-voice-clone-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+
+adversary_type: "ai_automated"
+attack_vector: "voice_clone"
+
+title: "AI Voice Clone Fraud"
+description: |
+  AI tools can replicate a person's voice from as little as a few seconds of
+  audio — a voicemail, a social media clip, a podcast appearance. Attackers
+  use cloned voices to impersonate the target or their trusted contacts in
+  phone calls, bypassing voice-based verification and social trust. The
+  technology is now accessible via consumer tools at near-zero cost.
+
+sophistication_required: 2
+prevalence: "occasional"
+likelihood_without_controls: "medium"
+
+real_world_examples:
+  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
+    title: "FTC Consumer Alert — Scammers Use AI to Clone Voices"
+    description: "FTC documented cases of AI voice cloning used to impersonate family members in urgent money transfer scams."
+    type: "case_study"
+  - url: "https://www.wired.com/story/cloned-voice-scam-family-emergency/"
+    title: "Wired — AI Voice Cloning Scams Are Getting Harder to Detect"
+    description: "Reported incidents of voice clone attacks on individuals and organisations."
+    type: "journalism"
+
+prevalence_data:
+  - stat: "Voice cloning tools are now widely available for under $10/month with no technical skill required."
+    source: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
+    date: "2023-03"
+
+mitigated_by:
+  - id: "ai-voice-clone-001"
+    mitigation_effectiveness: 0.80
+    reason: "Awareness of voice cloning and use of verbal codewords with trusted contacts significantly reduces susceptibility."
+  - id: "human-verify-001"
+    mitigation_effectiveness: 0.70
+    reason: "Verification habits — calling back on a known number, requiring in-person confirmation for financial actions — break the attack chain."
+
+assets_at_risk:
+  - "financial"
+  - "identity"
+  - "relationships"
+  - "credentials"
+
+tracks:
+  - "general"
+  - "journalist"
+  - "womens_safety"
+  - "ai_focused"
+
+threat_model_relevance:
+  opportunistic: 0.4
+  targeted_individual: 1.0
+  criminal_org: 0.9
+  intimate_partner: 0.5
+  domestic_government: 0.3
+  foreign_government: 0.6
+  ai_automated: 1.0
+
+status: "active"
+last_verified: "2026-03-06"
+verified_by:
+  - "org:ftc.gov"
+
+sources:
+  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
+    title: "FTC — Scammers Use AI to Clone Voices of Loved Ones"
+    type: "primary"
+    accessed: "2026-03-06"
+
+tags:
+  - "ai_powered"
+  - "social_engineering"
+  - "growing_threat"
+  - "no_tech_skill_required"
+
+created_at: "2026-03-06"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-06"
+    changes: "Initial threat node."
+    author: "github:@fpszero"

@@ -1,0 +1,131 @@
+id: "womens-location-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+title: "Audit every app and account that can see your real-time location"
+description: "Many apps — including messaging apps, social media, and your phone's built-in account — can share your real-time or recent location with others. In a safe relationship, this is a convenience. In an unsafe one, it is a surveillance tool. A complete location audit means knowing exactly what can see you and having the ability to switch it off instantly."
+threat_narrative: "Intimate partner abuse increasingly relies on digital location tracking. Survivors of stalking and domestic abuse consistently report that their location was known to their abuser before physical confrontations — often via Find My, shared Google accounts, or location-sharing features that were enabled with consent that was later withdrawn. You cannot control who can find you if you don't know what's sharing your location. This audit takes 30 minutes and gives you that control back."
+category: "physical_security"
+subcategory: "device_physical"
+tracks:
+  - "womens_safety"
+  - "general"
+platforms:
+  - "ios"
+  - "android"
+platform_notes:
+  ios: |
+    ⚠ If you are in immediate danger, do not research this on a device that may be monitored.
+
+    Check every location-sharing method:
+
+    1. Find My — who can see your location:
+       Open the Find My app → tap People tab → see who you're sharing with → tap a person → Stop Sharing My Location.
+
+    2. Messages location sharing:
+       Open any conversation → tap the person's name at the top → if "Stop Sharing Location" appears, you are sharing. Tap it.
+
+    3. Per-app location permissions:
+       Settings → Privacy & Security → Location Services → review every single app.
+       Set non-essential apps (games, shopping, food delivery) to "Never."
+       Set apps you want to use location for to "While Using" — not "Always."
+
+    4. Google Maps (if installed): tap your profile picture → Location Sharing → review who you're sharing with.
+
+    5. Shared Apple ID devices:
+       Settings → [Your Name] → scroll down → see all devices. Remove any you don't recognise or no longer use.
+  android: |
+    ⚠ If you are in immediate danger, do not research this on a device that may be monitored.
+
+    Check every location-sharing method:
+
+    1. Google account location sharing:
+       Open Google Maps → tap your profile picture → Location Sharing → see who you're sharing with. Tap a person → Stop.
+
+    2. Google Timeline (location history):
+       Google Maps → your profile picture → Your Timeline.
+       To disable: Maps → Settings → Personal Content → Location History → turn off.
+
+    3. Per-app location permissions:
+       Settings → Privacy → Permission Manager → Location → review each app.
+       Set to "Allow only while using" or "Deny" for non-essential apps.
+
+    4. Google account devices:
+       myaccount.google.com → Security → Your Devices → remove devices you don't recognise.
+
+    5. Samsung/manufacturer Find My:
+       If you use a Samsung device, check findmymobile.samsung.com — sign in and see who has access.
+platform_notes_verified:
+  ios: "2026-03-04"
+  android: "2026-03-04"
+not_applicable_if: []
+sensitive: true
+difficulty:
+  technical: 1
+  disruption: 2
+  reversibility: 1
+time_estimate:
+  setup: "30min"
+  ongoing: "low"
+maturity_level: 1
+adversaries:
+  - "intimate_partner"
+  - "targeted_individual"
+attack_vectors:
+  - "physical_access"
+  - "insider_access"
+  - "osint_passive"
+assets_protected:
+  - "location"
+  - "behavioral_data"
+  - "relationships"
+controls_implemented: []
+score_weight: 8.5
+threat_model_multipliers:
+  intimate_partner: 2.0
+  targeted_individual: 1.6
+  opportunistic: 0.2
+  data_broker: 0.5
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "womens-stalkerware-001"
+    relationship: "required_companion"
+    note: "Stalkerware and covert location sharing are both surveillance tools — address both in the same audit session."
+  - id: "data-permissions-001"
+    relationship: "complementary"
+    note: "data-permissions-001 covers app permissions broadly. This item focuses on location in a physical safety context."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://www.techsafety.org/resources-survivors"
+    title: "Technology Safety Resources for Survivors — NNEDV TechSafety"
+    type: "primary"
+    accessed: "2026-03-06"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      SAFETY PLANNING NOTE: Before removing yourself from location-sharing with someone who may react
+      dangerously to losing access to your location, make a safety plan first.
+      Consult a domestic abuse resource in your area before making this change.
+      US: National DV Hotline 1-800-799-7233 or text START to 88788.
+      UK: National Domestic Abuse Helpline 0808 2000 247.
+      Full international directory: stopstalkerware.org/get-help/
+emotional_register: null
+tags:
+  - "free"
+  - "sensitive"
+  - "intimate_partner_threat"
+  - "safety_planning_required"
+  - "location_privacy"
+  - "high_impact"
+created_at: "2026-03-04"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-04"
+    changes: "Initial item. Reviewed for trauma-informed framing."
+    author: "github:@fpszero"

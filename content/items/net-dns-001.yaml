@@ -1,0 +1,177 @@
+id: "net-dns-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Switch to an encrypted, private DNS resolver"
+description: |
+  Every website you visit generates a DNS query — the lookup that translates
+  a domain name into an IP address. By default these queries travel unencrypted
+  to your ISP's servers. Switching to an encrypted DNS resolver (DoH or DoT)
+  hides your browsing destinations from your ISP and any network-level observer.
+threat_narrative: |
+  Your ISP sees a complete record of every domain you visit even when sites use HTTPS —
+  because DNS queries travel in plaintext by default. In the US, ISPs can legally sell
+  this browsing data. On public WiFi, anyone on the same network can read your DNS traffic.
+  Encrypted DNS closes this specific surveillance channel without requiring a VPN.
+  Your IP address is still visible to websites — this targets the ISP/network layer only.
+category: "network_security"
+subcategory: "dns"
+tracks:
+  - "general"
+platforms:
+  - "all"
+platform_notes:
+  windows: |
+    Settings → Network & Internet → Wi-Fi or Ethernet → DNS server assignment → Manual.
+    Toggle on "DNS over HTTPS (Automatic)". Enter 9.9.9.9 (Quad9) as your primary resolver.
+    For NextDNS with custom filtering: use your personal NextDNS DoH URL from nextdns.io.
+  macos: |
+    The easiest approach on macOS is a DNS configuration profile.
+    Quad9: download the profile at quad9.net/support/set-up-guides/macos
+    NextDNS: install via nextdns.io/setup — generates a personal config profile.
+    System Settings → Privacy & Security → Profiles to verify it installed.
+  android: |
+    Settings → Network & Internet → Private DNS → "Private DNS provider hostname".
+    Enter: dns.quad9.net (Quad9, recommended for everyone)
+    Or your NextDNS hostname (from nextdns.io/setup) for custom filtering.
+    This enables DNS-over-TLS system-wide — covers all apps.
+  ios: |
+    iOS requires a DNS configuration profile — you can't set it manually in Settings.
+    Quad9: profile at quad9.net/support/set-up-guides/ios
+    NextDNS: profile generated at nextdns.io/setup (free, 300k queries/month)
+    Settings → General → VPN & Device Management to install and verify.
+  linux: |
+    Option 1 (easiest): Use systemd-resolved with DoT.
+    Edit /etc/systemd/resolved.conf: set DNS=9.9.9.9 and DNSOverTLS=yes
+    Then: sudo systemctl restart systemd-resolved
+    Option 2: Install dnscrypt-proxy for more control and DoH support.
+    See: github.com/DNSCrypt/dnscrypt-proxy
+  router: |
+    Setting DNS on your router protects all devices on your network simultaneously —
+    including IoT devices that can't be configured individually.
+    In your router admin panel (usually 192.168.1.1), find DNS settings and replace
+    your ISP's DNS with: 9.9.9.9 and 149.112.112.112 (Quad9)
+    For NextDNS: create a free account at nextdns.io and use your custom endpoint URL.
+platform_notes_verified:
+  windows: "2026-03-01"
+  macos: "2026-03-01"
+  android: "2026-03-01"
+  ios: "2026-03-01"
+  linux: "2026-03-01"
+  router: "2026-03-01"
+not_applicable_if:
+  - condition: "item_implemented:net-vpn-001"
+    reason: "A VPN tunnels all traffic including DNS, making a separate DNS resolver redundant for most threat models."
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "10min"
+  ongoing: "negligible"
+maturity_level: 2
+adversaries:
+  - "isp_network"
+  - "data_broker"
+  - "employer"
+attack_vectors:
+  - "network_interception"
+  - "metadata_analysis"
+assets_protected:
+  - "metadata"
+  - "behavioral_data"
+controls_implemented: []
+score_weight: 7.0
+threat_model_multipliers:
+  isp_network: 2.0
+  data_broker: 1.6
+  employer: 1.4
+  domestic_government: 1.2
+compensating_controls:
+  - id: "net-vpn-001"
+    urgency_reduction: 0.6
+    reason: "A VPN routes all traffic including DNS through an encrypted tunnel, making encrypted DNS redundant for most threat models."
+depends_on: []
+related_items:
+  - id: "net-vpn-001"
+    relationship: "complementary"
+    note: "VPN provides broader traffic protection. Encrypted DNS is lighter-weight and targets specifically the DNS surveillance channel."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-01"
+verified_by:
+  - "org:privacyguides.org"
+sources:
+  - url: "https://privacyguides.org/en/dns/"
+    title: "Encrypted DNS Resolvers — Privacy Guides"
+    type: "primary"
+    accessed: "2026-03-01"
+  - url: "https://www.quad9.net/privacy/policy/"
+    title: "Quad9 Privacy Policy"
+    type: "supporting"
+    accessed: "2026-03-01"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      Educational purposes only. Encrypted DNS hides your queries from your ISP and network
+      observer — it does not anonymise your traffic or IP address. Your destination IP is
+      still visible to sites you visit. For full traffic anonymisation, see VPN or Tor items.
+emotional_register: null
+tags:
+  - "free_options"
+  - "privacy"
+  - "network"
+  - "quick"
+  - "no_account_needed"
+created_at: "2025-01-01"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-01"
+    changes: |
+      Major rewrite. Removed Google (8.8.8.8) — privacy-hostile, logs queries, incompatible
+      with framework values. Removed Cloudflare (1.1.1.1) as primary recommendation — mixed
+      posture, logs retained. New tiered recommendation: Quad9 (everyone, default),
+      NextDNS (power users wanting custom filtering), AdGuard DNS (ad/tracker-blocking focus),
+      Mullvad DNS (Mullvad VPN users). Expanded platform notes with specific setup steps.
+    author: "github:@fpszero"
+  - version: "1.0.0"
+    date: "2025-01-01"
+    changes: "Initial item."
+    author: "github:@fpszero"
+
+# ── DNS Resolver Recommendation Matrix ───────────────────────────────────────
+# Embedded as a comment for contributor reference. This drives platform_notes copy.
+#
+# Quad9 (9.9.9.9 / dns.quad9.net)
+#   → Recommended for: everyone, easiest, zero configuration
+#   → No-log policy. Automatic malware-blocking DNS. Non-profit (based in Switzerland).
+#   → Privacy Guides rated. EFF endorsed.
+#   → Free, no account required.
+#
+# NextDNS (nextdns.io)
+#   → Recommended for: users wanting custom filtering, per-device rules, activity logs
+#   → Free tier: 300k queries/month (enough for most users). Paid: unlimited.
+#   → Creates a personal resolver endpoint — you control what's blocked.
+#   → Logs are optional, scoped to your account, and deletable.
+#
+# AdGuard DNS (dns.adguard-dns.com)
+#   → Recommended for: ad and tracker blocking focus
+#   → Default mode blocks ads/trackers. Family mode adds adult content filtering.
+#   → Free. No account required for default mode.
+#   → Privacy Guides rated.
+#
+# Mullvad DNS (base.dns.mullvad.net)
+#   → Recommended for: existing Mullvad VPN users
+#   → No logs. Ad/tracker blocking variants available.
+#
+# AVOID:
+#   Google Public DNS (8.8.8.8) — Google's core business is advertising. DNS data
+#   feeds their profile. Antithetical to this framework. Do not recommend.
+#
+#   Cloudflare (1.1.1.1) — Mixed posture. Logs retained per Cloudflare's privacy policy
+#   (anonymised, but retained). Better than ISP default, but not recommended here.
+#   List as mixed if referenced in avoid-resources.
+#
+#   ISP default — No encryption, full logging, legally saleable in many jurisdictions.

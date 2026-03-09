@@ -1,0 +1,96 @@
+id: "threat-criminal-phishing-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+
+adversary_type: "criminal_org"
+attack_vector: "phishing"
+
+title: "Criminal Organisation Phishing Campaign"
+description: |
+  Organised criminal groups run large-scale phishing operations targeting
+  financial accounts, corporate credentials, and cloud data. Unlike opportunistic
+  phishing, criminal organisations invest in convincing impersonation infrastructure:
+  lookalike domains, real-time TOTP relay proxies, and AI-generated personalised
+  lures. Some operations are semi-targeted — they use data broker profiles to
+  personalise attacks at scale without full spear-phishing investment.
+
+sophistication_required: 3
+prevalence: "common"
+likelihood_without_controls: "medium"
+
+real_world_examples:
+  - url: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
+    title: "EFF SSD — How to Avoid Phishing Attacks"
+    description: "EFF's surveillance self-defence guide to recognising and resisting phishing at all sophistication levels."
+    type: "case_study"
+  - url: "https://krebsonsecurity.com/category/phishing/"
+    title: "Krebs on Security — Phishing Coverage"
+    description: "Ongoing documentation of real-world criminal phishing operations and infrastructure."
+    type: "journalism"
+
+prevalence_data:
+  - stat: "Phishing remains the most common initial access vector in financially motivated cybercrime."
+    source: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
+    date: "2025-06"
+
+mitigated_by:
+  - id: "ai-phishing-detect-001"
+    mitigation_effectiveness: 0.75
+    reason: "Awareness of AI-enhanced phishing techniques and verification habits reduce susceptibility to convincing lures."
+  - id: "auth-2fa-001"
+    mitigation_effectiveness: 0.65
+    reason: "TOTP 2FA significantly raises the cost of phishing but is vulnerable to real-time relay attacks. Hardware keys score higher."
+  - id: "human-urgency-001"
+    mitigation_effectiveness: 0.60
+    reason: "Recognising and resisting artificial urgency — the primary phishing emotional trigger — interrupts the attack before credential entry."
+  - id: "human-verify-001"
+    mitigation_effectiveness: 0.70
+    reason: "Out-of-band verification habits (call the organisation directly, check the URL carefully) are highly effective against impersonation."
+
+assets_at_risk:
+  - "credentials"
+  - "financial"
+  - "cloud_data"
+  - "identity"
+
+tracks:
+  - "general"
+  - "journalist"
+  - "corporate"
+  - "womens_safety"
+  - "ai_focused"
+
+threat_model_relevance:
+  opportunistic: 0.7
+  targeted_individual: 0.6
+  criminal_org: 1.0
+  intimate_partner: 0.2
+  employer: 0.3
+  domestic_government: 0.4
+  foreign_government: 0.5
+  ai_automated: 0.9
+
+status: "active"
+last_verified: "2026-03-06"
+verified_by:
+  - "org:eff.org"
+
+sources:
+  - url: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
+    title: "EFF SSD — How to Avoid Phishing Attacks"
+    type: "primary"
+    accessed: "2026-03-06"
+
+tags:
+  - "high_prevalence"
+  - "financially_motivated"
+  - "ai_enhanced"
+  - "social_engineering"
+
+created_at: "2026-03-06"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-06"
+    changes: "Initial threat node."
+    author: "github:@fpszero"

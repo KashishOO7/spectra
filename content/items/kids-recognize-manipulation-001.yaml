@@ -1,0 +1,139 @@
+# PSSAF Checklist Item
+# Personal Security Self-Audit Framework — kids_teen track
+# SENSITIVE: false — content is protective and educational, not operationally sensitive.
+# Tone note: empowering, not fear-inducing. Focus on signals and trusted adult response.
+
+id: "kids-recognize-manipulation-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+
+title: "Teach your child to recognise online manipulation red flags"
+
+description: |
+  Manipulation of children online follows recognisable patterns: requests for secrets,
+  gift-giving, moving to private platforms, and gradual escalation of intimacy or requests.
+  Children who know these patterns can name them when they encounter them — and know
+  that telling a trusted adult is the right response, not a source of trouble.
+
+threat_narrative: |
+  Adults who target children online almost always begin with trust-building — games,
+  compliments, shared interests — before escalating to requests for photos, location,
+  or private communication. The "don't tell anyone" request is a nearly universal
+  signal. Children who haven't been explicitly taught these patterns often don't
+  recognise them until significant harm has occurred. Recognition and a clear,
+  rehearsed response to "tell a trusted adult" is the most effective known defence.
+
+category: "human_vulnerability"
+subcategory: "social_engineering_defense"
+
+tracks:
+  - "kids_teen"
+
+platforms:
+  - "all"
+
+platform_notes: {}
+
+platform_notes_verified: {}
+
+not_applicable_if: []
+
+# Note: sensitive: false — this item should surface normally in guardian mode.
+# The content is protective education, not operationally sensitive.
+# Guardians reviewing this with children is the intended use case.
+sensitive: false
+
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+
+time_estimate:
+  setup: "30min"
+  ongoing: "low"
+
+maturity_level: 1
+
+adversaries:
+  - "targeted_individual"
+  - "opportunistic"
+
+attack_vectors:
+  - "social_engineering"
+  - "phishing"
+
+assets_protected:
+  - "relationships"
+  - "identity"
+  - "location"
+
+controls_implemented: []
+
+score_weight: 8.0
+
+threat_model_multipliers:
+  opportunistic: 1.0
+  targeted_individual: 2.0
+
+compensating_controls: []
+
+depends_on: []
+
+related_items:
+  - id: "human-urgency-001"
+    relationship: "related_concept"
+    note: "Urgency and artificial pressure are manipulation tools used against adults too."
+  - id: "human-verify-001"
+    relationship: "related_concept"
+    note: "Verification habits — 'is this really who they say they are?' — apply at all ages."
+  - id: "kids-oversharing-001"
+    relationship: "related_concept"
+    note: "Oversharing is often elicited through gradual manipulation. Related skill."
+
+status: "active"
+superseded_by: null
+
+last_verified: "2026-03-01"
+
+verified_by:
+  - "org:eff.org"
+
+sources:
+  - url: "https://www.eff.org/issues/kids-privacy"
+    title: "EFF — Kids & Privacy"
+    type: "primary"
+    accessed: "2026-03-01"
+
+resources: []
+
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      Educational guidance only. If a child discloses that they have been contacted
+      inappropriately online, contact local law enforcement and a qualified child
+      protection professional. This framework provides awareness education only.
+      Report suspected online exploitation to your national reporting centre
+      (NCMEC in the US, IWF in the UK, CEOP in the UK, INHOPE internationally).
+
+# REQUIRED for category: human_vulnerability
+emotional_register: "trust_exploitation"
+# Rationale: the threat this item addresses is specifically about an adult
+# exploiting a child's natural trust. "trust_exploitation" is the accurate register.
+# The scoring engine can use this to weight this item higher for users in the
+# kids_teen track who indicate their child is highly trusting or socially active online.
+
+tags:
+  - "free"
+  - "no_account_needed"
+  - "guardian_conversation"
+  - "kids_safe"
+  - "high_impact_low_effort"
+  - "requires_human_element"
+
+created_at: "2026-03-04"
+created_by: "github:@maintainer_username"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-04"
+    changes: "Initial item creation."
+    author: "github:@maintainer_username"

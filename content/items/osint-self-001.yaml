@@ -1,0 +1,92 @@
+id: "osint-self-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Run a passive self-OSINT audit"
+description: |
+  Open-source intelligence (OSINT) is the practice of gathering information about a target 
+  from public sources. Running OSINT on yourself reveals what attackers can find — your 
+  home address, relationships, daily patterns — before they weaponize it.
+threat_narrative: |
+  You cannot defend a perimeter you haven't mapped. Data brokers, public social media, 
+  and breach dumps legally expose your life. A stalker or targeted attacker can build a 
+  complete profile of your vulnerabilities for under $5. A self-OSINT audit is the map 
+  of your own exposure.
+category: "osint_footprint"
+subcategory: "self_osint_audit"
+tracks:
+  - "general"
+  - "journalist"
+  - "womens_safety"
+platforms:
+  - "web"
+platform_notes:
+  web: |
+    THE OSINT MAP:
+    1. Search Engine Dorking: Search your full name in quotes. Then add your city. 
+       Then search your phone number and primary email in quotes.
+    2. Data Brokers: Search yourself on Spokeo, WhitePages, BeenVerified, and FastPeopleSearch.
+    3. Username Mapping: Run your primary usernames through namecheckr.com or WhatsMyName.app 
+       to see where else you have forgotten accounts.
+    4. Breach Check: Check all emails and phone numbers on HaveIBeenPwned.
+    Document everything you find. This list becomes your cleanup priority list.
+platform_notes_verified:
+  web: "2026-03-04"
+not_applicable_if: []
+sensitive: true
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "2hr"
+  ongoing: "ongoing_low"
+maturity_level: 2
+adversaries:
+  - "targeted_individual"
+  - "data_broker"
+  - "opportunistic"
+  - "intimate_partner"
+attack_vectors:
+  - "osint_passive"
+  - "data_broker_aggregation"
+assets_protected:
+  - "location"
+  - "identity"
+  - "relationships"
+  - "reputation"
+controls_implemented: []
+score_weight: 8.0
+threat_model_multipliers:
+  targeted_individual: 2.0
+  data_broker: 1.6
+  intimate_partner: 1.8
+  opportunistic: 0.8
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "data-broker-optout-001"
+    relationship: "complementary"
+    note: "The OSINT audit tells you which brokers to target with opt-outs."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://inteltechniques.com/workbook.html"
+    title: "OSINT Workbook — Michael Bazzell"
+    type: "primary"
+    accessed: "2026-03-04"
+resources: []
+legal_notes: []
+emotional_register: null
+tags:
+  - "audit"
+  - "discovery"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-04"
+    changes: "Explicit OSINT mapping steps added."
+    author: "github:@fpszero"

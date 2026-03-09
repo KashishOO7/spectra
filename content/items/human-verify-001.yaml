@@ -1,0 +1,91 @@
+id: "human-verify-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Always verify requests through an independent channel"
+description: |
+  When anyone contacts you requesting action — transferring money, providing credentials, 
+  or clicking a link — verify their identity using an independent channel. Do not use the 
+  contact info provided in the suspicious message.
+threat_narrative: |
+  Business email compromise and AI-driven impersonation cost billions annually. Attackers 
+  rely on you accepting the context they provide. A phishing site can be a pixel-perfect 
+  replica. The verification step is the entire defense. It costs 2 minutes and defeats 
+  multi-million dollar attack infrastructure.
+category: "human_vulnerability"
+subcategory: "social_engineering_defense"
+tracks:
+  - "general"
+  - "corporate"
+platforms:
+  - "all"
+platform_notes:
+  all: |
+    THE VERIFICATION RULES:
+    1. Phone Calls: Hang up. Look up the official number on the back of your bank card 
+       or the official website. Call them back.
+    2. Emails: Check the actual sender domain in the email headers, not just the display name. 
+       Do not click links; manually navigate to the service's website in your browser.
+    3. 'CEO/Boss Requests': Corporate policy should require a secondary channel (e.g., a 
+       Slack message or phone call) for any sudden financial or data request.
+platform_notes_verified:
+  all: "2026-03-04"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "5min"
+  ongoing: "ongoing_low"
+maturity_level: 1
+adversaries:
+  - "opportunistic"
+  - "targeted_individual"
+  - "criminal_org"
+  - "ai_automated"
+attack_vectors:
+  - "phishing"
+  - "spear_phishing"
+  - "social_engineering"
+  - "voice_clone"
+assets_protected:
+  - "financial"
+  - "credentials"
+  - "identity"
+controls_implemented: []
+score_weight: 8.5
+threat_model_multipliers:
+  opportunistic: 1.0
+  targeted_individual: 1.8
+  criminal_org: 1.5
+  ai_automated: 2.0
+compensating_controls: []
+depends_on:
+  - id: "human-urgency-001"
+    reason: "Pausing on urgency is the prerequisite for having time to verify."
+    hard_dependency: true
+related_items: []
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
+    title: "How to Avoid Phishing Attacks — EFF SSD"
+    type: "primary"
+    accessed: "2026-03-04"
+resources: []
+legal_notes: []
+emotional_register: "urgency"
+tags:
+  - "behavioral"
+  - "zero_trust"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-04"
+    changes: "Formalized the 'Independent Channel' rules. Bumped score weight."
+    author: "github:@fpszero"

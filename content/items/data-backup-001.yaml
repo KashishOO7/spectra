@@ -1,0 +1,191 @@
+id: "data-backup-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Back up to a zero-knowledge cloud provider or encrypt before upload"
+description: |
+  Cloud backups are only as private as whoever holds the encryption key — usually
+  the provider. Zero-knowledge cloud storage means your files are encrypted on your
+  device before upload, so the provider stores ciphertext they cannot read even if
+  compelled to. The easiest path is switching to a provider that does this by default.
+  If you're locked into Google Drive or Dropbox, Cryptomator adds client-side
+  encryption on top.
+threat_narrative: |
+  Every major cloud provider has received government data requests and complied.
+  When your provider holds the encryption key, a breach, an insider threat, or a
+  legal demand can expose everything you've backed up. A zero-knowledge provider
+  stores only encrypted blobs — the key never leaves your device. Your backup
+  content becomes unreadable to anyone without your password, including the provider.
+category: data_management
+subcategory: backup_security
+tracks: ["general"]
+platforms: ["all"]
+platform_notes:
+  general: |
+    TIER 1 — Easiest: Switch to a zero-knowledge cloud provider (recommended for everyone).
+    These services encrypt your files before upload by default — no extra steps, no extra software.
+
+    Proton Drive (proton.me/drive)
+    • Free: 1GB (usable for documents, photos). Paid plans start at 4€/month.
+    • Open source, audited, based in Switzerland. Same privacy posture as ProtonMail.
+    • Works on Android, iOS, Windows, macOS, web.
+
+    Filen.io (filen.io)
+    • Free: 10GB — the most generous free tier. Open source.
+    • Zero-knowledge, end-to-end encrypted. Desktop sync clients available.
+    • Good choice for users wanting more free storage than Proton Drive offers.
+
+    Internxt (internxt.com)
+    • Free: 10GB. Open source.
+    • Zero-knowledge E2EE. Web, desktop, mobile clients.
+    • Alternative to Filen with similar guarantees.
+
+    TIER 2 — If you're staying with Google Drive/Dropbox/OneDrive:
+    Use Cryptomator (free, open source, cryptomator.org) to create an encrypted vault
+    inside your existing cloud folder. Files are encrypted locally before sync.
+    Works on Windows, macOS, Linux, Android (Play Store / F-Droid), iOS (App Store).
+    Setup: create a vault folder inside your cloud provider folder → unlock with a password →
+    files placed inside the vault are encrypted transparently before upload.
+
+    TIER 3 — Power users / self-hosted:
+    Restic (restic.net) — open-source, encrypted incremental backups to any backend
+    (local drive, SFTP, S3, Backblaze B2). Requires CLI comfort.
+    Nextcloud / Seafile — self-hosted cloud storage with E2EE options.
+
+  windows: |
+    Easiest: Install Proton Drive or Filen.io desktop client and use it as your primary
+    cloud folder. Works like Google Drive — drop files in, they sync encrypted.
+    If keeping Google Drive/OneDrive: install Cryptomator, create a vault inside your
+    cloud folder, set it to open on login. Files in the vault encrypt before sync.
+
+  macos: |
+    Easiest: Install Proton Drive desktop client or Filen.io (filen.io/download).
+    iCloud note: iCloud Drive stores files with Apple holding the key by default.
+    Enable iCloud Advanced Data Protection for E2EE: Settings → [Name] → iCloud →
+    Advanced Data Protection. This is the highest-value single setting for iCloud users.
+    For non-iCloud: use Proton Drive, Filen, or Cryptomator + existing provider.
+
+  linux: |
+    Filen.io and Proton Drive both have Linux desktop clients.
+    For CLI-based encrypted backups: Restic is the gold standard.
+    Quick start: restic init --repo sftp:user@host:/path/to/repo
+    Then: restic backup /home/user --scheduled via cron or systemd timer.
+    Cryptomator also has a Linux AppImage at cryptomator.org/downloads.
+
+  android: |
+    Proton Drive: available on Google Play and F-Droid (via Proton's repo).
+    Filen.io: available on Google Play.
+    Both encrypt before sync — install, sign in, enable auto-upload for photos/documents.
+    If staying with Google Photos: note it is not zero-knowledge. For sensitive photos,
+    use Proton Drive auto-upload instead.
+    Cryptomator is also available on Play Store and F-Droid for existing cloud users.
+
+  ios: |
+    Priority action: Enable iCloud Advanced Data Protection.
+    Settings → [Your Name] → iCloud → Advanced Data Protection → Turn On.
+    This switches iCloud backups and Drive to end-to-end encryption. Takes 2 minutes.
+    If not using iCloud: install Proton Drive (App Store) or Filen.io (App Store).
+    Cryptomator is available on the App Store for encrypting existing provider storage.
+
+platform_notes_verified:
+  general: "2026-03-01"
+  windows: "2026-03-01"
+  macos: "2026-03-01"
+  linux: "2026-03-01"
+  android: "2026-03-01"
+  ios: "2026-03-01"
+
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 2
+  reversibility: 1
+time_estimate:
+  setup: "30min"
+  ongoing: "negligible"
+maturity_level: 2
+adversaries:
+  - "opportunistic"
+  - "criminal_org"
+  - "domestic_government"
+  - "foreign_government"
+  - "data_broker"
+attack_vectors:
+  - "physical_access"
+  - "supply_chain"
+  - "insider_access"
+assets_protected:
+  - "local_data"
+  - "cloud_data"
+controls_implemented: []
+score_weight: 7.0
+threat_model_multipliers:
+  opportunistic: 0.8
+  targeted_individual: 1.2
+  criminal_org: 1.0
+  domestic_government: 1.6
+  foreign_government: 1.8
+  data_broker: 1.1
+  ai_automated: 0.7
+compensating_controls: []
+depends_on:
+  - id: "device-encrypt-001"
+    reason: "Device-level encryption should be in place first — local data must be protected before focusing on cloud transit."
+    hard_dependency: false
+related_items:
+  - id: "device-encrypt-001"
+    relationship: "complementary"
+    note: "Full disk encryption and encrypted backups together protect data at rest locally and in transit to cloud."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-01"
+verified_by:
+  - "org:privacyguides.org"
+sources:
+  - url: "https://privacyguides.org/en/cloud/"
+    title: "Cloud Storage — Privacy Guides"
+    type: "primary"
+    accessed: "2026-03-01"
+  - url: "https://cryptomator.org/"
+    title: "Cryptomator — Open Source Cloud Encryption"
+    type: "supporting"
+    accessed: "2026-03-05"
+  - url: "https://filen.io/"
+    title: "Filen — Zero-Knowledge Encrypted Cloud Storage"
+    type: "supporting"
+    accessed: "2026-03-05"
+resources:
+  - id: "res-tool-protonvpn-001"
+    context: "Proton ecosystem — Proton Drive is the backup/storage product with zero-knowledge architecture"
+    platform_specific: []
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      Encrypting your own data is legal in most jurisdictions. This item concerns personal
+      data only. Some countries restrict commercial use of strong encryption — consult local
+      law for commercial contexts. This is educational information only.
+emotional_register: null
+tags:
+  - "free_option"
+  - "open_source_options"
+  - "privacy_preserving"
+  - "one_time_setup"
+  - "zero_knowledge"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-01"
+    changes: |
+      Major rewrite. Previous version led with Cryptomator, creating a friction gap
+      that most users won't clear. New approach: Tier 1 = switch to a zero-knowledge
+      provider by default (Proton Drive, Filen.io, Internxt — all free tiers, E2EE
+      by design, zero additional steps). Tier 2 = Cryptomator for users locked into
+      existing providers. Tier 3 = self-hosted/CLI. Updated difficulty from 2hr to
+      30min (Tier 1 setup is just app install + sign in). Added iCloud Advanced Data
+      Protection as iOS priority action.
+    author: "github:@fpszero"
+  - version: "1.0.0"
+    date: "2026-02-25"
+    changes: "Initial item."
+    author: "github:@fpszero"

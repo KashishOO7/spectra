@@ -1,0 +1,69 @@
+# SPECTRA — Landscape Feed
+# Global threat events that dynamically adjust item scoring weights.
+#
+# Each active event applies a multiplier to related items' effective_score
+# while the current date is between published_at and expires_at.
+#
+# Anti-alert-fatigue: Keep this to 2-4 events max. Only add when there is
+# a real, documented shift in the threat landscape — not routine news.
+#
+# Process: Each event requires a maintainer PR with a source_url.
+# Expired events stay in the file for historical reference.
+#
+# multiplier values:
+#   1.1 = minor elevation (new tool, not widespread yet)
+#   1.2 = moderate elevation (documented uptick, credible sources)
+#   1.3 = significant elevation (widely reported, actively exploited)
+#   1.4 = high elevation (major breach or shift in attacker capability)
+#   1.5+ = requires maintainer approval
+
+---
+
+events:
+
+  - id: "landscape-ai-phishing-2026-q1"
+    title: "AI-Powered Phishing Now at Scale"
+    description: |
+      AI-generated phishing emails now match human-written quality and are deployed
+      at scale by commodity toolkits. Credential theft success rates have measurably
+      increased across major providers in Q1 2026.
+    related_items:
+      - "auth-password-manager-001"
+      - "auth-2fa-001"
+      - "human-urgency-001"
+      - "auth-backup-codes-001"
+    multiplier: 1.25
+    severity: "high"
+    published_at: "2026-01-10"
+    expires_at: "2026-09-30"
+    source_url: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
+
+  - id: "landscape-sms-2fa-bypass-2026"
+    title: "SMS 2FA Bypass Automated by Criminal Toolkits"
+    description: |
+      Multiple criminal toolkits now automate SIM swap attacks and SS7 interception,
+      reducing the time to bypass SMS 2FA from hours to minutes. TOTP authenticator
+      apps and hardware keys remain unaffected.
+    related_items:
+      - "auth-2fa-001"
+      - "auth-backup-codes-001"
+    multiplier: 1.3
+    severity: "high"
+    published_at: "2026-01-20"
+    expires_at: "2026-12-31"
+    source_url: "https://www.eff.org/deeplinks/2017/09/guide-common-types-two-factor-authentication-web"
+
+  - id: "landscape-data-broker-breach-2025"
+    title: "Major Data Broker Breaches (late 2025)"
+    description: |
+      Several large data broker services suffered significant breaches in late 2025,
+      exposing aggregated personal profiles including home addresses, phone numbers,
+      family relationships, and financial indicators. Opt-out and self-OSINT checks
+      are particularly urgent for anyone with a public profile.
+    related_items:
+      - "data-broker-optout-001"
+    multiplier: 1.4
+    severity: "critical"
+    published_at: "2025-12-15"
+    expires_at: "2026-06-30"
+    source_url: "https://www.privacyguides.org/en/data-broker-removals/"

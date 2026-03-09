@@ -1,0 +1,93 @@
+id: "physical-travel-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Prepare devices before crossing international borders"
+description: |
+  Border crossings are legally distinct zones in most countries — authorities can compel 
+  device access or detain you with little or no suspicion required. Preparing a device 
+  before travel limits data exposure without requiring you to refuse a lawful order.
+threat_narrative: |
+  CBP (US Customs) conducts tens of thousands of device searches annually. Courts in 
+  multiple countries have upheld border device searches without warrants. Crossing with 
+  an unencrypted device containing sensitive communications faces potential full data 
+  extraction. Preparation before the border is the only effective defense.
+category: "physical_security"
+subcategory: "travel_security"
+tracks:
+  - "general"
+  - "journalist"
+platforms:
+  - "all"
+platform_notes:
+  all: |
+    THE BORDER PROTOCOL:
+    1. Back up your device at home. Leave highly sensitive data behind if not needed.
+    2. Power down the device entirely before reaching the border (this forces the encryption 
+       keys out of RAM and requires a PIN, not a fingerprint, to unlock).
+    3. Log out of sensitive cloud apps (Signal, password managers). 
+    4. Use a strong alphanumeric passphrase. Biometrics (FaceID/TouchID) can often be 
+       legally compelled; memorized passphrases are much harder to compel.
+    5. After crossing: Run a malware scan if the device left your sight.
+platform_notes_verified:
+  all: "2026-03-04"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 3
+  reversibility: 1
+time_estimate:
+  setup: "30min"
+  ongoing: "negligible"
+maturity_level: 2
+adversaries:
+  - "domestic_government"
+  - "foreign_government"
+  - "targeted_individual"
+attack_vectors:
+  - "physical_access"
+assets_protected:
+  - "local_data"
+  - "communications"
+  - "credentials"
+controls_implemented: []
+score_weight: 7.5
+threat_model_multipliers:
+  domestic_government: 2.0
+  foreign_government: 2.0
+  targeted_individual: 1.4
+  intimate_partner: 1.0
+compensating_controls: []
+depends_on:
+  - id: "device-encrypt-001"
+    reason: "Encryption is a prerequisite for meaningful travel security."
+    hard_dependency: true
+related_items:
+  - id: "device-screenlock-001"
+    relationship: "required_companion"
+    note: "Use PIN/Passphrase, not biometric, when traveling."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://www.eff.org/wp/digital-privacy-us-border-2017"
+    title: "Digital Privacy at the US Border — EFF"
+    type: "primary"
+    accessed: "2026-03-04"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: "Border search laws vary significantly by country. Refusing to unlock a device may result in detention or device confiscation. This is educational, not legal advice."
+emotional_register: null
+tags:
+  - "travel"
+  - "legal_defense"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-04"
+    changes: "Updated with EFF's protocol for RAM clearing and biometric disabling. Removed non-taxonomy attack vector."
+    author: "github:@fpszero"

@@ -1,0 +1,101 @@
+id: "device-encrypt-001"
+schema_version: "1.0.0"
+version: "2.0.0"
+title: "Enable full-disk encryption on all devices"
+description: |
+  Full-disk encryption (FDE) scrambles your device's storage so it is unreadable 
+  without your encryption key or password. If a device is stolen or seized, the data 
+  remains mathematically inaccessible.
+threat_narrative: |
+  An unencrypted laptop left in a car or seized at a border is a catastrophic data breach. 
+  Attackers can bypass the OS entirely, booting from a USB drive to extract passwords, 
+  session tokens, and sensitive files in minutes. FDE nullifies physical access as an 
+  attack vector for data extraction.
+category: "device_security"
+subcategory: "encryption"
+tracks:
+  - "general"
+  - "corporate"
+  - "journalist"
+platforms:
+  - "windows"
+  - "macos"
+  - "linux"
+  - "android"
+  - "ios"
+platform_notes:
+  windows: "Settings > Privacy & Security > Device Encryption. If you have Windows Pro, use BitLocker (Control Panel > System and Security). Ensure your recovery key is backed up to a local password manager, not just Microsoft's cloud."
+  macos: "System Settings > Privacy & Security > FileVault > Turn On. Choose to create a recovery key rather than using your iCloud account to unlock the disk."
+  linux: "Use LUKS (Linux Unified Key Setup) during OS installation. Post-install encryption requires advanced terminal usage and data backup."
+  android: "Modern Android devices (10+) are encrypted by default. Verify in Settings > Security > Encryption & Credentials."
+  ios: "iPhones are hardware-encrypted by default, but this relies entirely on your passcode. Set a strong, 6+ digit alphanumeric passcode to fortify the encryption."
+platform_notes_verified:
+  all: "2026-03-04"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 2
+time_estimate:
+  setup: "10min"
+  ongoing: "negligible"
+maturity_level: 1
+adversaries:
+  - "opportunistic"
+  - "targeted_individual"
+  - "intimate_partner"
+  - "domestic_government"
+  - "foreign_government"
+  - "criminal_org"
+attack_vectors:
+  - "physical_access"
+assets_protected:
+  - "local_data"
+  - "credentials"
+  - "identity"
+  - "financial"
+controls_implemented:
+  - "ctrl-device-fde"
+score_weight: 9.5
+threat_model_multipliers:
+  opportunistic: 1.0
+  targeted_individual: 1.6
+  intimate_partner: 2.0
+  domestic_government: 1.8
+  foreign_government: 2.0
+  criminal_org: 1.2
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "device-screenlock-001"
+    relationship: "required_companion"
+    note: "Encryption only works if the device is locked and requires a strong password to decrypt."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:privacyguides.org"
+  - "org:anonymousplanet.org"
+sources:
+  - url: "https://privacyguides.org/en/encryption/"
+    title: "Encryption — Privacy Guides"
+    type: "primary"
+    accessed: "2026-03-04"
+  - url: "https://ssd.eff.org/module/how-encrypt-your-windows-device"
+    title: "How to Encrypt Your Windows, Mac, or Linux Computer — EFF Surveillance Self-Defense"
+    type: "supporting"
+    accessed: "2026-03-06"
+resources: []
+legal_notes: []
+emotional_register: null
+tags:
+  - "foundation"
+  - "physical_security"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "2.0.0"
+    date: "2026-03-04"
+    changes: "Refined platform notes for explicit local key storage advice. Added Anonymous Planet sourcing."
+    author: "github:@fpszero"

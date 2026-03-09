@@ -1,0 +1,185 @@
+# PSSAF Checklist Item
+# Personal Security Self-Audit Framework — womens_safety track
+#
+# Content review note: This item covers non-consensual intimate imagery (NCII).
+# Framing is prevention-focused and resource-forward, not shame-inducing.
+# Written to inform and empower, not to assign responsibility for abuse.
+# Reviewed for trauma-informed language before publication.
+
+id: "womens-image-abuse-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+
+title: "Understand your options for preventing and responding to image-based abuse"
+
+description: |
+  Non-consensual intimate imagery (NCII) — sharing or threatening to share intimate
+  images without consent — is a form of abuse, not a consequence of sharing. This item
+  covers both proactive steps that reduce exposure and response pathways if images
+  are shared without your consent. Prevention tools and reporting mechanisms have
+  improved significantly in recent years.
+
+threat_narrative: |
+  NCII is used as a tool of control, coercion, and harassment. In many cases it is
+  threatened rather than carried out, as the threat itself causes significant harm.
+  AI tools now make it possible to generate synthetic intimate images of real people
+  without any original intimate content existing — meaning this risk is no longer
+  limited to situations where images were previously shared. The impact on targets
+  includes loss of employment, severe psychological harm, and secondary harassment
+  campaigns. Response pathways exist and are increasingly effective when acted on quickly.
+
+category: "data_management"
+subcategory: "data_deletion"
+
+tracks:
+  - "womens_safety"
+
+platforms:
+  - "all"
+
+platform_notes:
+  web: |
+    StopNCII.org: Creates a hash of your intimate images that participating platforms
+    (Meta, TikTok, Snap, Bumble, OnlyFans, and others) use to proactively detect and
+    remove matching content. You never upload the image — only a fingerprint.
+    Use this proactively, not only after an incident.
+    
+    Meta's "Take It Down" (takeitdown.ncmec.org): For under-18s specifically.
+    Similar hash-based approach for Meta platforms (Facebook, Instagram, Messenger).
+    
+    Google Image Removal: Search Console → Remove Outdated Content, or
+    support.google.com/websearch/troubleshooter/9685456 for non-consensual intimate
+    images specifically — Google has an expedited removal process.
+    
+    Bing NCII removal: microsoft.com/en-us/concern/bing
+  android: |
+    Google Photos: Settings → Manage Storage → check backup settings.
+    If intimate images are stored, review who has account access and whether
+    Google account recovery options could grant an abuser access.
+    Disable automatic backup of intimate images if preferred:
+    Google Photos → Library → Utilities → Manage device folders.
+  ios: |
+    iCloud Photos: Settings → [Your Name] → iCloud → Photos.
+    If intimate images sync to iCloud, review who has access to your Apple ID.
+    Enable Advanced Data Protection (Settings → Privacy & Security → Advanced Data Protection)
+    to ensure end-to-end encryption of iCloud Photo Library.
+    Disable shared album access and review who is in your Family Sharing group.
+
+platform_notes_verified:
+  web: "2026-03"
+  android: "2026-03"
+  ios: "2026-03"
+
+not_applicable_if: []
+
+# SENSITIVE: This item's presence in an assessment and its content require
+# additional UI protection. Do not display in shared-screen contexts.
+sensitive: true
+
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+
+time_estimate:
+  setup: "30min"
+  ongoing: "negligible"
+
+maturity_level: 2
+
+adversaries:
+  - "targeted_individual"
+  - "intimate_partner"
+  - "ai_automated"
+
+attack_vectors:
+  - "deepfake"
+  - "insider_access"
+  - "social_engineering"
+
+assets_protected:
+  - "reputation"
+  - "relationships"
+  - "behavioral_data"
+  - "identity"
+
+controls_implemented: []
+
+score_weight: 8.0
+
+threat_model_multipliers:
+  targeted_individual: 1.8
+  intimate_partner: 2.0
+  ai_automated: 1.6
+
+compensating_controls: []
+
+depends_on: []
+
+related_items:
+  - id: "womens-stalkerware-001"
+    relationship: "related_concept"
+    note: "Stalkerware and NCII are both tools of intimate partner control. Often coexist."
+  - id: "womens-online-harassment-001"
+    relationship: "related_concept"
+    note: "NCII distribution is frequently accompanied by organised harassment campaigns."
+  - id: "ai-voice-clone-001"
+    relationship: "related_concept"
+    note: "AI-generated synthetic NCII is a growing threat vector requiring awareness."
+
+status: "active"
+superseded_by: null
+
+last_verified: "2026-03-01"
+
+verified_by:
+  - "org:eff.org"
+
+sources:
+  - url: "https://stopncii.org"
+    title: "StopNCII — Non-Consensual Intimate Image Platform"
+    type: "primary"
+    accessed: "2026-03-01"
+  - url: "https://cybercivilrights.org"
+    title: "Cyber Civil Rights Initiative"
+    type: "supporting"
+    accessed: "2026-03-01"
+
+resources: []
+
+legal_notes:
+  - jurisdiction: "global"
+    note: |
+      NCII is illegal in many jurisdictions. This is an educational resource only —
+      not legal advice. If you are experiencing NCII or threats of NCII, the Cyber
+      Civil Rights Initiative (cybercivilrights.org) operates a crisis helpline:
+      +1-844-878-2274 (US) and provides international resources. Document everything
+      before taking action — screenshots with timestamps, platform names, and any
+      identifying information about the perpetrator. A qualified attorney can advise
+      on civil and criminal options in your jurisdiction.
+  - jurisdiction: "GB"
+    note: |
+      In England and Wales, sharing intimate images without consent is a criminal
+      offence under the Online Safety Act 2023. Threats to share are also criminalised.
+      Report to police and to the Internet Watch Foundation (iwf.org.uk).
+  - jurisdiction: "AU"
+    note: |
+      Australia's eSafety Commissioner (esafety.gov.au) has legal powers to compel
+      removal of NCII and synthetic NCII. File a report at esafety.gov.au/report.
+
+emotional_register: null
+
+tags:
+  - "free"
+  - "high_impact"
+  - "response_pathway"
+  - "prevention_and_response"
+  - "ai_threat_relevant"
+
+created_at: "2026-03-04"
+created_by: "github:@maintainer_username"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-04"
+    changes: "Initial item creation."
+    author: "github:@maintainer_username"

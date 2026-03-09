@@ -1,0 +1,457 @@
+- id: "res-tool-aegis-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Aegis Authenticator"
+  url: "https://getaegis.app"
+  description: |
+    Free, open-source TOTP/HOTP authenticator for Android with AES-256-GCM encrypted vaults
+    and flexible backup options. Unlike Google Authenticator, backups are encrypted and you
+    control where they go. Audited by Cure53 in 2023 with no critical findings.
+  platforms: ["android"]
+  adversaries_addressed: ["opportunistic", "criminal_org", "targeted_individual", "ai_automated"]
+  categories_relevant: ["account_security"]
+  tracks: ["general"]
+  cost: "free"
+  open_source: true
+  source_url: "https://github.com/beemdevelopment/Aegis"
+  license: "GPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats: []
+  security_audits:
+    - url: "https://github.com/beemdevelopment/Aegis/blob/master/docs/vault.md"
+      conducted_by: "Cure53"
+      year: 2023
+      summary: "No critical vulnerabilities found. Minor issues addressed in subsequent release."
+  alternatives:
+    - id: "res-tool-keepassxc-001"
+      note: "Cross-platform desktop option with TOTP built in."
+  endorsing_orgs: ["privacyguides.org", "eff.org"]
+  distribution:
+    - platform: "android"
+      store: "F-Droid"
+      url: "https://f-droid.org/en/packages/com.beemdevelopment.aegis/"
+      preferred: true
+      note: "Preferred — F-Droid builds are reproducible."
+    - platform: "android"
+      store: "Google Play"
+      url: "https://play.google.com/store/apps/details?id=com.beemdevelopment.aegis"
+      preferred: false
+      note: "Available but F-Droid is preferred for reproducibility."
+  status: "active"
+  last_verified: "2025-02-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/multi-factor-authentication/#aegis-authenticator-android"
+      title: "Aegis Authenticator — Privacy Guides"
+      type: "primary"
+      accessed: "2025-02-01"
+  tags: ["open_source", "free", "audited", "no_account_required", "offline_capable", "encrypted_backup"]
+  created_at: "2025-01-01"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2025-01-01"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+
+- id: "res-tool-bitwarden-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Bitwarden"
+  url: "https://bitwarden.com"
+  description: |
+    Free, open-source password manager with end-to-end encrypted vaults, cross-platform
+    sync, and browser extensions for all major browsers. The free tier covers unlimited
+    passwords across unlimited devices — no paywall for core functionality.
+    Self-hosting via Vaultwarden is supported for advanced users who want full control.
+  platforms: ["windows", "macos", "linux", "android", "ios", "web"]
+  adversaries_addressed: ["opportunistic", "criminal_org", "targeted_individual", "ai_automated"]
+  categories_relevant: ["account_security"]
+  tracks: ["general"]
+  cost: "freemium"
+  open_source: true
+  source_url: "https://github.com/bitwarden/clients"
+  license: "GPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats: []
+  security_audits:
+    - url: "https://bitwarden.com/help/is-bitwarden-audited/"
+      conducted_by: "Cure53"
+      year: 2023
+      summary: "Annual third-party audit. No critical issues. Results published publicly."
+  alternatives:
+    - id: "res-tool-keepassxc-001"
+      note: "Fully offline alternative with no cloud sync. Better for high-threat models."
+  endorsing_orgs: ["privacyguides.org", "eff.org"]
+  distribution:
+    - platform: "all"
+      store: "Official site"
+      url: "https://bitwarden.com/download/"
+      preferred: true
+      note: "Desktop apps, browser extensions, and mobile apps all available."
+  status: "active"
+  last_verified: "2026-02-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/passwords/#bitwarden"
+      title: "Bitwarden — Privacy Guides"
+      type: "primary"
+      accessed: "2026-02-01"
+  tags: ["open_source", "free", "audited", "cross_platform", "cloud_sync", "browser_extension"]
+  created_at: "2026-02-25"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-02-25"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+
+- id: "res-tool-signal-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Signal"
+  url: "https://signal.org"
+  description: |
+    End-to-end encrypted messaging, voice, and video calls. The Signal Protocol is the
+    gold standard for encrypted messaging and is used by WhatsApp and iMessage internally —
+    but Signal itself has no metadata retention, no ads, and is run by a non-profit.
+    All messages, calls, and files are encrypted end-to-end with open, audited cryptography.
+  platforms: ["android", "ios", "windows", "macos", "linux"]
+  adversaries_addressed: ["opportunistic", "criminal_org", "targeted_individual", "intimate_partner", "isp_network", "domestic_government", "foreign_government"]
+  categories_relevant: ["communications"]
+  tracks: ["general", "journalist", "womens_safety"]
+  cost: "free"
+  open_source: true
+  source_url: "https://github.com/signalapp"
+  license: "AGPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats:
+    - "Requires a phone number to register, which links your identity to the account. For high-risk users, use a non-primary number or a VoIP number."
+    - "Desktop app requires linking to a mobile device — mobile is the primary client."
+  security_audits:
+    - url: "https://eprint.iacr.org/2016/1013.pdf"
+      conducted_by: "Academic peer review (CCS 2016)"
+      year: 2016
+      summary: "Signal Protocol formally verified. Cryptographic design is sound."
+  alternatives: []
+  endorsing_orgs: ["privacyguides.org", "eff.org"]
+  distribution:
+    - platform: "android"
+      store: "Google Play"
+      url: "https://play.google.com/store/apps/details?id=org.thoughtcrime.securesms"
+      preferred: true
+      note: ""
+    - platform: "ios"
+      store: "App Store"
+      url: "https://apps.apple.com/app/signal-private-messenger/id874139669"
+      preferred: true
+      note: ""
+    - platform: "all"
+      store: "Official site"
+      url: "https://signal.org/download/"
+      preferred: true
+      note: "Desktop clients for Windows, macOS, Linux."
+  status: "active"
+  last_verified: "2026-02-01"
+  verified_by: ["org:privacyguides.org", "org:eff.org"]
+  sources:
+    - url: "https://privacyguides.org/en/real-time-communication/#signal"
+      title: "Signal — Privacy Guides"
+      type: "primary"
+      accessed: "2026-02-01"
+    - url: "https://ssd.eff.org/module/how-to-use-signal"
+      title: "How to Use Signal — EFF Surveillance Self-Defense"
+      type: "supporting"
+      accessed: "2026-03-06"
+  tags: ["open_source", "free", "audited", "e2e_encrypted", "non_profit", "no_ads"]
+  created_at: "2026-02-25"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-02-25"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+
+- id: "res-tool-keepassxc-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "KeePassXC"
+  url: "https://keepassxc.org"
+  description: |
+    Fully offline, open-source password manager that stores your vault as an encrypted local file
+    (AES-256 or ChaCha20). No cloud sync by default — you own the file and control exactly where it
+    goes. Also supports TOTP codes built-in, making it a combined password + authenticator solution.
+    Best choice for users who cannot or will not trust cloud-based password managers.
+  platforms: ["windows", "macos", "linux"]
+  adversaries_addressed: ["opportunistic", "criminal_org", "targeted_individual", "domestic_government", "foreign_government"]
+  categories_relevant: ["account_security"]
+  tracks: ["general", "journalist"]
+  cost: "free"
+  open_source: true
+  source_url: "https://github.com/keepassxreboot/keepassxc"
+  license: "GPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats:
+    - "No built-in sync — you must manage your vault file across devices yourself (e.g. via Syncthing or manual transfer)."
+    - "Less beginner-friendly than cloud password managers. Setup requires more deliberate configuration."
+  security_audits:
+    - url: "https://keepassxc.org/audits/"
+      conducted_by: "Assured Information Security"
+      year: 2023
+      summary: "Security audit commissioned by the project. No critical vulnerabilities found."
+  alternatives:
+    - id: "res-tool-bitwarden-001"
+      note: "Cloud-synced alternative. Better UX for most users, slightly weaker threat model for offline-first needs."
+  endorsing_orgs: ["privacyguides.org"]
+  distribution:
+    - platform: "all"
+      store: "Official site"
+      url: "https://keepassxc.org/download/"
+      preferred: true
+      note: "Available for Windows, macOS, Linux."
+  status: "active"
+  last_verified: "2026-02-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/passwords/#keepassxc"
+      title: "KeePassXC — Privacy Guides"
+      type: "primary"
+      accessed: "2026-02-01"
+  tags: ["open_source", "free", "audited", "offline", "no_account_required", "totp_support"]
+  created_at: "2026-02-25"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-02-25"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+
+- id: "res-tool-protonvpn-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Proton VPN"
+  url: "https://protonvpn.com"
+  description: |
+    Open-source VPN with a verified no-logs policy (independently audited), based in Switzerland
+    with strong legal privacy protections. The free tier is genuinely usable — no data caps,
+    no speed throttling on slower servers, and no ads. Protects traffic from ISP surveillance,
+    network-level interception, and WiFi eavesdropping.
+  platforms: ["windows", "macos", "linux", "android", "ios"]
+  adversaries_addressed: ["isp_network", "opportunistic", "criminal_org", "data_broker"]
+  categories_relevant: ["network_security"]
+  tracks: ["general", "journalist"]
+  cost: "freemium"
+  open_source: true
+  source_url: "https://github.com/ProtonVPN"
+  license: "GPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats:
+    - "A VPN shifts trust from your ISP to the VPN provider — it does not make you anonymous. Proton has a strong track record, but this trade-off applies to all VPNs."
+    - "Free tier is limited to slower servers in 3 countries. Paid plans unlock more locations and higher speeds."
+    - "VPNs do not protect against malware, phishing, or account compromise — they only protect network-layer traffic."
+  security_audits:
+    - url: "https://protonvpn.com/blog/no-logs-audit/"
+      conducted_by: "Securitum"
+      year: 2022
+      summary: "No-logs policy verified. No evidence of user traffic or connection logs retained."
+  alternatives: []
+  endorsing_orgs: ["privacyguides.org"]
+  distribution:
+    - platform: "all"
+      store: "Official site"
+      url: "https://protonvpn.com/download"
+      preferred: true
+      note: "Apps for all major platforms."
+  status: "active"
+  last_verified: "2026-02-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/vpn/#proton-vpn"
+      title: "Proton VPN — Privacy Guides"
+      type: "primary"
+      accessed: "2026-02-01"
+  tags: ["open_source", "audited", "freemium", "no_logs", "cross_platform"]
+  created_at: "2026-02-25"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-02-25"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+
+- id: "res-tool-ublock-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "uBlock Origin"
+  url: "https://ublockorigin.com"
+  description: |
+    Open-source, wide-spectrum content blocker for browsers. Blocks ads, trackers, malicious
+    domains, and fingerprinting scripts with negligible CPU and memory overhead compared to
+    alternatives. The most effective tool for reducing your OSINT footprint and reducing
+    exposure to malvertising — a common malware delivery vector.
+  platforms: ["web"]
+  adversaries_addressed: ["opportunistic", "data_broker", "criminal_org", "ai_automated"]
+  categories_relevant: ["network_security", "osint_footprint"]
+  tracks: ["general"]
+  cost: "free"
+  open_source: true
+  source_url: "https://github.com/gorhill/uBlock"
+  license: "GPL-3.0"
+  privacy_posture: "privacy_first"
+  caveats:
+    - "The Manifest V3 update in Chrome limits extension capabilities. The full uBlock Origin is available on Firefox. On Chrome, install 'uBlock Origin Lite' (reduced functionality) or switch to Firefox for full protection."
+  security_audits: []
+  alternatives: []
+  endorsing_orgs: ["privacyguides.org", "eff.org"]
+  distribution:
+    - platform: "web"
+      store: "Firefox Add-ons"
+      url: "https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/"
+      preferred: true
+      note: "Full version. Firefox is recommended for best ad-blocking protection."
+    - platform: "web"
+      store: "Chrome Web Store"
+      url: "https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm"
+      preferred: false
+      note: "Full version still available but will eventually be replaced by Lite version due to Manifest V3."
+  status: "active"
+  last_verified: "2026-02-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/browser-extensions/#ublock-origin"
+      title: "uBlock Origin — Privacy Guides"
+      type: "primary"
+      accessed: "2026-02-01"
+  tags: ["open_source", "free", "browser_extension", "tracker_blocking", "malvertising_protection"]
+  created_at: "2026-02-25"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-02-25"
+      changes: "Initial entry."
+      author: "github:@fpszero"
+- id: "res-tool-google-auth-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Google Authenticator"
+  url: "https://support.google.com/accounts/answer/1066447"
+  description: |
+    Google's TOTP authenticator app. Listed here as a redirect — users who already
+    have it installed should be aware of its limitations and consider migrating to Aegis
+    (Android) or Raivo (iOS). Not recommended for new setups.
+  platforms: ["android", "ios"]
+  adversaries_addressed: []
+  categories_relevant: ["account_security"]
+  tracks: ["general"]
+  cost: "free"
+  open_source: false
+  source_url: null
+  license: null
+  privacy_posture: "avoid"
+  caveats:
+    - "Closed source — the codebase cannot be audited for security or privacy issues."
+    - "Until 2023, had no encrypted backup — codes were stored in plaintext and unrecoverable if your phone was lost. Cloud backup was added in 2023 but sync is tied to a Google account."
+    - "Cloud sync links your 2FA codes to Google's servers and your Google account identity. For a framework concerned with minimising data exposure to large platforms, this is a significant trade-off."
+    - "No open-source alternative to verify the backup encryption implementation."
+    - "Google is an advertising company. Associating your 2FA activity with a Google account is inconsistent with this framework's threat model for users concerned about data brokers or targeted surveillance."
+  security_audits: []
+  alternatives:
+    - id: "res-tool-aegis-001"
+      note: "Recommended Android replacement. Open source, encrypted offline backups, audited by Cure53."
+  endorsing_orgs: []
+  distribution:
+    - platform: "android"
+      store: "Google Play"
+      url: "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
+      preferred: false
+      note: "Not recommended — listed for users already using this app."
+    - platform: "ios"
+      store: "App Store"
+      url: "https://apps.apple.com/app/google-authenticator/id388497605"
+      preferred: false
+      note: "Not recommended — listed for users already using this app."
+  status: "active"
+  last_verified: "2026-03-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/multi-factor-authentication/"
+      title: "Multi-Factor Authentication — Privacy Guides"
+      type: "primary"
+      accessed: "2026-03-01"
+  tags: ["closed_source", "google", "avoid", "cloud_tied"]
+  created_at: "2026-03-01"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-03-01"
+      changes: "Initial entry as avoid resource. Redirects users to Aegis."
+      author: "github:@fpszero"
+
+- id: "res-tool-authy-001"
+  schema_version: "1.0.0"
+  version: "1.0.0"
+  type: "tool"
+  title: "Authy"
+  url: "https://authy.com"
+  description: |
+    Twilio's TOTP authenticator. Listed here as a redirect — users who already have
+    it installed should be aware of its limitations and consider migrating to Aegis
+    (Android) or Raivo (iOS). Not recommended for new setups.
+  platforms: ["android", "ios", "windows", "macos", "linux"]
+  adversaries_addressed: []
+  categories_relevant: ["account_security"]
+  tracks: ["general"]
+  cost: "free"
+  open_source: false
+  source_url: null
+  license: null
+  privacy_posture: "avoid"
+  caveats:
+    - "Closed source — codebase cannot be audited."
+    - "Owned by Twilio, a US company subject to US legal process. Your 2FA backup is stored on Twilio's servers, not locally."
+    - "Twilio suffered a significant data breach in 2022 in which attacker accessed employee accounts and some customer data. Subsequent audit found Authy phone numbers were exposed in a 2024 API vulnerability affecting 33 million accounts."
+    - "Account recovery is phone-number-based, which creates a SIM swap vulnerability — the same attack vector that 2FA is supposed to prevent."
+    - "Multi-device sync is convenient but means your 2FA codes exist on Twilio's infrastructure, not solely on your device."
+  security_audits: []
+  alternatives:
+    - id: "res-tool-aegis-001"
+      note: "Recommended Android replacement. Open source, encrypted local backups, no cloud dependency."
+  endorsing_orgs: []
+  distribution:
+    - platform: "android"
+      store: "Google Play"
+      url: "https://play.google.com/store/apps/details?id=com.authy.authy"
+      preferred: false
+      note: "Not recommended — listed for users already using this app."
+    - platform: "ios"
+      store: "App Store"
+      url: "https://apps.apple.com/app/twilio-authy/id494168017"
+      preferred: false
+      note: "Not recommended — listed for users already using this app."
+  status: "active"
+  last_verified: "2026-03-01"
+  verified_by: ["org:privacyguides.org"]
+  sources:
+    - url: "https://privacyguides.org/en/multi-factor-authentication/"
+      title: "Multi-Factor Authentication — Privacy Guides"
+      type: "primary"
+      accessed: "2026-03-01"
+    - url: "https://techcrunch.com/2024/07/03/twilio-says-hackers-identified-cell-phone-numbers-of-two-factor-app-authy-users/"
+      title: "Twilio says hackers identified cell phone numbers of 33M Authy users — TechCrunch"
+      type: "supporting"
+      accessed: "2026-03-06"
+  tags: ["closed_source", "cloud_tied", "avoid", "breach_history"]
+  created_at: "2026-03-01"
+  created_by: "github:@fpszero"
+  changelog:
+    - version: "1.0.0"
+      date: "2026-03-01"
+      changes: "Initial entry as avoid resource. Documents Twilio breach history and SIM swap risk."
+      author: "github:@fpszero"

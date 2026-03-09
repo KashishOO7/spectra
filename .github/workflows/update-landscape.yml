@@ -1,0 +1,39 @@
+name: Scan Security Feeds
+
+# Scans RSS feeds daily for security events relevant to Spectra.
+# Creates a GitHub issue with draft YAML candidates for maintainer review.
+# Never auto-commits — requires manual maintainer review.
+#
+# Manual trigger available for on-demand scanning.
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # Daily at 08:00 UTC
+  workflow_dispatch:        # Manual trigger from Actions tab
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan-landscape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pyyaml --quiet
+
+      - name: Run landscape scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 .github/scripts/scan-landscape.py

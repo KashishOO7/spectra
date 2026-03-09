@@ -1,0 +1,115 @@
+name: Spectra CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Schema Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run schema validator
+        run: npm run validate
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: validation-report.txt
+          if-no-files-found: ignore
+
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run check
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [validate, typecheck]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_URL: https://spectra.fpszero.com
+
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  health-check:
+    name: Post-Deploy Health Check
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Wait for deployment to propagate
+        run: sleep 30
+
+      - name: Check key pages
+        run: |
+          BASE="https://spectra.fpszero.com"
+          PAGES=("/" "/audit" "/resources" "/about" "/threats" "/graph" "/timeline")
+          FAILED=0
+          for page in "${PAGES[@]}"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE$page")
+            if [ "$STATUS" = "200" ]; then
+              echo "✓ $BASE$page → $STATUS"
+            else
+              echo "✗ $BASE$page → $STATUS"
+              FAILED=1
+            fi
+          done
+          exit $FAILED

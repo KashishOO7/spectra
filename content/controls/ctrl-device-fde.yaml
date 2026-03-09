@@ -1,0 +1,44 @@
+id: "ctrl-device-fde"
+schema_version: "1.0.0"
+version: "1.0.0"
+name: "Full-Disk Encryption (FDE)"
+category: "device_security"
+description: |
+  Full-disk encryption protects the entire contents of a storage device by
+  encrypting data at rest. Without the decryption key, an adversary with
+  physical access to the device cannot read any stored data, including the
+  operating system, applications, and user files.
+security_property: "confidentiality"
+nist_references:
+  - "NIST SP 800-111: Guide to Storage Encryption Technologies for End User Devices"
+cis_references:
+  - "CIS Control 3: Data Protection"
+  - "CIS Safeguard 3.6: Encrypt Data on End-User Devices"
+implemented_by:
+  - id: "device-encrypt-001"
+    method: "OS-native full-disk encryption (BitLocker, FileVault, LUKS, Android FBE, iOS Data Protection)"
+    effectiveness: 0.90
+    note: |
+      OS-native FDE is the standard baseline. Effectiveness is near-complete for
+      physical access threats when the device is powered off. Reduced when the
+      device is powered on and unlocked (memory attack surface).
+coverage_threshold:
+  minimum_items: 1
+  minimum_effectiveness: 0.70
+  scope: "all_accounts"
+coverage_note: |
+  FDE must be active on every device that stores sensitive data. A single
+  unencrypted device undermines the entire posture.
+mitigates_threats: []
+status: "active"
+last_verified: "2025-02-01"
+verified_by:
+  - "org:nist.gov"
+  - "org:privacyguides.org"
+sources:
+  - url: "https://csrc.nist.gov/publications/detail/sp/800-111/final"
+    title: "NIST SP 800-111 — Guide to Storage Encryption for End User Devices"
+    type: "primary"
+    accessed: "2025-01-01"
+created_at: "2024-06-01"
+created_by: "github:@maintainer_username"

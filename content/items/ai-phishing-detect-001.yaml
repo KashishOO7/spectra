@@ -1,0 +1,95 @@
+id: "ai-phishing-detect-001"
+schema_version: "1.0.0"
+version: "1.1.0"
+title: "Update your phishing detection instincts — grammar is no longer a red flag"
+description: |
+  Traditional phishing had obvious tells: bad grammar, generic greetings, suspicious links. 
+  AI-generated phishing is grammatically perfect, highly personalized using OSINT, and 
+  indistinguishable from legitimate communication.
+threat_narrative: |
+  Attackers use Large Language Models (LLMs) to scrape your LinkedIn, public tweets, and 
+  company news to draft spear-phishing emails in seconds. Because the text is flawless, 
+  the old rule of "look for typos" is dangerously obsolete. 
+category: "ai_threats"
+subcategory: "ai_phishing_detection"
+tracks:
+  - "general"
+  - "ai_focused"
+platforms:
+  - "all"
+platform_notes:
+  all: |
+    Replace the "grammar check" mental model with the Zero-Trust Evaluation model.
+    Ask these three questions before acting:
+    1. Initiation: Did I initiate this conversation or request? (If no, escalate suspicion).
+    2. Emotion: Does this message create a sense of urgency, fear, or sudden reward?
+    3. Action: Is it asking me to click a link, download a file, or enter a password?
+    If an uninitiated message creates urgency and demands action, it is hostile until 
+    proven otherwise via an independent channel.
+platform_notes_verified:
+  all: "2026-03-04"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "5min"
+  ongoing: "ongoing_low"
+maturity_level: 2
+adversaries:
+  - "opportunistic"
+  - "targeted_individual"
+  - "criminal_org"
+  - "ai_automated"
+  - "foreign_government"
+attack_vectors:
+  - "phishing"
+  - "spear_phishing"
+  - "social_engineering"
+assets_protected:
+  - "credentials"
+  - "financial"
+  - "cloud_data"
+  - "identity"
+controls_implemented: []
+score_weight: 8.0
+threat_model_multipliers:
+  opportunistic: 1.1
+  targeted_individual: 1.6
+  criminal_org: 1.4
+  ai_automated: 2.0
+  foreign_government: 1.6
+compensating_controls: []
+depends_on:
+  - id: "human-urgency-001"
+    reason: "Recognizing urgency is the prerequisite to detecting AI manipulation."
+    hard_dependency: false
+related_items:
+  - id: "human-verify-001"
+    relationship: "required_companion"
+    note: "Independent verification is the only reliable defense against flawless AI text."
+status: "active"
+superseded_by: null
+last_verified: "2026-03-04"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://arxiv.org/abs/2305.12989"
+    title: "Spear Phishing With Large Language Models — Academic research"
+    type: "primary"
+    accessed: "2026-03-04"
+resources: []
+legal_notes: []
+emotional_register: null
+tags:
+  - "behavioral"
+  - "ai_defense"
+created_at: "2026-02-25"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.1.0"
+    date: "2026-03-04"
+    changes: "Formalized Zero-Trust Evaluation model in platform notes."
+    author: "github:@fpszero"

@@ -1,0 +1,22 @@
+{
+  "name": "Spectra — Personal Security Audit",
+  "short_name": "Spectra",
+  "description": "Know exactly how exposed you are. Open-source personal security self-audit framework.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080c12",
+  "theme_color": "#080c12",
+  "orientation": "portrait-primary",
+  "categories": ["security", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

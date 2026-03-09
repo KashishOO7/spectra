@@ -1,0 +1,97 @@
+id: "threat-intimate-physical-access-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+
+adversary_type: "intimate_partner"
+attack_vector: "physical_access"
+
+title: "Intimate Partner Physical Device Access"
+description: |
+  A current or former intimate partner, family member, or cohabitant uses
+  physical access to a device to install stalkerware, extract data, review
+  messages, or reconfigure accounts and security settings. This adversary
+  type is uniquely dangerous because trust has already been extended: they
+  know passwords, have physical proximity, and may have legal access to
+  shared spaces. The harm is often ongoing — not a single breach event.
+
+sophistication_required: 1
+prevalence: "common"
+likelihood_without_controls: "high"
+
+real_world_examples:
+  - url: "https://stopstalkerware.org/information-for-survivors/"
+    title: "Coalition Against Stalkerware — Survivor Resources"
+    description: "Documented patterns of stalkerware deployment and intimate partner surveillance."
+    type: "case_study"
+  - url: "https://techsafety.org/resources-survivors"
+    title: "NNEDV Safety Net — Technology Safety Resources"
+    description: "Comprehensive documentation of technology-facilitated abuse patterns."
+    type: "case_study"
+
+prevalence_data:
+  - stat: "Intimate partner surveillance is one of the most common forms of stalkerware deployment, affecting millions annually."
+    source: "https://stopstalkerware.org/information-for-survivors/"
+    date: "2025-01"
+
+mitigated_by:
+  - id: "womens-stalkerware-001"
+    mitigation_effectiveness: 0.80
+    reason: "Detecting and removing stalkerware, combined with device hygiene practices, directly addresses this threat."
+  - id: "womens-location-001"
+    mitigation_effectiveness: 0.75
+    reason: "Auditing and controlling location-sharing apps and permissions removes a primary surveillance vector."
+  - id: "device-screenlock-001"
+    mitigation_effectiveness: 0.50
+    reason: "A strong screen lock with biometric authentication raises the barrier for opportunistic physical access."
+  - id: "auth-2fa-001"
+    mitigation_effectiveness: 0.40
+    reason: "2FA on accounts limits the damage from password exposure but does not address physical device access directly."
+
+assets_at_risk:
+  - "communications"
+  - "location"
+  - "local_data"
+  - "credentials"
+  - "relationships"
+  - "identity"
+
+tracks:
+  - "womens_safety"
+  - "general"
+
+threat_model_relevance:
+  opportunistic: 0.1
+  targeted_individual: 0.6
+  criminal_org: 0.1
+  intimate_partner: 1.0
+  employer: 0.2
+  domestic_government: 0.1
+  foreign_government: 0.1
+  ai_automated: 0.3
+
+status: "active"
+last_verified: "2026-03-06"
+verified_by:
+  - "org:stopstalkerware.org"
+  - "org:techsafety.org"
+
+sources:
+  - url: "https://stopstalkerware.org/information-for-survivors/"
+    title: "Coalition Against Stalkerware — Information for Survivors"
+    type: "primary"
+    accessed: "2026-03-06"
+
+tags:
+  - "physical_access"
+  - "high_prevalence"
+  - "ongoing_harm"
+  - "trauma_informed_content"
+  - "sensitive"
+
+created_at: "2026-03-06"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2026-03-06"
+    changes: "Initial threat node."
+    author: "github:@fpszero"

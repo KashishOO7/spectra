@@ -1,0 +1,46 @@
+id: "ctrl-auth-mfa"
+schema_version: "1.0.0"
+version: "1.0.0"
+name: "Multi-Factor Authentication (MFA)"
+category: "account_security"
+description: |
+  MFA requires proof of identity through two or more independent factors:
+  something you know (password/PIN), something you have (device, hardware key),
+  or something you are (biometric). A control is considered active only when
+  MFA is enabled on all accounts classified as critical in the user's threat model.
+security_property: "authentication_assurance"
+nist_references:
+  - "NIST SP 800-53: IA-2 (Identification and Authentication)"
+  - "NIST SP 800-63B: AAL2 (Authentication Assurance Level 2)"
+cis_references:
+  - "CIS Control 6: Access Control Management"
+  - "CIS Safeguard 6.3: Require MFA for Externally-Exposed Applications"
+implemented_by:
+  - id: "auth-2fa-001"
+    method: "TOTP (Time-based One-Time Password)"
+    effectiveness: 0.75
+    note: |
+      TOTP is widely supported and significantly better than no 2FA. Vulnerable
+      to real-time phishing relay and SIM swap if SMS backup is enabled.
+coverage_threshold:
+  minimum_items: 1
+  minimum_effectiveness: 0.50
+  scope: "all_critical_accounts"
+coverage_note: |
+  MFA coverage is only meaningful when applied consistently. The scoring engine
+  penalises partial coverage.
+mitigates_threats:
+  - id: "threat-opportunistic-credential-stuffing-001"
+    effectiveness: 0.95
+status: "active"
+last_verified: "2025-02-01"
+verified_by:
+  - "org:nist.gov"
+  - "org:eff.org"
+sources:
+  - url: "https://csrc.nist.gov/publications/detail/sp/800-63b/final"
+    title: "NIST SP 800-63B — Digital Identity Guidelines"
+    type: "primary"
+    accessed: "2025-01-01"
+created_at: "2024-06-01"
+created_by: "github:@maintainer_username"

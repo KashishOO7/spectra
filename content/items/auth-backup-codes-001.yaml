@@ -1,0 +1,68 @@
+id: "auth-backup-codes-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+title: "Generate and securely store 2FA backup codes"
+description: "Backup codes are one-time recovery codes generated when you enable 2FA. If you lose your authenticator device, they are your only way back in. Most people never save them and lose account access permanently."
+threat_narrative: "A stolen or broken phone without backup codes means permanent lockout from accounts without recovery options. This happens thousands of times daily. The cost of not having backup codes is losing your account entirely — not a security incident, just a self-inflicted one."
+category: "account_security"
+subcategory: "recovery"
+tracks:
+  - "general"
+platforms:
+  - "all"
+platform_notes:
+  all: "After enabling 2FA on any service, locate 'backup codes' or 'recovery codes' in security settings. Download them and store in your password manager's secure notes, or print and store physically in a locked location. Never store in email, cloud notes, or screenshots on your phone."
+platform_notes_verified:
+  all: "2025-01"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "5min"
+  ongoing: "negligible"
+maturity_level: 1
+adversaries:
+  - "opportunistic"
+attack_vectors: []
+assets_protected:
+  - "credentials"
+  - "cloud_data"
+controls_implemented: []
+score_weight: 5.0
+threat_model_multipliers:
+  opportunistic: 1.0
+compensating_controls: []
+depends_on:
+  - id: "auth-2fa-001"
+    reason: "Backup codes exist because of 2FA. Enable 2FA first."
+    hard_dependency: true
+related_items: []
+status: "active"
+superseded_by: null
+last_verified: "2025-01-01"
+verified_by:
+  - "org:privacyguides.org"
+sources:
+  - url: "https://privacyguides.org/en/basics/multi-factor-authentication/"
+    title: "Multi-Factor Authentication — Privacy Guides"
+    type: "primary"
+    accessed: "2025-01-01"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: "Educational purposes only."
+emotional_register: null
+tags:
+  - "free"
+  - "quick"
+  - "recovery"
+created_at: "2025-01-01"
+created_by: "github:@fpszero"
+changelog:
+  - version: "1.0.0"
+    date: "2025-01-01"
+    changes: "Initial item."
+    author: "github:@fpszero"
