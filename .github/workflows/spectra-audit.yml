@@ -1,0 +1,56 @@
+name: Spectra Internal Audit
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install --no-deps "requests==2.32.3" "pyyaml==6.0.1"
+
+      - id: validate
+        run: npm run validate 2>&1 | tee audit_validate.txt || true
+
+      - id: audit_script
+        run: python .github/scripts/spectra_audit.py 2>&1 | tee audit_main.txt || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.repository }}
+
+      - run: python .github/scripts/publish_audit.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.repository }}
+          AUDIT_DATE: ${{ github.run_id }}
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-logs-${{ github.run_id }}
+          path: |
+            audit_validate.txt
+            audit_main.txt
+          retention-days: 30
