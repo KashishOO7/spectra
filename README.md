@@ -44,7 +44,7 @@ The app is split into a static content engine and a SvelteKit frontend.
 spectra/
 ├── .github/
 │   ├── scripts/            # Automations (e.g., RSS landscape scanner)
-│   ├── workflows/          # CI schema validation and URL health checks
+│   ├── workflows/          # CI, content review bot, landscape scanner, security audit, URL health checks
 │   └── CODEOWNERS          # Required reviewers for sensitive content tracks
 ├── content/                # The Database (CC BY-SA 4.0)
 │   ├── controls/           # Abstract mitigation nodes (e.g., MFA, encryption)
