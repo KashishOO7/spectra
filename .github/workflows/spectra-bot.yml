@@ -1,0 +1,55 @@
+name: Spectra Content Gatekeeper
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'content/**/*.yaml'
+      - 'content/**/*.yml'
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.user.login }}
+  cancel-in-progress: false
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr_code
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: |
+          pip install --no-deps \
+            "openai==1.35.7" \
+            "ruamel.yaml==0.18.6" \
+            "requests==2.32.3"
+
+      - run: python .github/scripts/spectra_bot.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPO_NAME: ${{ github.repository }}
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatekeeper-log-pr-${{ github.event.pull_request.number }}
+          path: gatekeeper_log.txt
+          retention-days: 14
