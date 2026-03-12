@@ -2,8 +2,8 @@ name: Weekly URL Health Check
 
 on:
   schedule:
-    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
-  workflow_dispatch:     # Allow manual trigger
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
 
 jobs:
   url-check:
@@ -16,8 +16,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - name: Extract and check all URLs
-        run: |
+      - run: |
           find content/ -name "*.yaml" -o -name "*.yml" | \
             xargs grep -h "url:" 2>/dev/null | \
             sed 's/.*url: *["\x27]\?\([^"\x27]*\)["\x27]\?.*/\1/' | \
@@ -29,11 +28,9 @@ jobs:
           while IFS= read -r url; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url" 2>/dev/null)
             if [ "$STATUS" = "404" ] || [ "$STATUS" = "000" ]; then
-              echo "⚠ DEAD: $url → $STATUS"
+              echo "DEAD: $url → $STATUS"
               DEAD=$((DEAD+1))
             fi
           done < /tmp/all_urls.txt
 
-          echo ""
           echo "Dead links found: $DEAD"
-          # Warning only — don't fail the build for dead links
