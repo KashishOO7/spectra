@@ -371,7 +371,7 @@
     </div>
   {:else}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-  <div class="panel overflow-hidden select-none" 
+  <div class="panel overflow-x-auto select-none" 
        style="cursor: {isPanning ? 'grabbing' : 'grab'}"
        on:wheel|preventDefault={handleSvgWheel}
        on:mousedown={handlePanStart}

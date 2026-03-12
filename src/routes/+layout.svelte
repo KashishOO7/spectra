@@ -22,6 +22,19 @@
     incident: 'Incident Triage',
     guardian: 'Guardian Mode'
   };
+
+  let menuOpen = false;
+  // Auto-close mobile menu on route change
+  $: if (pathname) menuOpen = false;
+
+  $: links = [
+    { href: '/audit',     label: 'Audit',      active: pathname.startsWith('/audit') },
+    { href: '/resources', label: 'Resources',  active: pathname.startsWith('/resources') },
+    { href: '/graph',     label: 'Threat Map', active: pathname.startsWith('/graph') },
+    { href: '/threats',   label: 'Threats',    active: pathname.startsWith('/threats') },
+    { href: '/timeline',  label: 'Timeline',   active: pathname.startsWith('/timeline') },
+    { href: '/about',     label: 'About',      active: pathname === '/about' }
+  ];
 </script>
 
 <!-- Main nav -->
@@ -42,27 +55,66 @@
       <span class="label-mono opacity-40 hidden sm:inline text-[10px]">by fpszero</span>
     </a>
 
-    <!-- Nav links — looped for consistent transition handling -->
-    <div class="flex items-center gap-0.5">
-      {#each [
-        { href: '/audit',     label: 'Audit',      active: pathname.startsWith('/audit') },
-        { href: '/resources', label: 'Resources',  active: pathname.startsWith('/resources') },
-        { href: '/graph',     label: 'Threat Map', active: pathname.startsWith('/graph') },
-        { href: '/threats',   label: 'Threats',    active: pathname.startsWith('/threats') },
-        { href: '/timeline',  label: 'Timeline',   active: pathname.startsWith('/timeline') },
-        { href: '/about',     label: 'About',      active: pathname === '/about' }
-      ] as link}
+    <!-- Nav links desktop + hamburger trigger -->
+    <div class="flex items-center gap-1">
+
+      <div class="hidden sm:flex items-center gap-0.5">
+        {#each links as link}
+          <a href={link.href}
+             class="px-3 py-1.5 rounded-md text-sm font-sans transition-colors duration-200
+                    {link.active
+                      ? 'text-white bg-surface border border-border shadow-sm'
+                      : 'text-dim hover:text-bright hover:bg-surface/50'}">
+            {link.label}
+          </a>
+        {/each}
+
+        <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
+           class="ml-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-sans
+                  border border-border text-dim hover:text-bright hover:border-muted
+                  transition-colors duration-200">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="opacity-70">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+
+      <button type="button"
+        class="sm:hidden w-9 h-9 flex items-center justify-center rounded border border-border
+               text-dim hover:text-body hover:border-muted transition-colors duration-200"
+        on:click={() => menuOpen = !menuOpen}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
+        {#if menuOpen}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M2 2L12 12M12 2L2 12"/>
+          </svg>
+        {:else}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M1 3.5h12M1 7h12M1 10.5h12"/>
+          </svg>
+        {/if}
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel — inside nav so it stays sticky with the bar -->
+  {#if menuOpen}
+  <div class="sm:hidden border-t border-border/60 bg-void/98 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
+      {#each links as link}
         <a href={link.href}
-           class="px-3 py-1.5 rounded-md text-sm font-sans transition-colors duration-200
+           on:click={() => menuOpen = false}
+           class="px-3 py-2.5 rounded-md text-sm font-sans transition-colors duration-200
                   {link.active
-                    ? 'text-white bg-surface border border-border shadow-sm'
+                    ? 'text-white bg-surface border border-border'
                     : 'text-dim hover:text-bright hover:bg-surface/50'}">
           {link.label}
         </a>
       {/each}
-
       <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
-         class="ml-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-sans
+         on:click={() => menuOpen = false}
+         class="mt-1 flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-sans
                 border border-border text-dim hover:text-bright hover:border-muted
                 transition-colors duration-200">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="opacity-70">
@@ -72,6 +124,7 @@
       </a>
     </div>
   </div>
+  {/if}
 </nav>
 
 <!-- Contextual bar: mode routes and sub-routes -->
@@ -163,7 +216,8 @@
     <div class="flex items-center gap-5 text-xs text-muted font-mono">
       <a href="/about#disclaimer" class="hover:text-body transition-colors duration-200">Disclaimer</a>
       <a href="/about#privacy" class="hover:text-body transition-colors duration-200">Privacy</a>
-      <a href="https://github.com/KashishOO7/spectra duration-200">Contribute</a>
+      <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
+         class="hover:text-body transition-colors duration-200">Contribute</a>
     </div>
   </div>
 </footer>

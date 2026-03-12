@@ -1841,7 +1841,7 @@
                 {/if}
               </div>
 
-              <div class="flex items-center gap-3 ml-auto">
+              <div class="flex items-center gap-3 w-full sm:w-auto sm:ml-auto mt-2 sm:mt-0">
                 {#if needsReverify}
                   <button type="button" on:click|stopPropagation={() => reverifyItem(item.id)}
                     class="btn-primary text-xs py-1 px-3">
