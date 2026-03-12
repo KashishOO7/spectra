@@ -1,19 +1,16 @@
-# SPECTRA — CODEOWNERS
+# CODEOWNERS
 
 # Schema changes require core maintainer
-/content/schema/                    @KashishOO7
 /src/lib/types.ts                   @KashishOO7
 /src/lib/engine/scoring.ts          @KashishOO7
 
 # Score weight changes require maintainer
-# (Also enforced by CI script detecting score_weight diffs)
 
 # Content quality — all item PRs need review
 /content/items/                     @KashishOO7
 /content/resources/                 @KashishOO7
 
 # Women's safety track — specialized review required
-# Add a reviewer here who has expertise in tech-facilitated abuse
 # /content/items/*womens*           @safety-reviewer
 
 # Kids/teen track — age-appropriate review required
