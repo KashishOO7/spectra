@@ -1,87 +1,97 @@
 # Spectra
 
-**Personal Security Self-Audit Framework** — by [FPS Zero](https://spectra.fpszero.com/)
+**Personal Security Self-Audit Framework** — by [FPS Zero](https://fpszero.com)
 
-Spectra is a local-first, threat-model-driven checklist to evaluate your digital, physical, and operational security posture. Instead of a generic "best practices" list, it weights recommendations based on your actual adversaries and threat vectors.
+Spectra builds a weighted security checklist around your actual threat model — not a generic best-practices wall. A journalist, a parent, and a domestic abuse survivor face fundamentally different adversaries. The scoring engine knows the difference.
 
-**Live App:** [spectra.fpszero.com](https://spectra.fpszero.com/)
+Everything runs in the browser. No server, no accounts, no data collection. Your assessment state lives in IndexedDB on your device.
 
-### How it works
+**Live:** [spectra.fpszero.com](https://spectra.fpszero.com/)
 
-* **Threat-model driven:** A journalist, a student, and a target of stalking have different priorities. Spectra adjusts accordingly.
-* **Local-first:** Your assessment state never leaves your browser. It uses IndexedDB. No accounts, no syncing, no backend servers.
-* **Graph-based:** Items, threats, and assets are mapped as nodes. The scoring engine calculates your posture by tracing paths between attack vectors and your controls.
-* **Human-centric:** We audit emotional triggers (urgency, authority manipulation) alongside technical controls like 2FA or FDE, because social engineering remains the highest-probability attack surface.
+## What it does
 
-### ⚠️ Disclaimer
+**Threat-model-driven scoring.** You answer three questions (adversaries, tracks, platforms). The engine applies per-adversary multipliers to every checklist item, so your priorities reflect your actual risk — not someone else's.
 
-Spectra is an open-source educational tool. It does not constitute professional security, legal, or medical advice. Because everything runs locally, you are responsible for your data. Use at your own risk. *If you are facing an active, immediate threat, contact local authorities or a professional incident response team.*
+**Human vulnerability audit.** A 7-question social engineering susceptibility quiz identifies which manipulation techniques (authority, urgency, scarcity, trust exploitation) you're most exposed to. Results weight the human vulnerability items in your score.
 
-### Getting Started
+**Knowledge graph, not a flat list.** Four schema types — checklist items, abstract controls, threat nodes, and curated resources — are cross-referenced. The threat graph visualises which adversaries reach which assets through which controls.
 
-**Prerequisites:** Node.js 20+ & npm 10+
+**Landscape-aware.** Active security events (e.g., automated SIM swap toolkits, AI phishing at scale) apply real-time multipliers to affected items. Your score responds to the world, not just your checkbox state.
+
+**Security timeline.** Every action is logged locally — items completed, score milestones crossed, life events applied. Your security posture is a story over time, not a snapshot.
+
+## Disclaimer
+
+Spectra is an open-source educational tool. It does not constitute professional security, legal, or medical advice. Implementations vary by jurisdiction. If you are facing an active threat, contact local authorities or a professional incident response team.
+
+## Getting started
+
+Node.js 20+, npm 10+.
 
 ```bash
-# Clone and install
 git clone https://github.com/KashishOO7/spectra.git
 cd spectra
 npm install
 
-# Validate YAML content schemas (Do this before opening a PR)
+# Validate content schemas
 npm run validate
 
-# Start dev server
+# Dev server
 npm run dev
-# → http://localhost:5173
-
 ```
 
-### Project Architecture
+## Architecture
 
-The app is split into a static content engine and a SvelteKit frontend.
+Static content engine + SvelteKit frontend. Content is YAML, loaded at build time via Node `fs`, baked into the static output. Deployed to GitHub Pages via `adapter-static`.
 
 ```
 spectra/
 ├── .github/
-│   ├── scripts/            # Automations (e.g., RSS landscape scanner)
-│   ├── workflows/          # CI, content review bot, landscape scanner, security audit, URL health checks
-│   └── CODEOWNERS          # Required reviewers for sensitive content tracks
-├── content/                # The Database (CC BY-SA 4.0)
-│   ├── controls/           # Abstract mitigation nodes (e.g., MFA, encryption)
-│   ├── items/              # Actionable checklist items (one YAML per item)
-│   ├── resources/          # Curated privacy tools and guides
-│   ├── threats/            # Specific threat models (e.g., AI voice cloning)
-│   └── landscape-feed.yaml # Active security landscape events
+│   ├── scripts/            # RSS landscape scanner, content gatekeeper, internal audit
+│   ├── workflows/          # CI pipeline, content review bot, URL health checks
+│   └── CODEOWNERS
+├── content/                # CC BY-SA 4.0
+│   ├── controls/           # Abstract security mechanisms (MFA, FDE)
+│   ├── items/              # Checklist items (one YAML per item)
+│   ├── resources/          # Curated tools with privacy posture ratings
+│   ├── threats/            # Adversary × attack vector threat nodes
+│   └── landscape-feed.yaml # Active global threat events with scoring multipliers
 ├── scripts/
-│   └── validate.ts         # Schema validator (run `npm run validate`)
-├── src/                    # Application Code (MIT)
+│   └── validate.ts         # Zod-based schema validator
+├── src/
 │   ├── lib/
-│   │   ├── content/        # Parses YAML and maps the threat graph
-│   │   ├── engine/         # Core scoring logic & local-first IndexedDB store
-│   │   └── types.ts        # Canonical TypeScript shapes for the framework
-│   └── routes/             # SvelteKit routing structure
-│       ├── audit/          # Main checklist and scoring experience
-│       ├── graph/          # Threat graph visualization
-│       ├── resources/      # Curated tools repository
-│       ├── threats/        # Threat node reference browser
-│       └── timeline/       # Security posture history
-├── static/                 # PWA manifest, favicon, CNAME
+│   │   ├── content/        # YAML parser and graph builder
+│   │   ├── engine/         # Scoring engine and IndexedDB store
+│   │   └── types.ts        # Canonical TypeScript types
+│   └── routes/
+│       ├── audit/          # Checklist, onboarding, SE quiz, incident triage
+│       ├── graph/          # Interactive threat graph (SVG, pan/zoom)
+│       ├── resources/      # Tool browser with posture filtering
+│       ├── threats/        # Threat landscape feed
+│       └── timeline/       # Personal security history
+├── static/                 # PWA manifest, service worker, CNAME
 ├── CONTRIBUTING.md
-├── LICENSE                 # Code license (MIT)
-└── LICENSE-CONTENT         # Content license (CC BY-SA 4.0)
+└── LICENSE
 ```
 
-### Contributing
+## Scoring
 
-PRs are welcome. See `CONTRIBUTING.md` for guidelines.
+Each item has a base `score_weight` (0-10). The engine applies:
 
-* **Rule 1:** All content modifications in `/content` must pass `npm run validate`.
-* **Rule 2:** Factual claims or new security controls need primary sources linked in the YAML.
-* *Note on Sensitive Content:* Edits related to physical safety, children's privacy, or women's safety require specialized maintainer review. See inline comments in the YAML files for schema definitions.
+```
+effective_score = base × threat_multiplier × landscape_multiplier × (1 - compensating_factor) × staleness_decay
+```
 
-### License
+Threat multipliers are per-adversary. Staleness decay penalises items whose content hasn't been verified recently. Landscape multipliers elevate items affected by active global events. Compensating controls reduce urgency when a stronger alternative is implemented.
 
-* **Code (`/src`, `/scripts`):** MIT License
-* **Content (`/content`):** CC BY-SA 4.0
+## Contributing
 
-Built from first principles by the FPS Zero lab.
+See `CONTRIBUTING.md`. The short version:
+
+All content changes in `/content` must pass `npm run validate`. Factual claims need primary sources in the YAML. Edits to women's safety or children's tracks require specialised maintainer review. Score weights and threat multipliers are protected fields — changes require maintainer approval.
+
+## License
+
+Code (`/src`, `/scripts`): MIT. Content (`/content`): CC BY-SA 4.0.
+
+Built by FPS Zero.
