@@ -50,6 +50,25 @@
   let incidentScenario: string | null = null;
   let isSimpleMode = true;
 
+  // Display mode — easy (default for new users) vs technical
+  let easyMode = true;
+
+  function truncSentences(text: string, n: number): string {
+    if (!text) return '';
+    const sentences = text.match(/[^.!?]+[.!?]+/g) ?? [text];
+    return sentences.slice(0, n).join(' ').trim();
+  }
+
+  const diffLabel = (n: number) => ['', 'Easy', 'Moderate', 'Complex'][n] ?? '?';
+
+  async function toggleEasyMode() {
+    easyMode = !easyMode;
+    if (profile) {
+      profile.easy_mode = easyMode;
+      await saveProfile(profile);
+    }
+  }
+
   // Social engineering quiz 
   let quizStep = 0; // 0 = intro, 1-7 = questions, 8 = results
   let quizAnswers: Record<string, number> = {};
@@ -441,6 +460,7 @@
       profile = createDefaultProfile();
       await saveProfile(profile);
     }
+    easyMode = profile.easy_mode ?? true;
 
     if (mode === 'guardian' && profile) {
       if (!profile.tracks.includes('kids_teen')) {
@@ -471,6 +491,13 @@
     }
 
     loading = false;
+
+    // Handle highlight param from graph navigation
+    const urlHighlight = $page.url.searchParams.get('highlight');
+    if (urlHighlight && graph.items.has(urlHighlight)) {
+      await tick();
+      await scrollToItem(urlHighlight);
+    }
   });
 
   function recalculate() {
@@ -576,6 +603,7 @@
     if (expandedItems.has(id)) {
       expandedItems.delete(id);
     } else {
+      expandedItems.clear();
       expandedItems.add(id);
       if (!(id in noteValues)) noteValues[id] = profile?.notes?.[id] ?? '';
     }
@@ -597,6 +625,7 @@
     view = 'checklist';
     await tick();
     if (!expandedItems.has(id)) {
+      expandedItems.clear();
       expandedItems.add(id);
       if (!(id in noteValues)) noteValues[id] = profile?.notes?.[id] ?? '';
     }
@@ -1679,7 +1708,7 @@
           class="text-left p-2.5 rounded border transition-colors
                  {selectedCategory === cat.category ? 'border-amber/50 bg-amber-dim/10' : 'border-transparent hover:border-border'}">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="text-xs text-dim font-mono truncate max-w-[80px]">{cat.label}</span>
+            <span class="text-xs text-dim font-mono truncate max-w-[120px] sm:max-w-none">{cat.label}</span>
             <span class="text-xs font-mono {cat.score > 65 ? 'text-teal-light' : cat.score > 35 ? 'text-amber-light' : 'text-red-light'}">{cat.score}%</span>
           </div>
           <div class="h-1 bg-border rounded-full overflow-hidden">
@@ -1736,6 +1765,15 @@
         <option value={cat}>{categoryLabel(cat)}</option>
       {/each}
     </select>
+  </div>
+
+  <div class="flex items-center gap-2 mb-3">
+    <button type="button" on:click={toggleEasyMode}
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition-colors
+             {easyMode ? 'border-teal/40 text-teal-light bg-teal-dim/10' : 'border-amber/40 text-amber-light bg-amber-dim/10'}">
+      {easyMode ? '◉ Easy mode' : '◈ Technical mode'}
+    </button>
+    <span class="text-xs text-muted font-mono hidden sm:inline">{easyMode ? 'Simplified — switch for full detail' : 'Full technical detail'}</span>
   </div>
 
   <p class="text-xs text-muted font-mono mb-3">
@@ -1818,12 +1856,12 @@
               <p class="text-xs text-dim font-mono mb-2 leading-relaxed">🔒 {blockedReason}</p>
             {/if}
 
-            <p class="text-sm text-dim leading-relaxed mb-3">{item.description}</p>
+            <p class="text-sm text-dim leading-relaxed mb-3">{easyMode ? truncSentences(item.description, 1) : item.description}</p>
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
               <span class="text-xs font-mono text-muted">⏱ {item.time_estimate?.setup ?? '?'}</span>
               <span class="maturity-{item.maturity_level} text-xs">
-                L{item.maturity_level} · {maturityLabels[item.maturity_level]}
+                {easyMode ? maturityLabels[item.maturity_level] : `L${item.maturity_level} · ${maturityLabels[item.maturity_level]}`}
               </span>
               <div class="flex items-center gap-1 flex-wrap">
                 {#each visiblePlatforms as platform}<span class="pill-dim text-xs">{platformDisplay(platform)}</span>{/each}
@@ -1870,7 +1908,7 @@
 
           <div>
             <p class="label-mono mb-2">Why this matters</p>
-            <p class="text-sm text-body leading-relaxed pl-3 border-l border-amber/30">{item.threat_narrative}</p>
+            <p class="text-sm text-body leading-relaxed pl-3 border-l border-amber/30">{easyMode ? truncSentences(item.threat_narrative, 2) : item.threat_narrative}</p>
           </div>
 
           {#if item.category === 'human_vulnerability' && item.emotional_register}
@@ -1913,15 +1951,15 @@
           <div class="flex items-center gap-5">
             <div>
               <p class="label-mono mb-1">Technical effort</p>
-              <span class="text-sm font-mono text-dim">{difficultyDots(item.difficulty?.technical ?? 1)}</span>
+              <span class="text-sm font-mono text-dim">{easyMode ? diffLabel(item.difficulty?.technical ?? 1) : difficultyDots(item.difficulty?.technical ?? 1)}</span>
             </div>
             <div>
               <p class="label-mono mb-1">Workflow change</p>
-              <span class="text-sm font-mono text-dim">{difficultyDots(item.difficulty?.disruption ?? 1)}</span>
+              <span class="text-sm font-mono text-dim">{easyMode ? diffLabel(item.difficulty?.disruption ?? 1) : difficultyDots(item.difficulty?.disruption ?? 1)}</span>
             </div>
             <div>
               <p class="label-mono mb-1">Reversibility</p>
-              <span class="text-sm font-mono text-dim">{difficultyDots(item.difficulty?.reversibility ?? 1)}</span>
+              <span class="text-sm font-mono text-dim">{easyMode ? diffLabel(item.difficulty?.reversibility ?? 1) : difficultyDots(item.difficulty?.reversibility ?? 1)}</span>
             </div>
           </div>
 
