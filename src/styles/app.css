@@ -19,6 +19,11 @@
     scroll-behavior: smooth;
   }
 
+  /* Mobile readability — bump base font so all rem units scale up slightly */
+  @media (max-width: 640px) {
+    html { font-size: 17px; }
+  }
+
   body {
     background-color: var(--color-void);
     min-height: 100vh;
