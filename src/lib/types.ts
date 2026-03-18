@@ -332,7 +332,8 @@ export interface UserProfile {
   // Extended fields
   timeline?: TimelineEvent[];
   se_quiz?: SEQuizResult | null;
-  life_events_applied?: string[];  // IDs of applied life events
+  life_events_applied?: string[];  
+  easy_mode?: boolean;             
 }
 
 // Landscape feed

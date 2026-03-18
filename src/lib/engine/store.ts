@@ -159,7 +159,8 @@ export function createDefaultProfile(): UserProfile {
     skipped: {},
     notes: {},
     timeline: [],
-    life_events_applied: []
+    life_events_applied: [],
+    easy_mode: true
   };
 }
 
