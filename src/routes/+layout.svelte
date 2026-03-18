@@ -167,7 +167,7 @@
 </div>
 {/if}
 
-<!-- Plain /audit breadcrumb — so users aren't stranded with no home path visible -->
+<!-- Plain /audit breadcrumb -->
 {#if isPlainAudit}
 <div class="w-full border-b border-border/20 bg-transparent">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-8 flex items-center gap-2">
@@ -193,18 +193,19 @@
 
 <!-- Footer -->
 <footer class="border-t border-border mt-16">
-  <div class="w-full bg-surface/60 border-b border-border/50 px-4 py-2 text-center">
-    <p class="text-xs text-muted font-mono">
-      Educational purposes only — not legal or professional security advice.
-      <a href="/about#disclaimer" class="underline underline-offset-2 hover:text-dim transition-colors ml-1">Full disclaimer</a>
-      <span class="mx-2 text-border">·</span>
-      Your data never leaves your device
-      <span class="mx-2 text-border">·</span>
+  <div class="w-full bg-surface/60 border-b border-border/50 px-4 py-3 sm:py-2">
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-0 text-xs sm:text-xs text-muted font-mono text-center">
+      <span>Educational purposes only — not legal or professional security advice.
+        <a href="/about#disclaimer" class="underline underline-offset-2 hover:text-dim transition-colors ml-1">Full disclaimer</a>
+      </span>
+      <span class="hidden sm:inline mx-2 text-border">·</span>
+      <span>Your data never leaves your device</span>
+      <span class="hidden sm:inline mx-2 text-border">·</span>
       <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
          class="underline underline-offset-2 hover:text-dim transition-colors">Open source on GitHub</a>
-    </p>
+    </div>
   </div>
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
     <div class="flex items-center gap-3">
       <div class="w-5 h-5 rounded border border-amber/30 flex items-center justify-center">
         <svg width="10" height="10" viewBox="0 0 14 14" fill="none" class="text-amber opacity-70">
