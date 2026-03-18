@@ -311,6 +311,17 @@
           Clear filter ×
         </button>
       {/if}
+      <div class="flex items-center border border-border rounded overflow-hidden">
+        <button type="button"
+          on:click={() => { zoom = Math.min(3, zoom * 1.3); }}
+          class="text-sm font-mono px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
+          title="Zoom in">+</button>
+        <span class="text-xs font-mono text-muted px-1.5 border-x border-border">{Math.round(zoom * 100)}%</span>
+        <button type="button"
+          on:click={() => { zoom = Math.max(0.25, zoom * 0.7); }}
+          class="text-sm font-mono px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
+          title="Zoom out">−</button>
+      </div>
       <button type="button"
         on:click={resetView}
         class="text-xs font-mono px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors"
