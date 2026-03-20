@@ -3,7 +3,6 @@
   import type { PageData } from './$types.js';
 
   export let data: PageData;
-  export const params: Record<string, string> | undefined = undefined;
 
   // Types
   type Severity = 'critical' | 'high' | 'moderate' | 'low';
@@ -115,7 +114,7 @@
 </script>
 
 <svelte:head>
-  <title>Threat Landscape — Spectra</title>
+  <title>Threat Landscape | Spectra</title>
   <meta name="description" content="Live security events affecting Spectra framework recommendations. Manually curated, source-backed.">
 </svelte:head>
 

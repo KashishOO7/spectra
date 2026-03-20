@@ -115,7 +115,6 @@ export function loadContentGraph(): ContentGraph {
     if (resource?.id) resources.set(resource.id, resource);
   }
 
-
   return { items, resources, itemsByCategory, itemsByAdversary, itemsByVector, itemsByAsset, itemsByTrack, itemsByMaturity };
 }
 

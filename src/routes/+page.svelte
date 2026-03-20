@@ -83,8 +83,8 @@
 </script>
 
 <svelte:head>
-  <title>Spectra — Personal Security Self-Audit</title>
-  <meta name="description" content="Know exactly how exposed you are. Open-source personal security audit framework — threat-model driven, private by design, no account required."/>
+  <title>Spectra | Personal Security Self-Audit</title>
+  <meta name="description" content="Know exactly how exposed you are. Open-source personal security audit framework. Threat-model driven, private by design, no account required."/>
 </svelte:head>
 
 <!-- Hero -->

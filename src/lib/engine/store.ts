@@ -48,8 +48,6 @@ export async function loadProfile(): Promise<UserProfile | null> {
 }
 
 export async function saveProfile(profile: UserProfile): Promise<void> {
-  // THE HEARTBEAT: Every time the profile is saved (any interaction), 
-  // we bump the last_active timestamp. This powers the 30-day inactivity checks.
   profile.last_active = new Date().toISOString();
   await idbPut(PROFILE_STORE, profile);
 }

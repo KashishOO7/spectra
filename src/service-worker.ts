@@ -80,7 +80,7 @@ async function respond(request: Request): Promise<Response> {
       if (offline) return offline;
     }
 
-    return new Response('Offline — and no cached version available.', {
+    return new Response('Offline. No cached version available.', {
       status: 503,
       headers: { 'Content-Type': 'text/plain' }
     });

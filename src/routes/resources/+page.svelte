@@ -5,7 +5,6 @@
   import { loadProfile } from '$lib/engine/store.js';
 
   export let data: PageData;
-  export const params: Record<string, string> | undefined = undefined;
 
   // Resources data
   $: resources = Object.values(data.graph.resources) as Resource[];

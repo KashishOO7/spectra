@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <title>About — Spectra</title>
+  <title>About | Spectra</title>
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">

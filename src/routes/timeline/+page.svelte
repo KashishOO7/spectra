@@ -183,7 +183,7 @@
 </script>
 
 <svelte:head>
-  <title>Security Timeline — Spectra</title>
+  <title>Security Timeline | Spectra</title>
 </svelte:head>
 
 <div class="min-h-screen bg-void bg-spectra-grid">

@@ -3,8 +3,6 @@
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
 
-  export const params: Record<string, string> | undefined = undefined;
-
   $: mode = browser ? $page.url.searchParams.get('mode') : null;
   $: pathname = browser ? $page.url.pathname : '/';
 
@@ -195,7 +193,7 @@
 <footer class="border-t border-border mt-16">
   <div class="w-full bg-surface/60 border-b border-border/50 px-4 py-3 sm:py-2">
     <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-0 text-xs sm:text-xs text-muted font-mono text-center">
-      <span>Educational purposes only — not legal or professional security advice.
+      <span>Educational purposes only. Not legal or professional security advice.
         <a href="/about#disclaimer" class="underline underline-offset-2 hover:text-dim transition-colors ml-1">Full disclaimer</a>
       </span>
       <span class="hidden sm:inline mx-2 text-border">·</span>

@@ -10,7 +10,7 @@ Everything runs in the browser. No server, no accounts, no data collection. Your
 
 ## What it does
 
-**Threat-model-driven scoring.** You answer three questions (adversaries, tracks, platforms). The engine applies per-adversary multipliers to every checklist item, so your priorities reflect your actual risk — not someone else's.
+**Threat-model-driven scoring.** You answer three questions (adversaries, tracks, platforms). The engine applies per-adversary multipliers to every checklist item, so your priorities reflect your actual risk, not someone else's.
 
 **Human vulnerability audit.** A 7-question social engineering susceptibility quiz identifies which manipulation techniques (authority, urgency, scarcity, trust exploitation) you're most exposed to. Results weight the human vulnerability items in your score.
 
@@ -57,7 +57,7 @@ spectra/
 │   ├── threats/            # Adversary × attack vector threat nodes
 │   └── landscape-feed.yaml # Active global threat events with scoring multipliers
 ├── scripts/
-│   └── validate.ts         # Zod-based schema validator
+│   └── validate.ts         # Schema validator (taxonomy + cross-reference checks)
 ├── src/
 │   ├── lib/
 │   │   ├── content/        # YAML parser and graph builder
@@ -88,7 +88,7 @@ Threat multipliers are per-adversary. Staleness decay penalises items whose cont
 
 See `CONTRIBUTING.md`. The short version:
 
-All content changes in `/content` must pass `npm run validate`. Factual claims need primary sources in the YAML. Edits to women's safety or children's tracks require specialised maintainer review. Score weights and threat multipliers are protected fields — changes require maintainer approval.
+All content changes in `/content` must pass `npm run validate`. Factual claims need primary sources in the YAML. Edits to women's safety or children's tracks require specialised maintainer review. Score weights and threat multipliers are protected fields - changes require maintainer approval.
 
 ## License
 

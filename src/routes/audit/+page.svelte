@@ -14,7 +14,6 @@
   import { scoreAssessment } from '$lib/engine/scoring.js';
 
   export let data: PageData;
-  export const params: Record<string, string> | undefined = undefined;
 
   // Core state
   let profile: UserProfile | null = null;
@@ -798,7 +797,7 @@
     {view === 'results' ? 'Results' :
      view === 'incident' ? 'Incident Triage' :
      view === 'quiz' ? 'Social Engineering Quiz' :
-     mode === 'guardian' ? 'Guardian Mode' : 'Audit'} — Spectra
+     mode === 'guardian' ? 'Guardian Mode' : 'Audit'} | Spectra
   </title>
 </svelte:head>
 

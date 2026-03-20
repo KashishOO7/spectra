@@ -277,7 +277,7 @@
 </script>
 
 <svelte:head>
-  <title>Threat Graph — Spectra</title>
+  <title>Threat Graph | Spectra</title>
 </svelte:head>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">

@@ -1,7 +1,7 @@
 {
   "name": "spectra",
   "version": "0.1.0",
-  "description": "Personal Security Self-Audit Framework — by FPSZero",
+  "description": "Personal Security Self-Audit Framework by FPSZero",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -26,8 +26,7 @@
     "vite": "^5.4.0"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
-    "zod": "^3.22.4"
+    "js-yaml": "^4.1.0"
   },
   "type": "module"
 }
