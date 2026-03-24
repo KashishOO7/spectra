@@ -210,7 +210,7 @@
           <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" stroke="currentColor" stroke-width="1.2" fill="none"/>
         </svg>
       </div>
-      <span class="text-xs text-dim font-mono">Spectra v0.1.0 · MIT (code) · CC BY-SA 4.0 (content)</span>
+      <span class="text-xs text-dim font-mono">Spectra v0.1.0 · AGPL-3.0 · CC BY-SA 4.0 (content)</span>
     </div>
     <div class="flex items-center gap-5 text-xs text-muted font-mono">
       <a href="/about#disclaimer" class="hover:text-body transition-colors duration-200">Disclaimer</a>
