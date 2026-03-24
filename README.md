@@ -92,6 +92,6 @@ All content changes in `/content` must pass `npm run validate`. Factual claims n
 
 ## License
 
-Code (`/src`, `/scripts`): MIT. Content (`/content`): CC BY-SA 4.0.
+Code (/src, /scripts): AGPL-3.0. Content (`/content`): CC BY-SA 4.0.
 
 Built by FPS Zero.
