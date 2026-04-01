@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { PageData } from './$types.js';
+  export let data: PageData;
   const paths = [
     {
       id: 'assess',
@@ -100,7 +102,7 @@
     <div class="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full
                 border border-border bg-surface/80 text-xs font-mono text-dim backdrop-blur-sm">
       <span class="w-1.5 h-1.5 rounded-full bg-teal-light animate-pulse-slow"></span>
-      v0.1 Beta · Built in public · All data stays on your device
+      v0.1 Beta · Built in public · Content updated {data.contentUpdated} · All data stays on your device
     </div>
 
     <h1 class="font-display text-4xl sm:text-[3.5rem] font-bold text-white mb-5 leading-[1.08] tracking-tight relative">
@@ -146,11 +148,11 @@
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-7">
     <div class="flex flex-wrap gap-8 items-center justify-center sm:justify-between text-center">
       {#each [
-        { value: '20+',   label: 'Checklist items',   note: 'growing with each release' },
+        { value: String(data.itemCount),   label: 'Checklist items',   note: 'growing with each release' },
         { value: '10',    label: 'Adversary profiles', note: 'from bots to nation-states' },
         { value: '6',     label: 'Platforms covered',  note: 'Windows, macOS, Linux, Android, iOS, Web' },
         { value: '0',     label: 'Data collected',     note: 'by this site, ever' },
-        { value: 'MIT',   label: 'License',            note: 'fork it, contribute, use it' }
+        { value: String(data.resourceCount), label: 'Curated resources',  note: 'tools, guides, and references' }
       ] as stat}
         <div class="min-w-[80px]">
           <div class="font-display text-2xl font-bold text-white">{stat.value}</div>
