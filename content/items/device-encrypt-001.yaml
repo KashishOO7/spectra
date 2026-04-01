@@ -31,6 +31,13 @@ platform_notes:
   ios: "iPhones are hardware-encrypted by default, but this relies entirely on your passcode. Set a strong, 6+ digit alphanumeric passcode to fortify the encryption."
 platform_notes_verified:
   all: "2026-03-04"
+environment_notes:
+  border_device_inspection: |
+    At border crossings, authorities may compel you to unlock your device.
+    Encryption protects data if the device is seized without your cooperation,
+    but cannot protect against lawful compelled decryption. Consider travelling
+    with a clean device and accessing sensitive data remotely, or enabling a
+    separate travel PIN distinct from your standard passphrase.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -93,9 +100,9 @@ tags:
   - "foundation"
   - "physical_security"
 created_at: "2026-02-25"
-created_by: "github:@fpszero"
+created_by: "github:@KashishOO7"
 changelog:
   - version: "2.0.0"
     date: "2026-03-04"
     changes: "Refined platform notes for explicit local key storage advice. Added Anonymous Planet sourcing."
-    author: "github:@fpszero"
+    author: "github:@KashishOO7"

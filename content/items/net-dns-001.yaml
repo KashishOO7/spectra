@@ -58,6 +58,12 @@ platform_notes_verified:
   ios: "2026-03-01"
   linux: "2026-03-01"
   router: "2026-03-01"
+environment_notes:
+  govt_monitors_traffic: |
+    DNS-over-HTTPS alone does not hide that you are using an encrypted DNS
+    resolver — your ISP can still observe the traffic pattern. In environments
+    with deep packet inspection, combine encrypted DNS with a VPN so DNS
+    queries are tunnelled inside the VPN connection and not separately visible.
 not_applicable_if:
   - condition: "item_implemented:net-vpn-001"
     reason: "A VPN tunnels all traffic including DNS, making a separate DNS resolver redundant for most threat models."
@@ -125,7 +131,7 @@ tags:
   - "quick"
   - "no_account_needed"
 created_at: "2025-01-01"
-created_by: "github:@fpszero"
+created_by: "github:@KashishOO7"
 changelog:
   - version: "2.0.0"
     date: "2026-03-01"
@@ -135,11 +141,11 @@ changelog:
       posture, logs retained. New tiered recommendation: Quad9 (everyone, default),
       NextDNS (power users wanting custom filtering), AdGuard DNS (ad/tracker-blocking focus),
       Mullvad DNS (Mullvad VPN users). Expanded platform notes with specific setup steps.
-    author: "github:@fpszero"
+    author: "github:@KashishOO7"
   - version: "1.0.0"
     date: "2025-01-01"
     changes: "Initial item."
-    author: "github:@fpszero"
+    author: "github:@KashishOO7"
 
 # ── DNS Resolver Recommendation Matrix ───────────────────────────────────────
 # Embedded as a comment for contributor reference. This drives platform_notes copy.

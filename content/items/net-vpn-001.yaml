@@ -19,6 +19,17 @@ platform_notes:
   linux: "Mullvad has a Linux CLI and GUI. Proton VPN supports Linux. WireGuard is available for manual configuration with any provider."
 platform_notes_verified:
   all: "2025-02"
+environment_notes:
+  vpn_restricted: |
+    In your environment, only government-approved VPN providers may be permitted.
+    Using a non-approved VPN may be illegal or draw attention. Research your
+    jurisdiction's specific rules before subscribing. If VPNs are blocked,
+    Tor may be an alternative but carries its own visibility profile.
+  govt_monitors_traffic: |
+    A commercial VPN shifts trust from your ISP to the VPN provider — it does
+    not make you anonymous. Choose a provider with an independently audited
+    no-logs policy (Mullvad, Proton). Paying with cash or cryptocurrency
+    reduces the linkage between your identity and the subscription.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -56,7 +67,7 @@ related_items:
     note: "A VPN with its own DNS handling makes separate encrypted DNS less necessary."
 status: "active"
 superseded_by: null
-last_verified: "2025-02-01"
+last_verified: "2026-03-31"
 verified_by:
   - "org:privacyguides.org"
 sources:
@@ -68,10 +79,6 @@ resources: []
 legal_notes:
   - jurisdiction: "global"
     note: "Educational purposes only. VPN legality and logging requirements vary by jurisdiction and VPN provider's country of incorporation. A VPN does not make you anonymous — it shifts trust to the VPN provider. Use providers with verified no-log policies and ideally open-source clients."
-  - jurisdiction: "CN"
-    note: "VPN use without a government-approved provider may be illegal in China."
-  - jurisdiction: "RU"
-    note: "VPN restrictions exist in Russia. Research current regulations."
 emotional_register: null
 tags:
   - "paid_options"
@@ -79,9 +86,9 @@ tags:
   - "network"
   - "public_wifi"
 created_at: "2025-01-01"
-created_by: "github:@fpszero"
+created_by: "github:@KashishOO7"
 changelog:
   - version: "1.0.0"
     date: "2025-01-01"
     changes: "Initial item."
-    author: "github:@fpszero"
+    author: "github:@KashishOO7"
