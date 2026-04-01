@@ -96,9 +96,9 @@ tags:
   - "privacy_preserving"
   - "anti_tracking"
 created_at: "2026-02-25"
-created_by: "github:@fpszero"
+created_by: "github:KashishOO7"
 changelog:
   - version: "2.0.0"
     date: "2026-03-04"
     changes: "Tiered browser recommendations. Prioritized Firefox+uBlock and Mullvad Browser."
-    author: "github:@fpszero"
+    author: "github:KashishOO7"
