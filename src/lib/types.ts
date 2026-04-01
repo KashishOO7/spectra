@@ -94,6 +94,13 @@ export type ResourceStatus =
 
 export type PrivacyPosture = 'privacy_first' | 'neutral' | 'mixed' | 'avoid';
 
+export type EnvironmentFlag =
+  | 'encrypted_comms_restricted'
+  | 'govt_monitors_traffic'
+  | 'has_data_protection_rights'
+  | 'vpn_restricted'
+  | 'border_device_inspection';
+
 export type EmotionalRegister =
   | 'urgency'
   | 'authority'
@@ -187,6 +194,7 @@ export interface ChecklistItem {
   platforms: Platform[];
   platform_notes?: Record<string, string>;
   platform_notes_verified?: Record<string, string>;
+  environment_notes?: Partial<Record<EnvironmentFlag, string>>;
   not_applicable_if?: NotApplicableCondition[];
   sensitive?: boolean;
   difficulty: {
@@ -334,6 +342,7 @@ export interface UserProfile {
   se_quiz?: SEQuizResult | null;
   life_events_applied?: string[];  
   easy_mode?: boolean;             
+  environment_flags?: EnvironmentFlag[];
 }
 
 // Landscape feed
