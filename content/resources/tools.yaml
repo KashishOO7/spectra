@@ -39,7 +39,7 @@
       preferred: false
       note: "Available but F-Droid is preferred for reproducibility."
   status: "active"
-  last_verified: "2025-02-01"
+  last_verified: "2026-03-31"
   verified_by: ["org:privacyguides.org"]
   sources:
     - url: "https://privacyguides.org/en/multi-factor-authentication/#aegis-authenticator-android"
@@ -48,12 +48,12 @@
       accessed: "2025-02-01"
   tags: ["open_source", "free", "audited", "no_account_required", "offline_capable", "encrypted_backup"]
   created_at: "2025-01-01"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2025-01-01"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-bitwarden-001"
   schema_version: "1.0.0"
@@ -101,12 +101,12 @@
       accessed: "2026-02-01"
   tags: ["open_source", "free", "audited", "cross_platform", "cloud_sync", "browser_extension"]
   created_at: "2026-02-25"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-02-25"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-signal-001"
   schema_version: "1.0.0"
@@ -168,12 +168,12 @@
       accessed: "2026-03-06"
   tags: ["open_source", "free", "audited", "e2e_encrypted", "non_profit", "no_ads"]
   created_at: "2026-02-25"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-02-25"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-keepassxc-001"
   schema_version: "1.0.0"
@@ -223,12 +223,12 @@
       accessed: "2026-02-01"
   tags: ["open_source", "free", "audited", "offline", "no_account_required", "totp_support"]
   created_at: "2026-02-25"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-02-25"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-protonvpn-001"
   schema_version: "1.0.0"
@@ -277,12 +277,12 @@
       accessed: "2026-02-01"
   tags: ["open_source", "audited", "freemium", "no_logs", "cross_platform"]
   created_at: "2026-02-25"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-02-25"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-ublock-001"
   schema_version: "1.0.0"
@@ -330,12 +330,12 @@
       accessed: "2026-02-01"
   tags: ["open_source", "free", "browser_extension", "tracker_blocking", "malvertising_protection"]
   created_at: "2026-02-25"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-02-25"
       changes: "Initial entry."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 - id: "res-tool-google-auth-001"
   schema_version: "1.0.0"
   version: "1.0.0"
@@ -387,12 +387,12 @@
       accessed: "2026-03-01"
   tags: ["closed_source", "google", "avoid", "cloud_tied"]
   created_at: "2026-03-01"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-03-01"
       changes: "Initial entry as avoid resource. Redirects users to Aegis."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
 
 - id: "res-tool-authy-001"
   schema_version: "1.0.0"
@@ -449,9 +449,9 @@
       accessed: "2026-03-06"
   tags: ["closed_source", "cloud_tied", "avoid", "breach_history"]
   created_at: "2026-03-01"
-  created_by: "github:@fpszero"
+  created_by: "github:@KashishOO7"
   changelog:
     - version: "1.0.0"
       date: "2026-03-01"
       changes: "Initial entry as avoid resource. Documents Twilio breach history and SIM swap risk."
-      author: "github:@fpszero"
+      author: "github:@KashishOO7"
