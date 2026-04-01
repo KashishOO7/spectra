@@ -1,6 +1,6 @@
 id: "incident-breach-monitor-001"
 schema_version: "1.0.0"
-version: "1.0.0"
+version: "1.1.0"
 title: "Set up breach monitoring for your email addresses"
 description: "Breach monitoring services alert you when your email address or password appears in a known data breach. This gives you early warning to change compromised credentials before attackers use them — typically weeks or months before you would otherwise know."
 threat_narrative: "Most people discover their credentials were breached when their accounts are already compromised. The average time between a breach occurring and an individual discovering their data was exposed is over 200 days. Breach monitoring services index billions of leaked credentials and notify you within days of exposure. Early warning is the difference between rotating a password and recovering a hijacked account."
@@ -11,7 +11,7 @@ tracks:
 platforms:
   - "all"
 platform_notes:
-  all: "Sign up at haveibeenpwned.com with every email address you use — notifications are free. For phone numbers, check if they appear via Google search. Firefox Monitor (monitor.firefox.com) provides similar functionality. For ongoing monitoring of all accounts, some password managers (Bitwarden, 1Password) include breach monitoring built in."
+  all: "Sign up at haveibeenpwned.com with every email address you use (free). Mozilla Monitor (monitor.mozilla.org) wraps the same database and supports up to 20 email addresses per account. For ongoing monitoring, some password managers (Bitwarden, 1Password) include breach alerts built in."
 platform_notes_verified:
   all: "2025-01"
 not_applicable_if: []
@@ -49,7 +49,7 @@ related_items:
     note: "Breach monitoring alerts you. A password manager makes acting on the alert fast — change just that one unique password."
 status: "active"
 superseded_by: null
-last_verified: "2025-01-01"
+last_verified: "2026-03-31"
 verified_by:
   - "org:eff.org"
 sources:
@@ -68,9 +68,13 @@ tags:
   - "monitoring"
   - "incident_response"
 created_at: "2025-01-01"
-created_by: "github:@fpszero"
+created_by: "github:@KashishOO7"
 changelog:
+  - version: "1.1.0"
+    date: "2026-04-01"
+    changes: "Firefox Monitor renamed to Mozilla Monitor. Updated URL and added 20-email limit detail. Monitor Plus shut down Dec 2025; free tier unaffected."
+    author: "github:@KashishOO7"
   - version: "1.0.0"
     date: "2025-01-01"
     changes: "Initial item."
-    author: "github:@fpszero"
+    author: "github:@KashishOO7"
