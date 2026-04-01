@@ -1,11 +1,3 @@
-# PSSAF Checklist Item
-# Personal Security Self-Audit Framework — womens_safety track
-#
-# Content review note: Online harassment campaigns disproportionately target women.
-# Framing is practical and agency-centred. Documentation before action is emphasised
-# because it preserves legal options. Avoids "just don't engage" as a sole response
-# since this often doesn't stop campaigns and places burden on the target.
-
 id: "womens-online-harassment-001"
 schema_version: "1.0.0"
 version: "1.0.0"
@@ -186,9 +178,9 @@ tags:
   - "documentation_required"
 
 created_at: "2026-03-04"
-created_by: "github:@maintainer_username"
+created_by: "github:@KashishOO7"
 changelog:
   - version: "1.0.0"
     date: "2026-03-04"
     changes: "Initial item creation."
-    author: "github:@maintainer_username"
+    author: "github:@KashishOO7"
