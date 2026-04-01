@@ -4,7 +4,7 @@
   import type { PageData } from './$types.js';
   import type {
     UserProfile, AssessmentResult, ChecklistItem, ContentGraph,
-    ScoredItem, AdversaryType, Track, Platform, LandscapeEvent
+    ScoredItem, AdversaryType, Track, Platform, LandscapeEvent, EnvironmentFlag
   } from '$lib/types.js';
   import {
     loadProfile, saveProfile, markImplemented, markSkipped, saveNote,
@@ -34,6 +34,7 @@
   let selectedCategory: string = 'all';
   let searchQuery = '';
   let expandedItems = new Set<string>();
+  let itemPlatformTab = '';
   let highlightedItem: string | null = null;
   let activePlatform: Platform | 'all' = 'all';
   let noteValues: Record<string, string> = {};
@@ -43,6 +44,7 @@
   let onboardAdversaries: AdversaryType[] = [];
   let onboardTracks: Track[] = ['general'];
   let onboardPlatforms: Platform[] = [];
+  let onboardEnvironment: EnvironmentFlag[] = [];
   let isReconfiguring = false;
 
   // Incident triage 
@@ -355,12 +357,25 @@
     onboardPlatforms = onboardPlatforms.includes(v)
       ? onboardPlatforms.filter(p => p !== v) : [...onboardPlatforms, v];
   }
+  function toggleEnvironment(v: EnvironmentFlag) {
+    onboardEnvironment = onboardEnvironment.includes(v)
+      ? onboardEnvironment.filter(f => f !== v) : [...onboardEnvironment, v];
+  }
+
+  const ENVIRONMENT_OPTIONS: { value: EnvironmentFlag; label: string; detail: string }[] = [
+    { value: 'encrypted_comms_restricted',  label: 'Encrypted messaging may be restricted where I live',        detail: 'E.g. countries that ban or monitor E2EE apps' },
+    { value: 'govt_monitors_traffic',       label: 'My government actively monitors internet traffic',           detail: 'E.g. deep packet inspection, mandatory ISP logging' },
+    { value: 'has_data_protection_rights',  label: 'I have legal data protection rights I can exercise',        detail: 'E.g. GDPR, CCPA — right to access and erasure' },
+    { value: 'vpn_restricted',              label: 'VPN usage is restricted or monitored where I live',          detail: 'E.g. only government-approved VPNs permitted' },
+    { value: 'border_device_inspection',    label: 'My devices may be inspected when crossing borders',          detail: 'E.g. travel to or from high-scrutiny border crossings' },
+  ];
 
   async function finishOnboard() {
     if (!profile || onboardAdversaries.length === 0) return;
     profile.adversaries = onboardAdversaries;
     profile.tracks = ['general', ...onboardTracks.filter(t => t !== 'general')];
     profile.platforms = onboardPlatforms.length > 0 ? onboardPlatforms : ['all' as Platform];
+    profile.environment_flags = onboardEnvironment;
     if (onboardPlatforms.length > 0) activePlatform = onboardPlatforms[0];
     await saveProfile(profile);
     recalculate();
@@ -605,6 +620,8 @@
       expandedItems.clear();
       expandedItems.add(id);
       if (!(id in noteValues)) noteValues[id] = profile?.notes?.[id] ?? '';
+      const it = graph.items.get(id);
+      if (it) setDefaultPlatformTab(it);
     }
     expandedItems = expandedItems;
   }
@@ -615,8 +632,7 @@
       if (fromItem) {
         navHistory = [...navHistory, { id: fromId, title: fromItem.title, category: fromItem.category }];
       }
-      // Related-item jump: always show full list so the destination item is visible
-      // regardless of which category it lives in. The highlight makes it findable.
+      
       selectedCategory = 'all';
     } else if (category) {
       selectedCategory = category;
@@ -627,6 +643,8 @@
       expandedItems.clear();
       expandedItems.add(id);
       if (!(id in noteValues)) noteValues[id] = profile?.notes?.[id] ?? '';
+      const it = graph.items.get(id);
+      if (it) setDefaultPlatformTab(it);
     }
     expandedItems = expandedItems;
     await tick();
@@ -643,6 +661,7 @@
       onboardAdversaries = [...(profile.adversaries ?? [])];
       onboardTracks = [...(profile.tracks ?? ['general'])];
       onboardPlatforms = (profile.platforms ?? []).filter(p => p !== 'all') as Platform[];
+      onboardEnvironment = [...(profile.environment_flags ?? [])];
     }
     isReconfiguring = true;
     onboardStep = 1;
@@ -654,21 +673,32 @@
     profile = await loadProfile();
   }
 
-  function getPlatformNote(item: ChecklistItem): string | null {
-    if (!item.platform_notes) return null;
-    if (activePlatform !== 'all' && item.platform_notes[activePlatform]) return item.platform_notes[activePlatform];
-    const keys = Object.keys(item.platform_notes);
-    if (keys.length > 0) return item.platform_notes[keys[0]];
-    return null;
+  function getActiveEnvNotes(
+    envNotes: Partial<Record<EnvironmentFlag, string>> | undefined,
+    flags: EnvironmentFlag[] | undefined
+  ): [string, string][] {
+    if (!envNotes || !flags?.length) return [];
+    return Object.entries(envNotes).filter(([flag]) => flags.includes(flag as EnvironmentFlag)) as [string, string][];
   }
 
-  function getPlatformNoteLabel(item: ChecklistItem): string {
-    if (activePlatform !== 'all' && item.platform_notes?.[activePlatform]) {
-      return activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1);
+  function getRelevantPlatformTabs(item: ChecklistItem): string[] {
+    const noteKeys = Object.keys(item.platform_notes ?? {});
+    if (noteKeys.length === 0) return [];
+    const userPlats = profile?.platforms ?? [];
+    const isAll = userPlats.length === 0 || userPlats.includes('all' as Platform);
+    if (isAll) return noteKeys;
+    const matched = noteKeys.filter(k => userPlats.includes(k as Platform));
+    return matched.length > 0 ? matched : noteKeys;
+  }
+
+  function setDefaultPlatformTab(item: ChecklistItem) {
+    const tabs = getRelevantPlatformTabs(item);
+    if (tabs.length === 0) { itemPlatformTab = ''; return; }
+    if (activePlatform !== 'all' && tabs.includes(activePlatform)) {
+      itemPlatformTab = activePlatform;
+    } else {
+      itemPlatformTab = tabs[0];
     }
-    const keys = Object.keys(item.platform_notes ?? {});
-    if (keys.length > 0) return keys[0].charAt(0).toUpperCase() + keys[0].slice(1);
-    return 'General';
   }
 
   let expandedPlatforms = new Set<string>();
@@ -734,7 +764,7 @@
     clearConfirm = false;
     dataPanelOpen = false;
     recalculate();
-    onboardAdversaries = []; onboardTracks = ['general']; onboardPlatforms = [];
+    onboardAdversaries = []; onboardTracks = ['general']; onboardPlatforms = []; onboardEnvironment = [];
     isReconfiguring = false;
     view = 'onboard';
     onboardStep = 1;
@@ -821,11 +851,11 @@
       </button>
     {/if}
     <div class="flex gap-1.5 items-center">
-      {#each [1,2,3] as step}
+      {#each [1,2,3,4] as step}
         <div class="h-1.5 rounded-full transition-all duration-500 {step === onboardStep ? 'w-8 bg-amber' : step < onboardStep ? 'w-4 bg-amber/50' : 'w-4 bg-border'}"></div>
       {/each}
     </div>
-    <span class="label-mono opacity-60">{onboardStep} of 3</span>
+    <span class="label-mono opacity-60">{onboardStep} of 4</span>
   </div>
 
   {#if onboardStep === 1}
@@ -980,8 +1010,46 @@
 
     <div class="flex items-center justify-between">
       <button type="button" on:click={() => onboardStep = 2} class="btn-ghost">← Back</button>
-      <button type="button" on:click={finishOnboard}
+      <button type="button" on:click={() => { if (onboardAdversaries.length > 0) onboardStep = 4; }}
         class="btn-primary {onboardAdversaries.length === 0 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}">
+        Next →
+      </button>
+    </div>
+  </div>
+
+  {:else if onboardStep === 4}
+  <div class="animate-fade-up">
+    <h1 class="font-display text-2xl font-bold text-white mb-2">Does any of this apply to you?</h1>
+    <p class="text-body text-sm mb-6 leading-relaxed">
+      All optional. These unlock environment-specific guidance on relevant checklist items.
+      Nothing here is stored beyond your own device.
+    </p>
+
+    <div class="space-y-2.5 mb-8">
+      {#each ENVIRONMENT_OPTIONS as opt}
+        {@const selected = onboardEnvironment.includes(opt.value)}
+        <button type="button" on:click={() => toggleEnvironment(opt.value)}
+          class="w-full text-left p-4 rounded-lg border transition-all duration-150 flex items-start gap-3 group
+                 {selected ? 'border-amber/50 bg-amber-dim/15' : 'border-border bg-surface hover:border-muted'}">
+          {#if selected}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0 mt-0.5">
+              <circle cx="7" cy="7" r="6" fill="#d4862a" fill-opacity="0.2" stroke="#d4862a" stroke-width="1.5"/>
+              <path d="M4 7L6 9L10 5" stroke="#d4862a" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          {:else}
+            <span class="w-3.5 h-3.5 rounded-full border border-muted flex-shrink-0 mt-0.5 group-hover:border-dim transition-colors"></span>
+          {/if}
+          <div>
+            <p class="font-sans font-medium text-sm {selected ? 'text-white' : 'text-bright'}">{opt.label}</p>
+            <p class="text-xs text-dim mt-0.5">{opt.detail}</p>
+          </div>
+        </button>
+      {/each}
+    </div>
+
+    <div class="flex items-center justify-between">
+      <button type="button" on:click={() => onboardStep = 3} class="btn-ghost">← Back</button>
+      <button type="button" on:click={finishOnboard} class="btn-primary">
         Build my checklist →
       </button>
     </div>
@@ -1695,7 +1763,7 @@
         {opt.label}
       </button>
     {/each}
-    <span class="text-xs text-muted font-mono ml-auto hidden sm:block">Filters how-to steps per item</span>
+    <span class="text-xs text-muted font-mono ml-auto hidden sm:block">Sets default tab for implementation steps</span>
   </div>
 
   {#if result?.category_scores?.length}
@@ -1788,8 +1856,6 @@
       {@const expanded = expandedItems.has(item.id)}
       {@const highlighted = highlightedItem === item.id}
       {@const needsReverify = item.needs_reverification}
-      {@const platformNote = getPlatformNote(item)}
-      {@const noteLabel = getPlatformNoteLabel(item)}
       {@const allPlatforms = item.platforms ?? []}
       {@const visiblePlatforms = allPlatforms.slice(0, 3)}
       {@const hiddenPlatforms = allPlatforms.slice(3)}
@@ -1797,6 +1863,7 @@
       {@const age = verificationAge(item.last_verified)}
       {@const blockedReason = getBlockedReason(item)}
       {@const hasLandscapeBoost = activeLandscapeEvents.some(e => e.related_items.includes(item.id))}
+      {@const platTabs = getRelevantPlatformTabs(item)}
 
       <div id="item-{item.id}"
         class="panel border transition-all duration-300
@@ -1927,24 +1994,44 @@
           </div>
           {/if}
 
-          {#if platformNote}
+          {#if platTabs.length > 0}
           <div>
-            <div class="flex items-center gap-2 mb-2">
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
               <p class="label-mono">How to implement</p>
-              <span class="pill-teal">{noteLabel}</span>
-              {#if activePlatform === 'all'}
-                <span class="text-xs text-muted font-mono">— select a platform above for specific steps</span>
+              {#if platTabs.length === 1}
+                <span class="pill-teal">{platTabs[0].charAt(0).toUpperCase() + platTabs[0].slice(1)}</span>
+              {:else}
+                {#each platTabs as pt}
+                  <button type="button" on:click={() => itemPlatformTab = pt}
+                    class="px-2 py-0.5 rounded text-xs font-mono transition-colors
+                           {itemPlatformTab === pt ? 'bg-teal/80 text-void font-semibold' : 'border border-border text-dim hover:text-body'}">
+                    {pt.charAt(0).toUpperCase() + pt.slice(1)}
+                  </button>
+                {/each}
               {/if}
             </div>
+            {#if item.platform_notes?.[itemPlatformTab || platTabs[0]]}
             <div class="bg-void/60 border border-border rounded-lg p-3">
-              <p class="text-sm text-body leading-relaxed font-mono whitespace-pre-line">{platformNote}</p>
+              <p class="text-sm text-body leading-relaxed font-mono whitespace-pre-line">{item.platform_notes[itemPlatformTab || platTabs[0]]}</p>
             </div>
-            {#if Object.keys(item.platform_notes ?? {}).length > 1 && activePlatform !== 'all'}
-              <p class="text-xs text-muted font-mono mt-1">
-                Steps also available for: {Object.keys(item.platform_notes ?? {}).filter(p => p !== activePlatform).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}
-              </p>
             {/if}
           </div>
+          {/if}
+
+          {#if item.environment_notes && profile?.environment_flags?.length}
+            {@const activeEnvNotes = getActiveEnvNotes(item.environment_notes, profile?.environment_flags)}
+            {#if activeEnvNotes.length > 0}
+            <div>
+              <p class="label-mono mb-2">Based on your environment</p>
+              <div class="space-y-2">
+                {#each activeEnvNotes as [, note]}
+                  <div class="bg-void/60 border border-amber/30 rounded-lg p-3">
+                    <p class="text-sm text-body leading-relaxed font-mono whitespace-pre-line">{note}</p>
+                  </div>
+                {/each}
+              </div>
+            </div>
+            {/if}
           {/if}
 
           <div class="flex items-center gap-5">
@@ -2011,6 +2098,22 @@
                 </a>
               {/each}
             </div>
+          </div>
+          {/if}
+
+          {#if item.legal_notes?.length}
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <p class="label-mono">Legal context</p>
+              {#if item.sensitive}<span class="text-xs font-mono text-amber-light">Safety-critical</span>{/if}
+            </div>
+            {#each item.legal_notes as ln}
+              <div class="rounded-lg p-3 text-xs font-mono leading-relaxed
+                          {item.sensitive ? 'bg-void/60 border border-amber/30 text-body' : 'bg-void/40 border border-border text-dim'}">
+                {#if ln.jurisdiction !== 'global'}<span class="text-muted mr-1">[{ln.jurisdiction}]</span>{/if}
+                <span class="whitespace-pre-line">{ln.note}</span>
+              </div>
+            {/each}
           </div>
           {/if}
 
