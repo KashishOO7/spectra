@@ -1,0 +1,161 @@
+id: "data-social-visibility-001"
+schema_version: "1.0.0"
+version: "1.0.0"
+title: "Lock down default visibility and sharing on social accounts"
+description: |
+  Social platforms default to maximum visibility: public profiles, discoverable
+  by phone number and email, visible friend lists, open activity status, and
+  "people you may know" features that expose your relationship graph. Each
+  default is a data point available to scrapers, stalkers, and OSINT tools.
+  Restricting visibility is free, takes minutes per account, and removes you
+  from the easiest reconnaissance paths.
+threat_narrative: |
+  OSINT tools scrape public profiles automatically. A stalker finds your
+  new workplace through LinkedIn activity. A scammer clones your identity
+  from public photos and friend lists. The "people you may know" feature
+  reveals connections you didn't choose to make public, including contacts
+  from your phone that the app uploaded without meaningful consent. In
+  documented cases, therapists have been suggested to their own patients,
+  and abuse survivors to their abusers, through this feature alone.
+category: "osint_footprint"
+subcategory: "social_media_exposure"
+tracks:
+  - "general"
+  - "womens_safety"
+  - "journalist"
+platforms:
+  - "web"
+  - "android"
+  - "ios"
+platform_notes:
+  web: |
+    GENERAL PRINCIPLE FOR EVERY SOCIAL ACCOUNT:
+    Find Settings → Privacy. Work through each section. The categories below
+    appear on nearly every platform under different names.
+
+    WHO CAN SEE YOUR STUFF
+    • Profile visibility — restrict to connections only, not public.
+    • Friend/follower list — hide from everyone or connections only.
+    • Activity status (online now, last seen) — disable.
+    • Posts and stories — default to friends/followers only, not public.
+
+    WHO CAN FIND YOU
+    • Phone number and email lookup — disable. This is how scrapers match
+      your profile to leaked databases.
+    • Search engine indexing — disable. Prevents Google from caching your profile.
+    • "People you may know" / "Suggested friends" — these features upload your
+      contacts and expose mutual connections. Disable or revoke contact access.
+
+    WHO CAN CONTACT YOU
+    • Message requests from strangers — restrict or disable.
+    • Comment permissions — limit to followers or approved accounts.
+
+    LINKEDIN SPECIFICALLY
+    • Settings → Visibility → Profile viewing options → Private mode.
+    • Connections visibility → Only you.
+    • Activity broadcasts → disable "Share profile updates."
+    • Data privacy → disable social, economic, and workplace research.
+  android: |
+    For app-specific social media settings on Android, the controls are
+    usually in the app itself, not in Android Settings.
+
+    Open each social app → Profile → Settings → Privacy/Security.
+    Follow the same categories as the Web tab.
+
+    ANDROID-SPECIFIC
+    • Revoke Contacts permission from social apps: Settings → Apps →
+      [App] → Permissions → Contacts → Deny. This prevents the app from
+      uploading your address book for "people you may know" features.
+    • Revoke Location permission from social apps unless you actively use
+      location-based features (check-ins, nearby friends).
+  ios: |
+    Same as Android: controls live inside each app, not in iOS Settings.
+
+    iOS-SPECIFIC
+    • Settings → [App Name] → disable Contacts access for every social app
+      you don't want uploading your address book.
+    • Settings → Privacy & Security → Location Services → set each social
+      app to "Never" or "While Using."
+    • Settings → Privacy & Security → Tracking → disable "Allow Apps to
+      Request to Track" globally.
+platform_notes_verified:
+  web: "2026-04-01"
+  android: "2026-04-01"
+  ios: "2026-04-01"
+not_applicable_if: []
+sensitive: false
+difficulty:
+  technical: 1
+  disruption: 1
+  reversibility: 1
+time_estimate:
+  setup: "30min"
+  ongoing: "low"
+maturity_level: 1
+adversaries:
+  - "targeted_individual"
+  - "data_broker"
+  - "intimate_partner"
+  - "opportunistic"
+  - "ai_automated"
+  - "employer"
+attack_vectors:
+  - "osint_passive"
+  - "social_engineering"
+  - "data_broker_aggregation"
+  - "spear_phishing"
+assets_protected:
+  - "relationships"
+  - "location"
+  - "reputation"
+  - "identity"
+  - "behavioral_data"
+controls_implemented: []
+score_weight: 7.5
+threat_model_multipliers:
+  targeted_individual: 1.8
+  data_broker: 1.6
+  intimate_partner: 1.8
+  opportunistic: 1.0
+  ai_automated: 1.5
+  employer: 1.4
+compensating_controls: []
+depends_on: []
+related_items:
+  - id: "osint-self-001"
+    relationship: "required_companion"
+    note: "Run an OSINT audit first to see what's already exposed, then lock down what you find."
+  - id: "data-ecosystem-audit-001"
+    relationship: "complementary"
+    note: "Ecosystem audit covers platform data collection. Social visibility covers what other people and scrapers can see."
+  - id: "data-permissions-001"
+    relationship: "complementary"
+    note: "OS permissions control what apps access on your device. Social visibility controls what they show the world."
+status: "active"
+superseded_by: null
+last_verified: "2026-04-01"
+verified_by:
+  - "org:eff.org"
+sources:
+  - url: "https://ssd.eff.org/module/protecting-yourself-on-social-networks"
+    title: "Protecting Yourself on Social Networks — EFF SSD"
+    type: "primary"
+    accessed: "2026-04-01"
+resources: []
+legal_notes:
+  - jurisdiction: "global"
+    note: "Educational purposes only. Platform settings change frequently. The categories (visibility, discoverability, contact access, activity status) remain stable across redesigns."
+emotional_register: null
+tags:
+  - "free"
+  - "high_impact"
+  - "quick_win"
+  - "anti_doxxing"
+  - "anti_stalking"
+created_at: "2026-04-01"
+created_by: "github:@KashishOO7"
+changelog:
+  - version: "1.0.0"
+    date: "2026-04-01"
+    changes: "Initial item."
+    author: "github:@KashishOO7"
