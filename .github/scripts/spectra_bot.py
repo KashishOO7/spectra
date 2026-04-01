@@ -172,6 +172,12 @@ def review_prose(client: OpenAI, data: dict, filename: str) -> dict | None:
             if isinstance(note, str) and note.strip():
                 prose_input[f"platform_notes.{platform}"] = note.strip()
 
+    environment_notes = data.get("environment_notes")
+    if isinstance(environment_notes, dict):
+        for flag, note in environment_notes.items():
+            if isinstance(note, str) and note.strip():
+                prose_input[f"environment_notes.{flag}"] = note.strip()
+
     if not prose_input:
         log.info("%s: no prose fields found. Skipping.", filename)
         return {}
