@@ -2,96 +2,114 @@
 
 **Personal Security Self-Audit Framework** — by [FPS Zero](https://fpszero.com)
 
-Spectra builds a weighted security checklist around your actual threat model — not a generic best-practices wall. A journalist, a parent, and a domestic abuse survivor face fundamentally different adversaries. The scoring engine knows the difference.
+Spectra builds a security checklist weighted to your actual threat model, rather than a generic
+best-practices list. A journalist, a parent, and a domestic-abuse survivor face different adversaries,
+so the same control gets a different priority for each. The scoring engine applies per-adversary
+multipliers to produce that ordering.
 
-Everything runs in the browser. No server, no accounts, no data collection. Your assessment state lives in IndexedDB on your device.
+Everything runs in the browser. No server, no accounts, no analytics. Your assessment state is stored
+in IndexedDB on your device and never leaves it.
 
 **Live:** [spectra.fpszero.com](https://spectra.fpszero.com/)
 
-## What it does
+## How it works
 
-**Threat-model-driven scoring.** You answer three questions (adversaries, tracks, platforms). The engine applies per-adversary multipliers to every checklist item, so your priorities reflect your actual risk, not someone else's.
+Content is authored as YAML and compiled into a graph at build time. The scoring engine combines that
+static graph with your local profile (held in IndexedDB) to produce a personalised priority order.
+There is no backend.
 
-**Human vulnerability audit.** A 7-question social engineering susceptibility quiz identifies which manipulation techniques (authority, urgency, scarcity, trust exploitation) you're most exposed to. Results weight the human vulnerability items in your score.
+```mermaid
+flowchart LR
+    Y["content/*.yaml<br/>(items, threats, resources)"]
+    L["loader.ts<br/>build content graph"]
+    S["+page.server.ts<br/>serialise to page"]
+    E["scoring.ts<br/>apply threat model"]
+    DB[("IndexedDB<br/>your profile")]
+    UI["Audit UI"]
 
-**Knowledge graph, not a flat list.** Four schema types — checklist items, abstract controls, threat nodes, and curated resources — are cross-referenced. The threat graph visualises which adversaries reach which assets through which controls.
+    Y -->|"js-yaml, build time"| L --> S --> E --> UI
+    DB -->|"read at runtime"| E
+    UI -->|"write progress"| DB
+```
 
-**Landscape-aware.** Active security events (e.g., automated SIM swap toolkits, AI phishing at scale) apply real-time multipliers to affected items. Your score responds to the world, not just your checkbox state.
+## Features
 
-**Security timeline.** Every action is logged locally — items completed, score milestones crossed, life events applied. Your security posture is a story over time, not a snapshot.
+- **Threat-model-driven scoring.** You select your adversaries, platforms, and tracks. The engine
+  applies per-adversary multipliers to every item, so the priority order reflects your risk.
+- **Human-vulnerability audit.** A 7-question social-engineering quiz scores your exposure to each
+  influence technique (authority, urgency, scarcity, trust exploitation, and others) and weights the
+  human-vulnerability items accordingly.
+- **Knowledge graph.** Checklist items, abstract controls, threat nodes, and curated resources are
+  cross-referenced. The threat graph shows which adversaries reach which assets through which controls.
+- **Landscape multipliers.** A small, curated set of active real-world events temporarily raises the
+  priority of affected items. Hand-curated and source-backed — not a live feed.
+- **Local timeline.** Completed items, score milestones, and applied life events are logged in your
+  browser so you can see change over time.
 
-## Disclaimer
+## Scoring
 
-Spectra is an open-source educational tool. It does not constitute professional security, legal, or medical advice. Implementations vary by jurisdiction. If you are facing an active threat, contact local authorities or a professional incident response team.
+Each item has a base `score_weight` (0–10). The engine computes, per item:
+
+```
+effective_score = base_weight
+                × threat_multiplier        (max across your selected adversaries)
+                × landscape_multiplier      (active real-world events)
+                × (1 − compensating_factor) (a stronger control you already have)
+                × staleness_multiplier      (how recently the guidance was verified)
+```
+
+Per-category score is earned ÷ available effective_score; the overall score is the mean across
+categories. Spectra is a **prioritisation engine**, not a calibrated risk calculator — the weights are
+principled expert judgement anchored to public data (DBIR, IC3, HIBP), documented in
+[SCORING.md](SCORING.md) and on the on-site [methodology page](https://spectra.fpszero.com/methodology).
 
 ## Getting started
 
-Node.js 20+, npm 10+.
+Requires Node.js 20+ and npm 10+.
 
 ```bash
 git clone https://github.com/KashishOO7/spectra.git
 cd spectra
 npm install
 
-# Validate content schemas
-npm run validate
-
-# Dev server
-npm run dev
+npm run validate   # schema + cross-reference checks
+npm run dev         # local dev server
+npm run build       # static production build
 ```
 
-## Architecture
+## Project layout
 
-Static content engine + SvelteKit frontend. Content is YAML, loaded at build time via Node `fs`, baked into the static output. Deployed to GitHub Pages via `adapter-static`.
+SvelteKit frontend with a static content engine. Content is YAML, loaded at build time and baked into
+the static output via `adapter-static`; deployed to GitHub Pages.
 
 ```
 spectra/
-├── .github/
-│   ├── scripts/            # RSS landscape scanner, content gatekeeper, internal audit
-│   ├── workflows/          # CI pipeline, content review bot, URL health checks
-│   └── CODEOWNERS
 ├── content/                # CC BY-SA 4.0
-│   ├── controls/           # Abstract security mechanisms (MFA, FDE)
-│   ├── items/              # Checklist items (one YAML per item)
-│   ├── resources/          # Curated tools with privacy posture ratings
-│   ├── threats/            # Adversary × attack vector threat nodes
-│   └── landscape-feed.yaml # Active global threat events with scoring multipliers
-├── scripts/
-│   └── validate.ts         # Schema validator (taxonomy + cross-reference checks)
+│   ├── items/              # checklist items (one YAML per item)
+│   ├── controls/           # abstract security mechanisms (MFA, FDE)
+│   ├── threats/            # adversary × attack-vector threat nodes
+│   ├── resources/          # curated tools with privacy-posture ratings
+│   └── landscape-feed.yaml # active real-world events with scoring multipliers
+├── scripts/                # validate, maintain (content health), new:item, check:links
 ├── src/
 │   ├── lib/
 │   │   ├── content/        # YAML parser and graph builder
-│   │   ├── engine/         # Scoring engine and IndexedDB store
-│   │   └── types.ts        # Canonical TypeScript types
-│   └── routes/
-│       ├── audit/          # Checklist, onboarding, SE quiz, incident triage
-│       ├── graph/          # Interactive threat graph (SVG, pan/zoom)
-│       ├── resources/      # Tool browser with posture filtering
-│       ├── threats/        # Threat landscape feed
-│       └── timeline/       # Personal security history
+│   │   ├── engine/         # scoring engine and IndexedDB store
+│   │   └── types.ts        # canonical TypeScript types
+│   └── routes/             # audit, graph, resources, threats, timeline,
+│                           # methodology, references, about
+├── .github/workflows/      # ci.yml deploys; content/landscape automation
+│                           # is dormant (manual dispatch only)
 ├── static/                 # PWA manifest, service worker, CNAME
-├── CONTRIBUTING.md
-└── LICENSE
+├── SCORING.md  CONTRIBUTING.md  LICENSE
 ```
-
-## Scoring
-
-Each item has a base `score_weight` (0-10). The engine applies:
-
-```
-effective_score = base × threat_multiplier × landscape_multiplier × (1 - compensating_factor) × staleness_decay
-```
-
-Threat multipliers are per-adversary. Staleness decay penalises items whose content hasn't been verified recently. Landscape multipliers elevate items affected by active global events. Compensating controls reduce urgency when a stronger alternative is implemented.
 
 ## Contributing
 
-See `CONTRIBUTING.md`. The short version:
-
-All content changes in `/content` must pass `npm run validate`. Factual claims need primary sources in the YAML. Edits to women's safety or children's tracks require specialised maintainer review. Score weights and threat multipliers are protected fields - changes require maintainer approval.
+See [CONTRIBUTING.md](CONTRIBUTING.md). All `/content` changes must pass `npm run validate`, and factual
+claims need a primary source in the YAML. `score_weight`, threat multipliers, and the women's-safety
+and children's tracks are protected — changes require maintainer review (see `CODEOWNERS`).
 
 ## License
 
-Code (/src, /scripts): AGPL-3.0. Content (`/content`): CC BY-SA 4.0.
-
-Built by FPS Zero.
+Code (`/src`, `/scripts`): AGPL-3.0. Content (`/content`): CC BY-SA 4.0.

@@ -7,7 +7,7 @@
       icon: '◈',
       label: 'Run Your Security Audit',
       sub: 'Free · Private · Takes about 20 minutes',
-      desc: 'Answer three questions about your situation. Get a personalised, weighted checklist built around the threats that actually apply to you — not a generic 100-item wall.',
+      desc: 'Answer a few quick questions about your situation. Get a personalised, weighted checklist built around the threats that actually apply to you — not a generic 100-item wall.',
       href: '/audit',
       cta: 'Start Audit',
       accent: 'amber'
@@ -111,11 +111,11 @@
     </h1>
 
     <p class="text-body text-lg sm:text-xl max-w-2xl mx-auto mb-3 leading-relaxed font-light">
-      Spectra is a free, open-source personal security audit. Answer three questions about
+      Spectra is a free, open-source personal security audit. Answer a few quick questions about
       your situation — get a weighted checklist built around the risks that actually apply to you.
     </p>
 
-    <p class="text-dim text-sm font-mono mb-12">
+    <p class="text-dim text-sm mb-12">
       No account. No server. No tracking. Everything lives in your browser.
     </p>
 
@@ -167,7 +167,7 @@
 <!-- What makes this different -->
 <section class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
   <p class="label-mono text-center mb-2">Why Spectra exists</p>
-  <p class="text-center text-dim text-sm font-mono mb-10 max-w-xl mx-auto">
+  <p class="text-center text-dim text-sm mb-10 max-w-xl mx-auto">
     Most security checklists are generic, vendor-driven, or written for IT teams.
     This one is built for people.
   </p>

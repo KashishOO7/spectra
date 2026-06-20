@@ -1,11 +1,11 @@
 name: Spectra Content Gatekeeper
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'content/**/*.yaml'
-      - 'content/**/*.yml'
+  # pull_request_target:
+  #   types: [opened, synchronize, reopened]
+  #   paths:
+  #     - 'content/**/*.yaml'
+  #     - 'content/**/*.yml'
 
 concurrency:
   group: pr-review-${{ github.event.pull_request.user.login }}

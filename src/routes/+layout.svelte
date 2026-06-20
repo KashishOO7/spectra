@@ -213,6 +213,8 @@
       <span class="text-xs text-dim font-mono">Spectra v0.1.0 · AGPL-3.0 · CC BY-SA 4.0 (content)</span>
     </div>
     <div class="flex items-center gap-5 text-xs text-muted font-mono">
+      <a href="/methodology" class="hover:text-body transition-colors duration-200">Methodology</a>
+      <a href="/references" class="hover:text-body transition-colors duration-200">References</a>
       <a href="/about#disclaimer" class="hover:text-body transition-colors duration-200">Disclaimer</a>
       <a href="/about#privacy" class="hover:text-body transition-colors duration-200">Privacy</a>
       <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"

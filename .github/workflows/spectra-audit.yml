@@ -1,8 +1,8 @@
 name: Spectra Internal Audit
 
 on:
-  schedule:
-    - cron: '0 9 * * 1'
+  # schedule:
+  #   - cron: '0 9 * * 1'
   workflow_dispatch:
 
 jobs:

@@ -16,7 +16,6 @@
   <h1 class="font-display text-3xl font-bold text-white mb-2">About Spectra</h1>
   <p class="text-dim font-mono text-sm mb-10">Open source · Educational · No commercial interests</p>
 
-  <!-- TOC -->
   <nav class="panel p-4 mb-10 flex flex-wrap gap-x-4 gap-y-2">
     {#each sections as s}
       <a href="#{s.id}" class="text-sm text-dim hover:text-body font-mono transition-colors">{s.label}</a>
@@ -25,7 +24,6 @@
 
   <div class="space-y-12 prose-custom">
 
-    <!-- What is Spectra -->
     <section id="what">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">What is Spectra?</h2>
       <p class="text-body leading-relaxed mb-3">
@@ -45,7 +43,6 @@
       </p>
     </section>
 
-    <!-- Disclaimer -->
     <section id="disclaimer">
       <div class="border border-amber/30 rounded-lg p-5 bg-amber-dim/10">
         <h2 class="font-display text-xl font-semibold text-amber-light mb-4">⚠ Disclaimer</h2>
@@ -102,11 +99,21 @@
         System 1/System 2 model informs how we frame the emotional triggers. BJ Fogg's behavior model
         informs how items are sequenced and motivated.
       </p>
-      <p class="text-body leading-relaxed">
+      <p class="text-body leading-relaxed mb-5">
         OPSEC doctrine references: NIST SP 800-53, CIS Controls, EFF's Surveillance Self-Defense, and
         Privacy Guides provide the technical foundation. Community references include Michael Bazzell's
         OSINT work for footprint reduction methodology.
       </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/methodology" class="btn-ghost">
+          How scoring works
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 1L8 5L4 9"/></svg>
+        </a>
+        <a href="/references" class="btn-ghost">
+          References &amp; standards
+          <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 1L8 5L4 9"/></svg>
+        </a>
+      </div>
     </section>
 
     <!-- FPS Zero -->
