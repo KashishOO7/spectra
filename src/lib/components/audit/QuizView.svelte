@@ -3,8 +3,8 @@
   import { SE_QUIZ_QUESTIONS } from '$lib/audit/quiz.js';
   import { SE_SCALE_LABELS, EMOTIONAL_REGISTER_LABELS } from '$lib/audit/constants.js';
 
-  export let quizStep: number;                       // bound
-  export let quizAnswers: Record<string, number>;    // bound
+  export let quizStep: number;                      
+  export let quizAnswers: Record<string, number>;    
   export let seQuiz: SEQuizResult | null | undefined;
   export let onSubmit: () => void;
   export let onBack: () => void;
@@ -13,14 +13,14 @@
 
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10 animate-fade-up">
   <button type="button" on:click={onBack}
-    class="flex items-center gap-2 text-xs font-mono text-dim hover:text-body transition-colors mb-8">
+    class="flex items-center gap-2 text-[13px] text-dim hover:text-body transition-colors mb-8">
     ← Back to audit
   </button>
 
   {#if quizStep === 0}
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-3">
-        <span class="text-2xl">🧠</span>
+        <span class="text-2xl text-amber">◉</span>
         <h1 class="font-display text-2xl font-bold text-white">Social Engineering Self-Assessment</h1>
       </div>
       <p class="text-body leading-relaxed mb-4">
@@ -28,7 +28,7 @@
         Your results adjust the weighting of human vulnerability items in your checklist.
       </p>
       <div class="panel p-4 border-amber/20 mb-6">
-        <p class="text-xs font-mono text-amber-light mb-2">Why this matters</p>
+        <p class="text-[13px] font-medium text-amber-light mb-2">Why this matters</p>
         <p class="text-sm text-body leading-relaxed">
           Everyone is susceptible to different manipulation techniques. Knowing your specific
           vulnerabilities is the first step to defending against them. This assessment stays
@@ -36,7 +36,7 @@
         </p>
       </div>
       {#if seQuiz}
-        <p class="text-xs font-mono text-dim mb-4">
+        <p class="text-[13px] text-dim mb-4">
           You completed this on {new Date(seQuiz.completed_at).toLocaleDateString()}.
           Retaking will update your results.
         </p>
@@ -62,7 +62,7 @@
     <div class="panel p-6 mb-6 border-amber/20">
       <p class="text-body leading-relaxed text-sm mb-2">{q.scenario}</p>
     </div>
-    <p class="text-sm font-mono text-bright mb-5">{q.prompt}</p>
+    <p class="text-sm text-bright mb-5">{q.prompt}</p>
 
     <div class="grid grid-cols-1 gap-2.5 mb-8">
       {#each [1,2,3,4,5] as n}
@@ -118,7 +118,7 @@
         {#each Object.entries(quiz.susceptibilities).sort((a, b) => b[1] - a[1]) as [register, score]}
           <div>
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-mono text-body">{EMOTIONAL_REGISTER_LABELS[register] ?? register}</span>
+              <span class="text-[13px] text-body">{EMOTIONAL_REGISTER_LABELS[register] ?? register}</span>
               <span class="text-xs font-mono {score >= 75 ? 'text-red-light' : score >= 50 ? 'text-amber-light' : 'text-teal-light'}">{score}%</span>
             </div>
             <div class="h-1.5 bg-border rounded-full overflow-hidden">
@@ -136,7 +136,7 @@
       <p class="label-mono text-amber mb-2">Your highest risk: {EMOTIONAL_REGISTER_LABELS[quiz.top_register] ?? quiz.top_register}</p>
       <p class="text-sm text-body">
         Items targeting this manipulation type have been prioritised in your checklist.
-        Focus on them first in the Human Vulnerability category.
+        Focus on them first, under Spotting scams.
       </p>
     </div>
     {/if}

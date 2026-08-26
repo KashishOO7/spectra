@@ -10,15 +10,27 @@
 
 <svelte:head>
   <title>About | Spectra</title>
+  <meta name="description" content="What Spectra is, what it deliberately does not do, how your data is handled, and who builds it." />
+  <link rel="canonical" href="https://spectra.fpszero.com/about" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Spectra" />
+  <meta property="og:title" content="About | Spectra" />
+  <meta property="og:description" content="What Spectra is, what it deliberately does not do, how your data is handled, and who builds it." />
+  <meta property="og:url" content="https://spectra.fpszero.com/about" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="About | Spectra" />
+  <meta name="twitter:description" content="What Spectra is, what it deliberately does not do, how your data is handled, and who builds it." />
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
   <h1 class="font-display text-3xl font-bold text-white mb-2">About Spectra</h1>
-  <p class="text-dim font-mono text-sm mb-10">Open source · Educational · No commercial interests</p>
+  <p class="text-dim text-sm mb-10">Open source · Educational · No commercial interests</p>
 
   <nav class="panel p-4 mb-10 flex flex-wrap gap-x-4 gap-y-2">
     {#each sections as s}
-      <a href="#{s.id}" class="text-sm text-dim hover:text-body font-mono transition-colors">{s.label}</a>
+      <a href="#{s.id}" class="text-sm text-dim hover:text-body transition-colors">{s.label}</a>
     {/each}
   </nav>
 
@@ -29,7 +41,7 @@
       <p class="text-body leading-relaxed mb-3">
         Spectra is an open-source personal security self-audit framework built from first principles.
         It covers device security, account hygiene, physical safety, human vulnerability to social engineering,
-        and AI-specific threats — in one place, personalized to your actual threat model.
+        and AI-specific threats, in one place, ordered by what you say you are worried about.
       </p>
       <p class="text-body leading-relaxed mb-3">
         Most security checklists fail in two ways: they're generic (same advice for everyone) and they ignore
@@ -57,7 +69,6 @@
       </div>
     </section>
 
-    <!-- Privacy Policy -->
     <section id="privacy">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">Privacy Policy</h2>
       <p class="text-body leading-relaxed mb-3">
@@ -70,28 +81,21 @@
           { label: 'Cookies', detail: 'None set by this site. Browser storage (IndexedDB) is used only for your assessment state.' },
           { label: 'External resources', detail: 'Clicking links to external sites takes you outside Spectra. Those sites have their own privacy policies. We link to them; we don\'t control them.' },
           { label: 'GitHub', detail: 'This site is hosted on GitHub Pages. GitHub\'s privacy policy applies to server-level data (IP addresses, request logs). We do not have access to this data.' },
-          { label: 'Fonts', detail: 'Fonts are loaded from Google Fonts. This sends a request to Google\'s servers. If this is a concern for your threat model, use a browser extension to self-host fonts or block the request.' }
+          { label: 'Fonts', detail: 'Fonts are loaded from Google Fonts. This sends a request to Google\'s servers. If this is a concern for your setup, use a browser extension to self-host fonts or block the request.' }
         ] as item}
           <div class="panel p-4">
-            <div class="text-sm font-mono text-teal-light mb-1">{item.label}</div>
+            <div class="text-sm font-medium text-teal-light mb-1">{item.label}</div>
             <p class="text-sm text-body leading-relaxed">{item.detail}</p>
           </div>
         {/each}
       </div>
     </section>
 
-    <!-- Methodology -->
     <section id="methodology">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">Methodology</h2>
       <p class="text-body leading-relaxed mb-3">
-        Spectra's framework is built on a knowledge graph, not a flat checklist. Every item carries:
-        the adversaries it's relevant against, the attack vectors it mitigates, the assets it protects,
-        difficulty dimensions, and scoring weights calibrated by adversary type.
-      </p>
-      <p class="text-body leading-relaxed mb-3">
-        The scoring engine applies threat model multipliers so that your checklist reflects your actual
-        adversary profile. A journalist's high-priority items differ from a casual user's. The same
-        framework, personalized by what you tell it about your situation.
+        How the ordering actually works, formula included, is on
+        <a href="/methodology" class="text-amber-light hover:underline">Under the hood</a>.
       </p>
       <p class="text-body leading-relaxed mb-3">
         Psychology references: Cialdini's influence principles (urgency, authority, social proof, reciprocity,
@@ -105,18 +109,17 @@
         OSINT work for footprint reduction methodology.
       </p>
       <div class="flex flex-col sm:flex-row gap-3">
-        <a href="/methodology" class="btn-ghost">
-          How scoring works
+        <a href="/how-it-works" class="btn-ghost">
+          How Spectra works
           <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 1L8 5L4 9"/></svg>
         </a>
-        <a href="/references" class="btn-ghost">
-          References &amp; standards
+        <a href="/methodology" class="btn-ghost">
+          Under the hood
           <svg width="12" height="12" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 1L8 5L4 9"/></svg>
         </a>
       </div>
     </section>
 
-    <!-- FPS Zero -->
     <section id="fpszero">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">About FPS Zero</h2>
       <p class="text-body leading-relaxed mb-3">

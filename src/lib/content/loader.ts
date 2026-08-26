@@ -1,9 +1,8 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import yaml from 'js-yaml';
-import type { ChecklistItem, Resource, ContentGraph, Category, AdversaryType, AttackVector, Asset, Track, LandscapeEvent } from '../types.js';
+import type { ChecklistItem, Resource, Lookup, ContentGraph, Category, AdversaryType, AttackVector, Asset, Track } from '../types.js';
 
-export type { LandscapeEvent };
 
 const CONTENT_DIR = join(process.cwd(), 'content');
 
@@ -17,15 +16,12 @@ function readYamlDir<T>(subdir: string): T[] {
       const raw = readFileSync(join(dir, f), 'utf-8');
     
       const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-      // Support multiple YAML documents per file (--- separator)
       const parts = normalized.split(/^---\s*$/m).filter((s: string) => s.trim().length > 0);
 
       for (const part of parts) {
         try {
           const parsed = yaml.load(part.trim());
           if (!parsed || typeof parsed !== 'object') continue;
-          // Support both array-of-items files (tools.yaml) and single-item files
           if (Array.isArray(parsed)) {
             for (const entry of parsed) {
               if (entry && typeof entry === 'object') results.push(entry as T);
@@ -46,25 +42,10 @@ function readYamlDir<T>(subdir: string): T[] {
   }
 }
 
-// Load landscape-feed.yaml
-export function loadLandscapeFeed(): LandscapeEvent[] {
-  const feedPath = join(CONTENT_DIR, 'landscape-feed.yaml');
-  try {
-    const raw = readFileSync(feedPath, 'utf-8');
-    const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    const parsed = yaml.load(normalized) as { events?: LandscapeEvent[] } | null;
-    const events = parsed?.events ?? [];
-
-    return events;
-  } catch (e) {
-    console.warn('[spectra] Could not load landscape-feed.yaml:', e);
-    return [];
-  }
-}
-
 export function loadContentGraph(): ContentGraph {
   const rawItems = readYamlDir<ChecklistItem>('items');
   const rawResources = readYamlDir<Resource>('resources');
+  const rawLookups = readYamlDir<Lookup>('lookups');
 
   const activeItems = rawItems.filter(i =>
     i.status === 'active' || i.status === 'under_review' || i.status === 'contested'
@@ -72,6 +53,7 @@ export function loadContentGraph(): ContentGraph {
 
   const items = new Map<string, ChecklistItem>();
   const resources = new Map<string, Resource>();
+  const lookups = new Map<string, Lookup>();
   const itemsByCategory = new Map<Category, string[]>();
   const itemsByAdversary = new Map<AdversaryType, string[]>();
   const itemsByVector = new Map<AttackVector, string[]>();
@@ -115,13 +97,18 @@ export function loadContentGraph(): ContentGraph {
     if (resource?.id) resources.set(resource.id, resource);
   }
 
-  return { items, resources, itemsByCategory, itemsByAdversary, itemsByVector, itemsByAsset, itemsByTrack, itemsByMaturity };
+  for (const lookup of rawLookups) {
+    if (lookup?.id && lookup.status === 'active') lookups.set(lookup.id, lookup);
+  }
+
+  return { items, resources, lookups, itemsByCategory, itemsByAdversary, itemsByVector, itemsByAsset, itemsByTrack, itemsByMaturity };
 }
 
 export function serializeGraph(graph: ContentGraph) {
   return {
     items: Object.fromEntries(graph.items),
     resources: Object.fromEntries(graph.resources),
+    lookups: Object.fromEntries(graph.lookups),
     itemsByCategory: Object.fromEntries(graph.itemsByCategory),
     itemsByAdversary: Object.fromEntries(graph.itemsByAdversary),
     itemsByVector: Object.fromEntries(graph.itemsByVector),

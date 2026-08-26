@@ -1,207 +1,202 @@
 <script lang="ts">
-  import type { PageData } from './$types.js';
-  export let data: PageData;
-  const paths = [
-    {
-      id: 'assess',
-      icon: '◈',
-      label: 'Run Your Security Audit',
-      sub: 'Free · Private · Takes about 20 minutes',
-      desc: 'Answer a few quick questions about your situation. Get a personalised, weighted checklist built around the threats that actually apply to you — not a generic 100-item wall.',
-      href: '/audit',
-      cta: 'Start Audit',
-      accent: 'amber'
-    },
-    {
-      id: 'incident',
-      icon: '◎',
-      label: 'Something Already Happened',
-      sub: 'Immediate triage — no setup needed',
-      desc: 'Account hacked, device stolen, suspicious link clicked, stalkerware suspected. Skip the questionnaire and get a step-by-step response playbook right now.',
-      href: '/audit?mode=incident',
-      cta: 'Start Triage',
-      accent: 'red'
-    },
-    {
-      id: 'resources',
-      icon: '◉',
-      label: 'Find the Right Tools',
-      sub: 'Curated, privacy-rated, no dark patterns',
-      desc: 'Every tool and guide rated for privacy posture, cost, and platform. If something has trade-offs, they\'re listed. If it\'s been audited, that\'s here too.',
-      href: '/resources',
-      cta: 'Browse',
-      accent: 'teal'
-    },
-    {
-      id: 'guardian',
-      icon: '○',
-      label: 'Protecting Someone Else',
-      sub: 'Kids, teens, family members',
-      desc: 'Guides for keeping children safer online, supporting women\'s digital safety, and helping non-technical people in your life without overwhelming them.',
-      href: '/audit?mode=guardian',
-      cta: 'Guardian Mode',
-      accent: 'body'
+  import { onMount } from 'svelte';
+  import type { Harm } from '$lib/types.js';
+  import { HARMS } from '$lib/audit/constants.js';
+  import { goto } from '$app/navigation';
+  import { loadProfile, saveProfile, createDefaultProfile } from '$lib/engine/store.js';
+
+  const harms = Object.keys(HARMS) as Harm[];
+
+  let selected: Harm[] = [];
+  let starting = false;
+
+  function toggle(harm: Harm) {
+    selected = selected.includes(harm)
+      ? selected.filter(h => h !== harm)
+      : [...selected, harm];
+  }
+
+  onMount(async () => {
+    try {
+      const profile = await loadProfile();
+      if (profile?.harms?.length) selected = [...profile.harms];
+    } catch {
     }
-  ];
+  });
 
-  const accentBorder: Record<string, string> = {
-    amber: 'border-amber/25 hover:border-amber/55 hover:shadow-lg hover:shadow-amber/5',
-    teal:  'border-teal/25 hover:border-teal/55 hover:shadow-lg hover:shadow-teal/5',
-    red:   'border-red/25 hover:border-red/55 hover:shadow-lg hover:shadow-red/5',
-    body:  'border-border hover:border-muted hover:shadow-lg hover:shadow-black/20'
-  };
+  async function start(e: MouseEvent) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (starting) return;
+    starting = true;
+    try {
+      const stored = await loadProfile();
+      if (selected.length === 0 && !stored?.harms?.length) {
+        await goto('/audit');
+        return;
+      }
+      if (selected.length === 0) {
+        delete stored!.harms;
+        await saveProfile(stored!);
+        await goto('/audit');
+        return;
+      }
 
-  const accentText: Record<string, string> = {
-    amber: 'text-amber-light',
-    teal:  'text-teal-light',
-    red:   'text-red-light',
-    body:  'text-body'
-  };
-
-  const accentDot: Record<string, string> = {
-    amber: 'bg-amber',
-    teal:  'bg-teal',
-    red:   'bg-red',
-    body:  'bg-muted'
-  };
-
-  const differentiators = [
-    {
-      icon: '⬡',
-      title: 'Built around your actual threat model',
-      body: 'Your security posture is scored against the adversaries that apply to you. A journalist and a parent have completely different risk profiles. This framework knows the difference.'
-    },
-    {
-      icon: '◈',
-      title: 'Human vulnerability is part of the audit',
-      body: 'Most attacks succeed because of psychology, not technology. We\'re one of the few frameworks that audits your exposure to social engineering alongside your technical controls.'
-    },
-    {
-      icon: '◉',
-      title: 'First principles, not vendor relationships',
-      body: 'Every recommendation is reasoned from scratch. Tools are privacy-rated. Trade-offs are mandatory reading. Nothing here is sponsored, affiliated, or promoted.'
+      const profile = stored ?? createDefaultProfile();
+      profile.harms = [...selected];
+      await saveProfile(profile);
+      await goto('/audit?from=harms');
+    } catch {
+      await goto('/audit');
+    } finally {
+      starting = false;
     }
-  ];
+  }
 </script>
 
 <svelte:head>
   <title>Spectra | Personal Security Self-Audit</title>
-  <meta name="description" content="Know exactly how exposed you are. Open-source personal security audit framework. Threat-model driven, private by design, no account required."/>
+  <meta name="description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
+  <link rel="canonical" href="https://spectra.fpszero.com/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Spectra" />
+  <meta property="og:title" content="Spectra | Personal Security Self-Audit" />
+  <meta property="og:description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
+  <meta property="og:url" content="https://spectra.fpszero.com/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Spectra | Personal Security Self-Audit" />
+  <meta name="twitter:description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
 </svelte:head>
 
-<!-- Hero -->
 <section class="bg-spectra-grid overflow-hidden">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-16 pb-14 text-center relative">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 pt-12 pb-14 relative">
 
-    <!-- Ambient glow -->
     <div class="absolute inset-0 flex items-start justify-center pointer-events-none" aria-hidden="true">
       <div class="w-[600px] h-[300px] rounded-full bg-amber/[0.03] blur-3xl translate-y-12"></div>
     </div>
 
-    <!-- Build badge -->
-    <div class="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full
-                border border-border bg-surface/80 text-xs font-mono text-dim backdrop-blur-sm">
-      <span class="w-1.5 h-1.5 rounded-full bg-teal-light animate-pulse-slow"></span>
-      v0.1 Beta · Built in public · Content updated {data.contentUpdated} · All data stays on your device
+    <div class="text-center relative pt-2">
+      <h1 class="font-display text-[2rem] sm:text-[2.75rem] font-bold text-white mb-4 leading-[1.12] tracking-tight">
+        What are you worried might happen?
+      </h1>
+
+      <p class="text-body text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed font-light">
+        Tap anything below. You get a short list of what to do. Plain steps, no signup, and
+        nothing leaves this browser.
+      </p>
     </div>
-
-    <h1 class="font-display text-4xl sm:text-[3.5rem] font-bold text-white mb-5 leading-[1.08] tracking-tight relative">
-      Most people find out they<br class="hidden sm:block"/>
-      were exposed <span class="text-gradient-amber">too late.</span>
-    </h1>
-
-    <p class="text-body text-lg sm:text-xl max-w-2xl mx-auto mb-3 leading-relaxed font-light">
-      Spectra is a free, open-source personal security audit. Answer a few quick questions about
-      your situation — get a weighted checklist built around the risks that actually apply to you.
-    </p>
-
-    <p class="text-dim text-sm mb-12">
-      No account. No server. No tracking. Everything lives in your browser.
-    </p>
-
-    <!-- Entry cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-3xl mx-auto relative">
-      {#each paths as path}
-        <a href={path.href}
-           class="panel p-5 border transition-all duration-200 group cursor-pointer {accentBorder[path.accent]}">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2 h-2 rounded-full {accentDot[path.accent]} opacity-70 mt-0.5 flex-shrink-0"></span>
-              <span class="text-xs font-mono {accentText[path.accent]} opacity-70">{path.sub}</span>
-            </div>
-            <span class="text-xs font-mono text-muted group-hover:text-dim transition-colors opacity-0 group-hover:opacity-100">
-              {path.cta} →
+    <ul class="relative mb-9 space-y-2">
+      {#each harms as harm}
+        {@const isOn = selected.includes(harm)}
+        <li>
+          <button type="button"
+            aria-pressed={isOn}
+            on:click={() => toggle(harm)}
+            class="w-full min-h-[56px] text-left px-4 py-3.5 rounded-xl border flex items-center gap-3.5
+                   transition-all duration-150 group
+                   {isOn
+                     ? 'border-amber/60 bg-amber-dim/15 shadow-sm shadow-amber/5'
+                     : 'border-border bg-surface hover:border-muted hover:bg-surface/80'}">
+            <span class="flex-shrink-0 w-[18px] h-[18px] flex items-center justify-center" aria-hidden="true">
+              {#if isOn}
+                <svg width="18" height="18" viewBox="0 0 14 14" fill="none" class="text-amber">
+                  <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              {:else}
+                <span class="w-[15px] h-[15px] rounded-full border border-muted block group-hover:border-dim transition-colors"></span>
+              {/if}
             </span>
-          </div>
-          <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
-            {path.label}
-          </h2>
-          <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">{path.desc}</p>
-        </a>
+            <span class="font-sans text-[15px] sm:text-base leading-snug
+                         {isOn ? 'text-white font-medium' : 'text-bright'}">{harm}</span>
+          </button>
+        </li>
       {/each}
-    </div>
-  </div>
-</section>
+    </ul>
 
-<!-- Stats strip -->
-<section class="border-y border-border bg-surface/30">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-7">
-    <div class="flex flex-wrap gap-8 items-center justify-center sm:justify-between text-center">
-      {#each [
-        { value: String(data.itemCount),   label: 'Checklist items',   note: 'growing with each release' },
-        { value: '10',    label: 'Adversary profiles', note: 'from bots to nation-states' },
-        { value: '6',     label: 'Platforms covered',  note: 'Windows, macOS, Linux, Android, iOS, Web' },
-        { value: '0',     label: 'Data collected',     note: 'by this site, ever' },
-        { value: String(data.resourceCount), label: 'Curated resources',  note: 'tools, guides, and references' }
-      ] as stat}
-        <div class="min-w-[80px]">
-          <div class="font-display text-2xl font-bold text-white">{stat.value}</div>
-          <div class="text-xs text-dim font-mono mt-0.5">{stat.label}</div>
-          <div class="text-xs text-muted mt-0.5 hidden sm:block">{stat.note}</div>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
-
-<!-- What makes this different -->
-<section class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
-  <p class="label-mono text-center mb-2">Why Spectra exists</p>
-  <p class="text-center text-dim text-sm mb-10 max-w-xl mx-auto">
-    Most security checklists are generic, vendor-driven, or written for IT teams.
-    This one is built for people.
-  </p>
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-    {#each differentiators as card}
-      <div class="panel p-5 hover:border-muted transition-colors">
-        <span class="text-amber text-lg mb-3 block opacity-70">{card.icon}</span>
-        <h3 class="font-display text-bright font-semibold mb-2 text-[0.9rem] leading-snug">{card.title}</h3>
-        <p class="text-sm text-dim leading-relaxed">{card.body}</p>
-      </div>
-    {/each}
-  </div>
-</section>
-
-<!-- Community / open source strip -->
-<section class="border-t border-border bg-surface/20">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 text-center">
-    <p class="label-mono mb-3">Open source · Community driven</p>
-    <p class="text-body text-base max-w-xl mx-auto mb-6 leading-relaxed">
-      Spectra is built in public. Content is reviewed by the community,
-      sources are required, and trade-offs are always disclosed.
-      If something's wrong or missing — contribute.
-    </p>
-    <div class="flex flex-wrap gap-3 justify-center">
-      <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
-         class="btn-ghost text-sm gap-2">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="opacity-70">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-        </svg>
-        View on GitHub
+    <div class="relative text-center">
+      <a href="/audit" on:click={start} class="btn-primary inline-block mb-3">
+        Show me what to do
       </a>
-      <a href="https://github.com/KashishOO7/spectra/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer"
-         class="btn-ghost text-sm">
-        How to contribute →
+
+      <p class="text-[13px] text-dim mb-4">
+        No account. Nothing you tapped left this browser.
+      </p>
+
+      <p class="text-[13px] mb-3">
+        <a href="/audit" class="text-dim hover:text-body transition-colors">
+          Not sure? Skip this and see the basics &rarr;
+        </a>
+      </p>
+
+      <p class="text-[13px] flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <a href="/how-it-works"
+           class="text-dim hover:text-body transition-colors py-1 min-h-[24px] inline-flex items-center">
+          How Spectra works
+        </a>
+        <a href="/methodology"
+           class="text-muted hover:text-body transition-colors py-1 min-h-[24px] inline-flex items-center">
+          Under the hood
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="border-t border-border">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+      <a href="/incident"
+         class="panel p-5 border transition-all duration-200 group cursor-pointer
+                border-red/25 hover:border-red/55 hover:shadow-lg hover:shadow-red/5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-red opacity-70 mt-0.5 flex-shrink-0"></span>
+            <span class="text-[13px] text-red-light opacity-70">Immediate triage &mdash; no setup needed</span>
+          </div>
+        </div>
+        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
+          Something already happened
+        </h2>
+        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
+          Hacked, stolen, or something feels wrong? Start here.
+        </p>
+      </a>
+
+      <a href="/resources"
+         class="panel p-5 border transition-all duration-200 group cursor-pointer
+                border-teal/25 hover:border-teal/55 hover:shadow-lg hover:shadow-teal/5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-teal opacity-70 mt-0.5 flex-shrink-0"></span>
+            <span class="text-[13px] text-teal-light opacity-70">Curated, privacy-rated, no dark patterns</span>
+          </div>
+        </div>
+        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
+          Find the right tools
+        </h2>
+        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
+          Every tool rated for privacy, cost and platform. Trade-offs listed.
+        </p>
+      </a>
+
+      <a href="/audit?mode=guardian"
+         class="panel p-5 border transition-all duration-200 group cursor-pointer
+                border-border hover:border-muted hover:shadow-lg hover:shadow-black/20">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-muted opacity-70 mt-0.5 flex-shrink-0"></span>
+            <span class="text-[13px] text-body opacity-70">Kids, teens, family members</span>
+          </div>
+        </div>
+        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
+          Setting this up for someone else
+        </h2>
+        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
+          A kid's first phone, a parent, a friend.
+        </p>
       </a>
     </div>
   </div>

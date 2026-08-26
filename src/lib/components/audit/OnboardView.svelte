@@ -5,8 +5,7 @@
   } from '$lib/audit/constants.js';
   import { platformDisplay } from '$lib/audit/helpers.js';
 
-  // State stays owned by the parent; this component is presentational.
-  export let onboardStep: number;            // bound — child advances/rewinds steps
+  export let onboardStep: number;           
   export let isReconfiguring: boolean;
   export let onboardAdversaries: AdversaryType[];
   export let onboardTracks: Track[];
@@ -26,7 +25,7 @@
     {#if isReconfiguring}
       <button type="button"
         on:click={onCancel}
-        class="text-xs font-mono text-dim hover:text-body transition-colors flex-shrink-0">
+        class="text-[13px] text-dim hover:text-body transition-colors flex-shrink-0">
         ← Cancel
       </button>
     {/if}
@@ -51,7 +50,7 @@
     <div class="flex items-center gap-4 mb-4">
       <span class="label-mono">Exposure level:</span>
       {#each [['common','bg-teal','text-teal-light','Common'],['elevated','bg-amber','text-amber-light','Elevated'],['high','bg-red','text-red-light','High risk']] as [k,dot,text,label]}
-        <span class="flex items-center gap-1.5 text-xs font-mono {text}">
+        <span class="flex items-center gap-1.5 text-[13px] {text}">
           <span class="w-2 h-2 rounded-full {dot} inline-block"></span>{label}
         </span>
       {/each}
@@ -72,9 +71,9 @@
             </div>
             <div class="flex-shrink-0 mt-0.5">
               {#if selected}
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="6" fill="#d4862a" fill-opacity="0.2" stroke="#d4862a" stroke-width="1.5"/>
-                  <path d="M4 7L6 9L10 5" stroke="#d4862a" stroke-width="1.5" stroke-linecap="round"/>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="text-amber">
+                  <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
               {:else}
                 <span class="w-3.5 h-3.5 rounded-full border border-muted block group-hover:border-dim transition-colors"></span>
@@ -87,14 +86,12 @@
     </div>
 
     <div class="flex items-center justify-between">
-      <p class="text-xs text-muted font-mono">
-        {onboardAdversaries.length === 0
-          ? 'Select at least one to continue'
-          : `${onboardAdversaries.length} selected — your checklist will be weighted accordingly`}
+      <p class="text-[13px] text-muted">
+        {#if onboardAdversaries.length > 0}{onboardAdversaries.length} selected — your checklist will be weighted accordingly{/if}
       </p>
       <button type="button"
-        on:click={() => { if (onboardAdversaries.length > 0) onboardStep = 2; }}
-        class="btn-primary {onboardAdversaries.length === 0 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}">
+        on:click={() => onboardStep = 2}
+        class="btn-primary">
         Next →
       </button>
     </div>
@@ -113,9 +110,9 @@
           class="p-4 rounded-lg border transition-all duration-150 flex items-center gap-3 group
                  {selected ? 'border-teal/50 bg-teal-dim/15' : 'border-border bg-surface hover:border-muted'}">
           {#if selected}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="7" r="6" fill="#2a8a8a" fill-opacity="0.2" stroke="#2a8a8a" stroke-width="1.5"/>
-              <path d="M4 7L6 9L10 5" stroke="#2a8a8a" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="text-teal">
+              <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           {:else}
             <span class="w-3.5 h-3.5 rounded-full border border-muted flex-shrink-0 group-hover:border-dim transition-colors"></span>
@@ -139,9 +136,9 @@
     </p>
 
     <div class="panel border border-teal/20 p-3.5 mb-3 flex items-center gap-3">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="7" cy="7" r="6" fill="#2a8a8a" fill-opacity="0.2" stroke="#2a8a8a" stroke-width="1.5"/>
-        <path d="M4 7L6 9L10 5" stroke="#2a8a8a" stroke-width="1.5" stroke-linecap="round"/>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="text-teal">
+        <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
       <div>
         <p class="font-sans font-medium text-sm text-bright">General baseline</p>
@@ -156,9 +153,9 @@
           class="w-full text-left p-3.5 rounded-lg border transition-all duration-150 flex items-start gap-3 group
                  {selected ? 'border-amber/50 bg-amber-dim/15' : 'border-border bg-surface hover:border-muted'}">
           {#if selected}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0 mt-0.5">
-              <circle cx="7" cy="7" r="6" fill="#d4862a" fill-opacity="0.2" stroke="#d4862a" stroke-width="1.5"/>
-              <path d="M4 7L6 9L10 5" stroke="#d4862a" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0 mt-0.5 text-amber">
+              <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           {:else}
             <span class="w-3.5 h-3.5 rounded-full border border-muted flex-shrink-0 mt-0.5 group-hover:border-dim transition-colors"></span>
@@ -190,8 +187,7 @@
 
     <div class="flex items-center justify-between">
       <button type="button" on:click={() => onboardStep = 2} class="btn-ghost">← Back</button>
-      <button type="button" on:click={() => { if (onboardAdversaries.length > 0) onboardStep = 4; }}
-        class="btn-primary {onboardAdversaries.length === 0 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}">
+      <button type="button" on:click={() => onboardStep = 4} class="btn-primary">
         Next →
       </button>
     </div>
@@ -212,9 +208,9 @@
           class="w-full text-left p-4 rounded-lg border transition-all duration-150 flex items-start gap-3 group
                  {selected ? 'border-amber/50 bg-amber-dim/15' : 'border-border bg-surface hover:border-muted'}">
           {#if selected}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0 mt-0.5">
-              <circle cx="7" cy="7" r="6" fill="#d4862a" fill-opacity="0.2" stroke="#d4862a" stroke-width="1.5"/>
-              <path d="M4 7L6 9L10 5" stroke="#d4862a" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" class="flex-shrink-0 mt-0.5 text-amber">
+              <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           {:else}
             <span class="w-3.5 h-3.5 rounded-full border border-muted flex-shrink-0 mt-0.5 group-hover:border-dim transition-colors"></span>

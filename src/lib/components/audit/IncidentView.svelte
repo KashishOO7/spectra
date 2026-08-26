@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { ContentGraph } from '$lib/types.js';
   import { INCIDENT_PLAYBOOKS } from '$lib/audit/playbooks.js';
+  import { categoryLabel } from '$lib/audit/helpers.js';
 
-  export let incidentScenario: string | null;   // bound
-  export let isSimpleMode: boolean;              // bound
+  export let incidentScenario: string | null;   
+  export let isSimpleMode: boolean;              
   export let graph: ContentGraph;
   export let implemented: Record<string, boolean>;
   export let onScrollToItem: (id: string, category?: string) => void;
@@ -18,9 +19,9 @@
     <div class="mb-8">
       <div class="flex items-center gap-3 mb-2">
         <span class="text-red-light text-xl">⚠</span>
-        <h1 class="font-display text-2xl font-bold text-white">Incident Triage</h1>
+        <h1 class="font-display text-2xl font-bold text-white">Something happened</h1>
       </div>
-      <p class="text-body text-sm font-mono">
+      <p class="text-body text-sm">
         What happened? Select the closest match — you'll get immediate steps for right now.
       </p>
     </div>
@@ -42,7 +43,7 @@
                   {pb.severity === 'critical' ? 'Critical' : 'High'}
                 </span>
               </div>
-              <p class="text-sm text-dim font-mono">{pb.subtitle}</p>
+              <p class="text-sm text-dim">{pb.subtitle}</p>
             </div>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"
                  stroke-width="1.5" class="flex-shrink-0 text-dim group-hover:text-body mt-1 transition-colors">
@@ -63,7 +64,7 @@
 
     <button type="button"
       on:click={() => incidentScenario = null}
-      class="flex items-center gap-2 text-xs font-mono text-dim hover:text-body transition-colors mb-8">
+      class="flex items-center gap-2 text-[13px] text-dim hover:text-body transition-colors mb-8">
       ← Back to scenarios
     </button>
 
@@ -76,13 +77,13 @@
             {pb.severity === 'critical' ? 'Critical' : 'High'}
           </span>
         </div>
-        <p class="text-sm text-dim font-mono">{pb.subtitle}</p>
+        <p class="text-sm text-dim">{pb.subtitle}</p>
       </div>
     </div>
 
     <div class="border border-red/30 bg-red-dim/10 rounded-lg p-4 mb-6 flex items-start gap-3">
-      <span class="text-red-light flex-shrink-0 font-mono text-sm">✕</span>
-      <p class="text-sm text-red-light font-mono leading-relaxed">{pb.doNotText}</p>
+      <span class="text-red-light flex-shrink-0 text-sm">✕</span>
+      <p class="text-sm text-red-light leading-relaxed">{pb.doNotText}</p>
     </div>
 
     <div class="panel p-5 mb-6">
@@ -91,13 +92,13 @@
         <div class="flex items-center gap-1 rounded-lg border border-border bg-surface p-0.5">
           <button type="button"
             on:click={() => isSimpleMode = true}
-            class="px-3 py-1 text-xs font-mono rounded-md transition-colors duration-150
+            class="px-3 py-1 text-[13px] rounded-md transition-colors duration-150
                    {isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
             Plain English
           </button>
           <button type="button"
             on:click={() => isSimpleMode = false}
-            class="px-3 py-1 text-xs font-mono rounded-md transition-colors duration-150
+            class="px-3 py-1 text-[13px] rounded-md transition-colors duration-150
                    {!isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
             Technical
           </button>
@@ -118,7 +119,7 @@
 
     {#if pb.relatedItemIds.length > 0}
     <div class="panel p-5 mb-6">
-      <p class="label-mono mb-3">Once you're stable — do these too</p>
+      <p class="text-xs tracking-wide text-dim mb-3">Once you're stable — do these too</p>
       <div class="space-y-2">
         {#each pb.relatedItemIds as id}
           {@const item = graph.items.get(id)}
@@ -141,14 +142,14 @@
                 <span class="text-sm text-body group-hover:text-white transition-colors font-sans">
                   {item.title}
                 </span>
-                <span class="text-[11px] text-muted font-mono ml-2">
-                  {item.category.replace(/_/g, ' ')}
+                <span class="text-[11px] text-muted ml-2">
+                  {categoryLabel(item.category)}
                 </span>
               </div>
               {#if isImplemented(id)}
-                <span class="text-xs font-mono text-teal-light flex-shrink-0">Done ✓</span>
+                <span class="text-[13px] text-teal-light flex-shrink-0">Done ✓</span>
               {:else}
-                <span class="text-xs font-mono text-dim group-hover:text-amber-light flex-shrink-0 transition-colors">
+                <span class="text-[13px] text-dim group-hover:text-amber-light flex-shrink-0 transition-colors">
                   Open →
                 </span>
               {/if}
