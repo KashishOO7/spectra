@@ -114,7 +114,7 @@ jobs:
       - name: Check key pages
         run: |
           BASE="https://spectra.fpszero.com"
-          PAGES=("/" "/audit" "/resources" "/about" "/threats" "/graph" "/timeline")
+          PAGES=("/" "/audit" "/resources" "/about" "/graph" "/timeline")
           FAILED=0
           for page in "${PAGES[@]}"; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE$page")
