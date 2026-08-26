@@ -1,4 +1,3 @@
-// Core scoring engine: Maps the content graph against the user profile.
 
 import type {
   ChecklistItem,
@@ -8,9 +7,13 @@ import type {
   CategoryScore,
   AssessmentResult,
   Category,
+  Harm,
   AdversaryType,
-  LandscapeEvent
+  Track
 } from '../types.js';
+import { HARMS, CATEGORY_LABELS } from '../audit/constants.js';
+import { harmsForItem } from '../audit/helpers.js';
+import { isHarmCovered } from './coverage.js';
 
 function seWeight(item: ChecklistItem, profile: UserProfile): number {
   if (item.category !== 'human_vulnerability' || !item.emotional_register) return 1.0;
@@ -20,19 +23,6 @@ function seWeight(item: ChecklistItem, profile: UserProfile): number {
   // Range: 0.8 (low susceptibility) → 1.4 (high susceptibility)
   return 0.8 + (score / 100) * 0.6;
 }
-
-const CATEGORY_LABELS: Record<Category, string> = {
-  device_security:     'Device Security',
-  account_security:    'Account Security',
-  communications:      'Communications',
-  network_security:    'Network Security',
-  physical_security:   'Physical Security',
-  human_vulnerability: 'Human Vulnerability',
-  data_management:     'Data Management',
-  osint_footprint:     'OSINT Footprint',
-  incident_response:   'Incident Response',
-  ai_threats:          'AI Threats'
-};
 
 const MATURITY_THRESHOLDS = [
   { max: 20,  level: 1 },
@@ -48,47 +38,52 @@ function getMaturityLevel(score: number): 1 | 2 | 3 | 4 | 5 {
   }
   return 5;
 }
+const SKIP_BAND_CEILING = 0.2;
+const SKIP_BAND_CAP: 1 | 2 | 3 | 4 | 5 = 3;
+export function activeTracksFor(profile: Pick<UserProfile, 'tracks'>): Track[] {
+  const stored = profile.tracks ?? [];
+  return stored.includes('general') ? stored : ['general' as Track, ...stored];
+}
 
-// Score drift: items age past last_verified shrinks their score contribution.
-// Tiers: <6mo = full | 6–12mo = 0.9× | 12–18mo = 0.75× | 18mo+ = 0.5×
-function getStalenessMultiplier(lastVerified: string | undefined): number {
-  if (!lastVerified) return 0.75;
-  const ageDays = (Date.now() - new Date(lastVerified).getTime()) / 86_400_000;
-  if (ageDays < 180) return 1.0;
-  if (ageDays < 365) return 0.9;
-  if (ageDays < 548) return 0.75;
-  return 0.5;
+export function itemMatchesTracks(
+  item: Pick<ChecklistItem, 'tracks'>,
+  activeTracks: Track[]
+): boolean {
+  return item.tracks?.some(t => activeTracks.includes(t)) ?? true;
+}
+export function itemsForHarms(
+  items: ChecklistItem[],
+  harms: Harm[] | undefined,
+  activeTracks: Track[]
+): ChecklistItem[] {
+  const mine = items.filter(i =>
+    i.status === 'active' && itemMatchesTracks(i, activeTracks)
+  );
+  if (!harms?.length) return mine;
+  const picked = new Set<Harm>(harms);
+  return mine.filter(i => harmsForItem(i).some(h => picked.has(h)));
 }
 
 export function scoreAssessment(
   graph: ContentGraph,
-  profile: UserProfile,
-  landscapeEvents: LandscapeEvent[] = []
+  profile: UserProfile
 ): AssessmentResult {
   const activeAdversaries = profile.adversaries ?? [];
-  const activeTracks      = profile.tracks ?? ['general'];
+  const activeTracks      = activeTracksFor(profile);
   const now               = Date.now();
-
-  // graph.items is a Map — must use .values(), not Object.values()
   if (!graph.items || typeof graph.items.values !== 'function') {
-    // Graceful degradation if graph not loaded yet
+
     return emptyResult();
   }
   const allItems = [...graph.items.values()].filter(i => i.status === 'active');
 
-  // Pre-compute active landscape events
-  const activeLandscape = landscapeEvents.filter(
-    e => new Date(e.expires_at).getTime() > now
-  );
-
   const scoredItems: ScoredItem[] = [];
+  const fullWeights = new Map<string, number>();
 
   for (const item of allItems) {
     // Track filter
-    const matchesTrack = item.tracks?.some(t => activeTracks.includes(t)) ?? true;
-    if (!matchesTrack) continue;
+    if (!itemMatchesTracks(item, activeTracks)) continue;
 
-    // Threat model multiplier: take the MAX across selected adversaries
     let threat_multiplier = 1.0;
     if (activeAdversaries.length > 0 && item.threat_model_multipliers) {
       const mults = activeAdversaries.map(
@@ -96,20 +91,9 @@ export function scoreAssessment(
       );
       threat_multiplier = Math.max(...mults);
     }
-
-    // SE quiz human vulnerability weighting
     const human_multiplier = seWeight(item, profile);
     threat_multiplier *= human_multiplier;
 
-    // Landscape feed: compound active global threat multipliers
-    let landscape_multiplier = 1.0;
-    for (const ev of activeLandscape) {
-      if (ev.related_items.includes(item.id)) {
-        landscape_multiplier *= ev.multiplier;
-      }
-    }
-
-    // Compensating controls: reduce urgency if a stronger control is active
     let compensating_factor = 0;
     if (item.compensating_controls?.length) {
       for (const cc of item.compensating_controls) {
@@ -120,53 +104,42 @@ export function scoreAssessment(
     }
 
     const base_weight    = item.score_weight ?? 5.0;
-    const staleness_multiplier = getStalenessMultiplier(item.last_verified);
     const relevance_score = threat_multiplier;
-    const effective_score = base_weight * threat_multiplier * landscape_multiplier * (1 - compensating_factor) * staleness_multiplier;
-
-    const is_implemented = !!(profile.implemented?.[item.id]);
-    const is_skipped     = !!(profile.skipped?.[item.id]);
-
-    // Security Pulse: flag items whose YAML was verified after the user marked them done
-    let needs_reverification = false;
-    if (is_implemented && profile.timeline?.length) {
-      const implEvents = profile.timeline
-        .filter(e => e.type === 'implemented' && e.item_id === item.id)
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-      if (implEvents.length > 0 && item.last_verified) {
-        const lastImpl = implEvents[0];
-        // YAML was verified AFTER user marked it done → content has changed
-        if (
-          new Date(item.last_verified).getTime() > new Date(lastImpl.timestamp).getTime() &&
-          item.maturity_level <= 2  // anti-alert-fatigue: only foundational controls
-        ) {
-          needs_reverification = true;
-        }
-      }
-    }
+    const full_weight = base_weight * threat_multiplier * (1 - compensating_factor);
+    const effective_score = full_weight;
+    fullWeights.set(item.id, full_weight);
+    const raw_skipped     = !!(profile.skipped?.[item.id]);
+    const is_skipped      = raw_skipped;
+    const is_implemented  = !raw_skipped && !!(profile.implemented?.[item.id]);
+    const is_snoozed     = !!(profile.snoozed?.[item.id]);
+    const doneAtVersion = profile.implemented_versions?.[item.id];
+    const needs_reverification =
+      is_implemented && !!doneAtVersion && doneAtVersion !== item.version;
 
     scoredItems.push({
       ...item,
       effective_score,
       relevance_score,
       is_applicable:     true,
-      priority_rank:     0,   // assigned below after full sort
+      priority_rank:     0,  
       is_implemented,
       is_skipped,
+      is_snoozed,
       needs_reverification,
-      category_saturation: 0, // assigned below after category grouping
+      category_saturation: 0,
       compensating_factor
     });
   }
 
-  // Assign priority ranks to unimplemented, unskipped items
   const unimplemented = scoredItems
     .filter(i => !i.is_implemented && !i.is_skipped)
-    .sort((a, b) => b.effective_score - a.effective_score);
+    .sort((a, b) =>
+      a.is_snoozed !== b.is_snoozed
+        ? (a.is_snoozed ? 1 : -1)
+        : b.effective_score - a.effective_score
+    );
   unimplemented.forEach((item, idx) => { item.priority_rank = idx + 1; });
 
-  // Category scoring
   const categories = [...new Set(scoredItems.map(i => i.category))];
   const categoryScores: CategoryScore[] = [];
 
@@ -175,40 +148,54 @@ export function scoreAssessment(
     const applicable = catItems.filter(i => !i.is_skipped);
     const implemented = applicable.filter(i => i.is_implemented);
 
-    const maxScore    = applicable.reduce((sum, i) => sum + i.effective_score, 0);
+    const maxScore    = applicable.reduce((sum, i) => sum + (fullWeights.get(i.id) ?? i.effective_score), 0);
     const earnedScore = implemented.reduce((sum, i) => sum + i.effective_score, 0);
 
     const saturation = maxScore > 0 ? earnedScore / maxScore : 0;
-    // Write saturation back to each item in this category
     catItems.forEach(i => { i.category_saturation = saturation; });
 
     const scorePct = maxScore > 0
       ? Math.round(saturation * 100)
-      : (applicable.length === 0 && catItems.length > 0 ? 100 : 0);
+      : (applicable.length === 0 && catItems.length > 0 ? null : 0);
 
     categoryScores.push({
       category:          cat,
       label:             CATEGORY_LABELS[cat] ?? cat,
       score:             scorePct,
       max_score:         maxScore,
-      maturity_level:    getMaturityLevel(scorePct),
+      maturity_level:    scorePct === null ? 1 : getMaturityLevel(scorePct),
       total_applicable:  applicable.length,
       implemented_count: implemented.length
     });
   }
+  const totalAvailable = scoredItems.reduce((sum, i) => sum + (fullWeights.get(i.id) ?? i.effective_score), 0);
+  const totalEarned = scoredItems
+    .filter(i => i.is_implemented && !i.is_skipped)
+    .reduce((sum, i) => sum + i.effective_score, 0);
+  const skippedWeight = scoredItems
+    .filter(i => i.is_skipped)
+    .reduce((sum, i) => sum + (fullWeights.get(i.id) ?? i.effective_score), 0);
+  const overallScore = totalAvailable > 0 ? Math.round((totalEarned / totalAvailable) * 100) : 0;
+  const skippedWeightRatio = totalAvailable > 0 ? skippedWeight / totalAvailable : 0;
 
-  const overallScore = categoryScores.length > 0
-    ? Math.round(categoryScores.reduce((sum, c) => sum + c.score, 0) / categoryScores.length)
-    : 0;
+  const uncappedBand = getMaturityLevel(overallScore);
+  const bandCappedBySkips = skippedWeightRatio > SKIP_BAND_CEILING && uncappedBand > SKIP_BAND_CAP;
+  const overallBand = bandCappedBySkips ? SKIP_BAND_CAP : uncappedBand;
 
   // Output sets
   const criticalGaps = scoredItems
     .filter(i => !i.is_implemented && !i.is_skipped && i.maturity_level <= 2)
     .sort((a, b) => b.effective_score - a.effective_score)
     .slice(0, 8);
+  const QUICK_SETUP = new Set(['5min', '10min']);
+  const critical_ids = new Set(criticalGaps.map(i => i.id));
 
   const quickWins = scoredItems
-    .filter(i => !i.is_implemented && !i.is_skipped && i.difficulty.technical === 1)
+    .filter(i =>
+      !i.is_implemented && !i.is_skipped &&
+      !critical_ids.has(i.id) &&
+      QUICK_SETUP.has(i.time_estimate?.setup as string)
+    )
     .sort((a, b) => b.effective_score - a.effective_score)
     .slice(0, 5);
 
@@ -216,7 +203,6 @@ export function scoreAssessment(
     .filter(i => i.needs_reverification)
     .sort((a, b) => b.effective_score - a.effective_score);
 
-  const critical_ids = new Set(criticalGaps.map(i => i.id));
   const quick_ids    = new Set(quickWins.map(i => i.id));
 
   const next_items = scoredItems
@@ -229,13 +215,25 @@ export function scoreAssessment(
   const humanVulnerabilityScore = humanItems.length > 0
     ? Math.round((humanImplemented / humanItems.length) * 100)
     : null;
+  const allHarms = Object.keys(HARMS) as Harm[];
+  const pickedHarms = [...new Set((profile.harms ?? []).filter(h => allHarms.includes(h)))];
+  const scopeHarms = pickedHarms.length > 0 ? pickedHarms : allHarms;
+
+  const coveredHarms: Harm[] = scopeHarms.filter(harm => isHarmCovered(scoredItems, harm));
 
   return {
     overall_score:    overallScore,
-    overall_maturity: getMaturityLevel(overallScore),
-    category_scores:  categoryScores.sort((a, b) => b.score - a.score),
-    total_applicable: scoredItems.filter(i => !i.is_skipped).length,
-    total_implemented: scoredItems.filter(i => i.is_implemented).length,
+    overall_maturity: overallBand,
+    harms_covered:    coveredHarms.length,
+    harms_total:      scopeHarms.length,
+    covered_harms:    coveredHarms,
+    category_scores:  categoryScores.sort((a, b) => (b.score ?? -1) - (a.score ?? -1)),
+    total_applicable: scoredItems.length,
+    total_implemented: scoredItems.filter(i => i.is_implemented && !i.is_skipped).length,
+    total_skipped:    scoredItems.filter(i => i.is_skipped).length,
+    total_snoozed:    scoredItems.filter(i => i.is_snoozed && !i.is_implemented && !i.is_skipped).length,
+    skipped_weight_ratio: skippedWeightRatio,
+    band_capped_by_skips: bandCappedBySkips,
     critical_gaps:    criticalGaps,
     quick_wins:       quickWins,
     reverify_items,
@@ -244,19 +242,26 @@ export function scoreAssessment(
     last_calculated:  new Date().toISOString(),
     all_items: scoredItems.sort((a, b) => {
       if (a.is_implemented !== b.is_implemented) return a.is_implemented ? 1 : -1;
+      if (!a.is_implemented && a.is_snoozed !== b.is_snoozed) return a.is_snoozed ? 1 : -1;
       return b.effective_score - a.effective_score;
     })
   };
 }
 
-// Empty result guard — graph not loaded yet
 function emptyResult(): AssessmentResult {
   return {
     overall_score:    0,
     overall_maturity: 1,
+    harms_covered:    0,
+    harms_total:      (Object.keys(HARMS) as Harm[]).length,
+    covered_harms:    [],
     category_scores:  [],
     total_applicable: 0,
     total_implemented: 0,
+    total_skipped:    0,
+    total_snoozed:    0,
+    skipped_weight_ratio: 0,
+    band_capped_by_skips: false,
     critical_gaps:    [],
     quick_wins:       [],
     reverify_items:   [],
