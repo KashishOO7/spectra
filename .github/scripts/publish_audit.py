@@ -58,7 +58,6 @@ def build_issue_body(report: dict, validate_output: str) -> str:
             "deprecated_integrity": "Deprecated Items Missing superseded_by",
             "source_integrity": "Active Items Missing Primary Source",
             "cross_reference": "Broken Cross-References",
-            "landscape_triage": "Untriaged Landscape Issues",
         }
 
         for check_key, check_findings in by_check.items():

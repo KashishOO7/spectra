@@ -166,39 +166,6 @@ def check_cross_references(items: dict) -> list[dict]:
     return findings
 
 
-def check_landscape_issues() -> list[dict]:
-    import requests as req
-    token = os.environ.get("GITHUB_TOKEN", "")
-    repo = os.environ.get("REPO_NAME", "")
-    if not token or not repo:
-        return []
-    headers = {"Authorization": f"Bearer {token}",
-                "Accept": "application/vnd.github.v3+json",
-                "X-GitHub-Api-Version": "2022-11-28"}
-    findings = []
-    try:
-        res = req.get(f"https://api.github.com/repos/{repo}/issues"
-                      f"?labels=landscape-candidate&state=open&per_page=50",
-                      headers=headers, timeout=10)
-        res.raise_for_status()
-        for issue in res.json():
-            try:
-                age = (date.today() - date.fromisoformat(issue.get("created_at", "")[:10])).days
-            except ValueError:
-                continue
-            if age > 30:
-                findings.append({
-                    "id": f"landscape-issue-#{issue['number']}",
-                    "file": issue.get("html_url", ""),
-                    "level": "amber", "check": "landscape_triage",
-                    "detail": (f"Open landscape issue #{issue['number']} "
-                               f"is {age} days old: \"{issue.get('title', '')[:80]}\".")
-                })
-    except Exception as exc:
-        print(f"  WARN  Could not fetch landscape issues: {exc}", flush=True)
-    return findings
-
-
 def check_duplicate_ids(items_raw: list[dict]) -> list[dict]:
     id_to_paths: dict[str, list] = defaultdict(list)
     for item in items_raw:
@@ -297,7 +264,6 @@ def main():
     all_findings += check_human_track_integrity(items)
     all_findings += check_mixed_posture_caveats(items)
     all_findings += check_tracking_urls(items)
-    all_findings += check_landscape_issues()
 
     severity_order = {"critical": 0, "red": 1, "amber": 2}
     all_findings.sort(key=lambda f: severity_order.get(f["level"], 9))

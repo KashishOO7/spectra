@@ -1,37 +1,40 @@
 /** @type {import('tailwindcss').Config} */
+
+const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`;
+
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {
       colors: {
-        void: '#080c12',       
-        surface: '#0d1421',    
-        border: '#1a2540',     
-        muted: '#2a3a5c',      
-        dim: '#4a6080',       
-        body: '#8ba4c0',       
-        bright: '#c8dff0',  
-        white: '#f0f8ff',      
-        
+        void: token('void'),
+        surface: token('surface'),
+        border: token('border'),
+        muted: token('muted'),
+        dim: token('dim'),
+        body: token('body'),
+        bright: token('bright'),
+        white: token('white'),
+
         amber: {
-          DEFAULT: '#d4862a',
-          light: '#f0a84e',
-          dim: '#7a4a12'
+          DEFAULT: token('amber'),
+          light: token('amber-light'),
+          dim: token('amber-dim')
         },
         teal: {
-          DEFAULT: '#2a8a8a',
-          light: '#3dbfbf',
-          dim: '#144444'
+          DEFAULT: token('teal'),
+          light: token('teal-light'),
+          dim: token('teal-dim')
         },
         red: {
-          DEFAULT: '#c0392b',
-          light: '#e74c3c',
-          dim: '#5c1a14'
+          DEFAULT: token('red'),
+          light: token('red-light'),
+          dim: token('red-dim')
         },
         green: {
-          DEFAULT: '#27ae60',
-          light: '#2ecc71',
-          dim: '#12522c'
+          DEFAULT: token('green'),
+          light: token('green-light'),
+          dim: token('green-dim')
         }
       },
       fontFamily: {
@@ -41,8 +44,8 @@ export default {
       },
       backgroundImage: {
         'grid-void': `
-          linear-gradient(rgba(26, 37, 64, 0.4) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(26, 37, 64, 0.4) 1px, transparent 1px)
+          linear-gradient(rgb(var(--c-grid) / var(--c-grid-a)) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(var(--c-grid) / var(--c-grid-a)) 1px, transparent 1px)
         `
       },
       backgroundSize: {

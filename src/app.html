@@ -6,13 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#080c12" />
     <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+    <script>
+      (function () {
+        var theme = 'light';
+        try {
+          var stored = localStorage.getItem('spectra-theme');
+          if (stored === 'light' || stored === 'dark') {
+            theme = stored;
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+          }
+        } catch (e) {
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'light' ? '#faf6ef' : '#080c12');
+      })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Spectra" />
     <link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.svg" />
 
-    <!-- Spectra: Personal Security Self-Audit Framework -->
-    <meta name="description" content="Know exactly how exposed you are. Spectra is an open-source personal security audit framework built from first principles." />
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';" />
@@ -23,6 +38,22 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
 
     <meta name="disclaimer" content="Spectra is for educational purposes only. Not legal, professional security, or medical advice. Use at your own risk. Open source: AGPL-3.0 (code) / CC BY-SA 4.0 (content)." />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Spectra",
+        "url": "https://spectra.fpszero.com/",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any browser",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+        "author": { "@type": "Organization", "name": "FPS Zero", "url": "https://fpszero.com" },
+        "description": "description": "A personal security self-audit that weights every step to what you are worried might happen. Runs entirely in your browser with no account and no server."
+      }
+    </script>
 
     %sveltekit.head%
   </head>

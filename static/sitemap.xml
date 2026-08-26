@@ -10,12 +10,24 @@
   <url>
     <loc>https://spectra.fpszero.com/audit</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://spectra.fpszero.com/incident</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://spectra.fpszero.com/methodology</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://spectra.fpszero.com/graph</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://spectra.fpszero.com/references</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
@@ -32,8 +44,8 @@
   </url>
 
   <url>
-    <loc>https://spectra.fpszero.com/timeline</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://spectra.fpszero.com/graph</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
@@ -41,6 +53,12 @@
     <loc>https://spectra.fpszero.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://spectra.fpszero.com/timeline</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 
 </urlset>

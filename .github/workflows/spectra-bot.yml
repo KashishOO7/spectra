@@ -1,6 +1,7 @@
 name: Spectra Content Gatekeeper
 
 on:
+  workflow_dispatch:
   # pull_request_target:
   #   types: [opened, synchronize, reopened]
   #   paths:
@@ -14,9 +15,12 @@ concurrency:
 jobs:
   ai-review:
     runs-on: ubuntu-latest
+    # Advisory prose bot — must never block a PR if it errors/crashes.
+    continue-on-error: true
     permissions:
       contents: read
       pull-requests: write
+      models: read
 
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +39,7 @@ jobs:
           python-version: '3.11'
 
       - run: |
-          pip install "openai==1.35.7" "requests==2.32.3"
+          pip install "openai==1.35.7" "httpx==0.27.2" "requests==2.32.3"
           pip install "ruamel.yaml==0.18.6"
 
       - run: python .github/scripts/spectra_bot.py

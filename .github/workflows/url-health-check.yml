@@ -1,6 +1,7 @@
 name: Weekly URL Health Check
 
 on:
+  # Disabled: dead-link checking now runs locally via `npm run check:links`.
   # schedule:
   #   - cron: '0 9 * * 1'
   workflow_dispatch:

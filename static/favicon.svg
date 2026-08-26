@@ -1,9 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#080c12"/>
-  <path d="M16 3L28 9.5V22.5L16 29L4 22.5V9.5L16 3Z"
-        stroke="#d4862a" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
-  <path d="M16 8L23 12V20L16 24L9 20V12L16 8Z"
-        fill="#d4862a" fill-opacity="0.15" stroke="#d4862a" stroke-width="1"
-        stroke-linejoin="round"/>
-  <circle cx="16" cy="16" r="2.5" fill="#d4862a"/>
+<!--
+  Spectra's mark, alone. Same shape as the nav, nothing around it.
+
+  Two deliberate choices, both fixing defects in the one this replaced:
+
+  1. No background plate. The old file painted a #080c12 rounded square behind the glyph, so on a
+     light browser tab it sat there as a dark tile. Transparent lets the tab supply its own ground
+     in either theme.
+  2. Drawn at the size it is used. The old glyph was a hexagon inside a hexagon inside a circle,
+     three concentric shapes in 32 pixels, which resolves to a smudge. One shape, two strokes.
+
+  The colour is light theme's --c-amber-light (138 84 16). An SVG loaded as a favicon gets no
+  stylesheet and cannot read a CSS variable, so one value has to serve both tab strips. Measured
+  5.81:1 on cream and 3.13:1 on near-black, both above the 3:1 floor for non-text. Plain --c-amber
+  was better on dark at 6.76 but only 2.69 on cream, and a browser tab is more often light.
+  If the palette moves, this file has to move with it by hand.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
+  <path d="M14 3.5a10.5 10.5 0 0 0 0 21"
+        stroke="#8a5410" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M14 3.5a10.5 10.5 0 0 1 0 21"
+        stroke="#8a5410" stroke-width="2.6" stroke-linecap="round"
+        stroke-dasharray="1 4.4" opacity="0.85"/>
 </svg>
