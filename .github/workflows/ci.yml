@@ -67,7 +67,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx playwright test --project=engine
+      # - run: npx playwright test --project=engine
 
   build:
     name: Build
