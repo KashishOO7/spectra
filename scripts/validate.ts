@@ -1,21 +1,19 @@
 #!/usr/bin/env tsx
 // Validates YAML content against engine schemas. (Run: npm run validate)
 
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import yaml from 'js-yaml';
+import { HARMS } from '../src/lib/audit/constants.js';
+import type { Asset, AttackVector, Harm } from '../src/lib/types.js';
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, 'content');
 
-// ANSI colors
 const R = '\x1b[31m'; const G = '\x1b[32m'; const Y = '\x1b[33m';
 const B = '\x1b[34m'; const D = '\x1b[2m';  const X = '\x1b[0m';
 const BOLD = '\x1b[1m';
 
-// Helpers
-
-// Parses single or multi-document YAML files into an array.
 function readYamlFile(path: string): unknown[] {
   let raw: string;
   try {
@@ -41,7 +39,6 @@ function readYamlFile(path: string): unknown[] {
 
     if (parsed === null || parsed === undefined) continue;
 
-    // If the document is a top-level array (e.g. tools.yaml), flatten it
     if (Array.isArray(parsed)) {
       for (const entry of parsed) {
         if (entry !== null && entry !== undefined) results.push(entry);
@@ -62,7 +59,7 @@ function readAllItems(subdir: string): Array<{ file: string; item: any }> {
   try {
     files = readdirSync(dir).filter(f => /\.ya?ml$/.test(f));
   } catch {
-    // Directory doesn't exist — not an error, just empty
+  
     return result;
   }
 
@@ -72,7 +69,6 @@ function readAllItems(subdir: string): Array<{ file: string; item: any }> {
     try {
       items = readYamlFile(path);
     } catch (e) {
-      // Parse errors are reported as failures, don't crash the whole run
       errors.push({
         rule: 'YAML_PARSE',
         severity: 'blocking',
@@ -89,7 +85,6 @@ function readAllItems(subdir: string): Array<{ file: string; item: any }> {
   return result;
 }
 
-// Validation state
 interface ValidationResult {
   rule: string;
   severity: 'blocking' | 'warning';
@@ -109,7 +104,6 @@ function warn(rule: string, file: string, message: string, item_id?: string) {
   warnings.push({ rule, severity: 'warning', file, item_id, message });
 }
 
-// Taxonomy
 const VALID_CATEGORIES = new Set([
   'device_security', 'account_security', 'communications', 'network_security',
   'physical_security', 'human_vulnerability', 'data_management', 'osint_footprint',
@@ -153,6 +147,8 @@ const VALID_STATUSES = new Set([
   'active', 'deprecated', 'under_review', 'region_specific', 'contested',
 ]);
 
+const VALID_TIME_SETUP = new Set(['5min', '10min', '15min', '30min', '2hr', 'half_day', 'multi_day']);
+const VALID_TIME_ONGOING = new Set(['negligible', 'low', 'medium', 'high']);
 const VALID_MATURITY = new Set([1, 2, 3, 4, 5]);
 
 const VALID_PREVALENCE = new Set(['common', 'occasional', 'rare', 'theoretical']);
@@ -171,45 +167,16 @@ const allChecklistItems = readAllItems('items');
 const allThreats       = readAllItems('threats');
 const allControls      = readAllItems('controls');
 
-// Resources live in content/resources/ — load and validate as before.
 const allResources = readAllItems('resources');
-
-// Landscape events live in content/landscape-feed.yaml
-// The file has a { events: [] } wrapper — readAllItems would return the wrapper object itself,
-// not the individual events.
-const allLandscapeEvents: Array<{ file: string; item: any }> = (() => {
-  const feedPath = join(CONTENT_DIR, 'landscape-feed.yaml');
-  let raw: string;
-  try {
-    raw = readFileSync(feedPath, 'utf-8');
-  } catch {
-    // File not present — not a blocking error, just no events to validate
-    return [];
-  }
-  let parsed: any;
-  try {
-    parsed = yaml.load(raw);
-  } catch (e) {
-    errors.push({ rule: 'YAML_PARSE', severity: 'blocking', file: 'content/landscape-feed.yaml', message: String(e) });
-    return [];
-  }
-  if (!parsed || !Array.isArray(parsed.events)) return [];
-  return parsed.events
-    .filter((e: unknown) => e !== null && e !== undefined)
-    .map((item: any) => ({ file: 'content/landscape-feed.yaml', item }));
-})();
 
 const allContent = [
   ...allChecklistItems,
   ...allThreats,
   ...allResources,
   ...allControls,
-  // Landscape events are intentionally excluded from the global ID registry check —
-  // they use a different ID namespace and are validated in their own phase.
 ];
 
-// Phase 1: Register all IDs
-const allIds = new Map<string, string>(); // id → file
+const allIds = new Map<string, string>();
 
 for (const { file, item } of allContent) {
   if (!item || typeof item !== 'object') {
@@ -234,11 +201,6 @@ for (const { file, item } of allContent) {
   }
 }
 
-// Phase 2: Validate checklist items
-// NOTE: emotional_register is NOT in this list.
-// It is required only for human_vulnerability items and is checked explicitly below.
-// All other items should have emotional_register: null, but its absence is not a
-// blocking error — the human-track check is the enforcement point.
 const CHECKLIST_REQUIRED = [
   'id', 'schema_version', 'version', 'title', 'description',
   'threat_narrative', 'category', 'subcategory', 'tracks', 'platforms',
@@ -264,52 +226,62 @@ for (const { file, item } of allChecklistItems) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid category '${item.category}'`, id);
   }
 
-  // Subcategory — existence check only (full map validation is future work)
+
   if (item.subcategory !== undefined && typeof item.subcategory !== 'string') {
     fail('VALID_TAXONOMY_VALUES', file, `subcategory must be a string`, id);
   }
 
-  // Adversaries
+  if (item.time_estimate?.setup !== undefined && !VALID_TIME_SETUP.has(item.time_estimate.setup)) {
+    fail('VALID_TAXONOMY_VALUES', file,
+      `Invalid time_estimate.setup '${item.time_estimate.setup}'`, id);
+  }
+  if (item.time_estimate?.ongoing !== undefined && !VALID_TIME_ONGOING.has(item.time_estimate.ongoing)) {
+    warn('VALID_TAXONOMY_VALUES', file,
+      `time_estimate.ongoing '${item.time_estimate.ongoing}' is outside the declared union`, id);
+  }
+
+  if (item.simple_description === undefined) {
+    warn('SIMPLE_DESCRIPTION_PRESENT', file,
+      `Missing simple_description — the action card will fall back to title`, id);
+  } else if (typeof item.simple_description !== 'string' || item.simple_description.trim() === '') {
+    fail('SIMPLE_DESCRIPTION_PRESENT', file,
+      `simple_description must be a non-empty string`, id);
+  }
+
   for (const adv of (item.adversaries ?? [])) {
     if (!VALID_ADVERSARIES.has(adv)) {
       fail('VALID_TAXONOMY_VALUES', file, `Invalid adversary '${adv}' — valid: ${[...VALID_ADVERSARIES].join(', ')}`, id);
     }
   }
 
-  // Attack vectors
   for (const vec of (item.attack_vectors ?? [])) {
     if (!VALID_ATTACK_VECTORS.has(vec)) {
       fail('VALID_TAXONOMY_VALUES', file, `Invalid attack_vector '${vec}' — valid: ${[...VALID_ATTACK_VECTORS].join(', ')}`, id);
     }
   }
 
-  // Assets protected
   for (const asset of (item.assets_protected ?? [])) {
     if (!VALID_ASSETS.has(asset)) {
       fail('VALID_TAXONOMY_VALUES', file, `Invalid asset '${asset}'`, id);
     }
   }
 
-  // Tracks
   for (const track of (item.tracks ?? [])) {
     if (!VALID_TRACKS.has(track)) {
       fail('VALID_TAXONOMY_VALUES', file, `Invalid track '${track}'`, id);
     }
   }
 
-  // Platforms
   for (const p of (item.platforms ?? [])) {
     if (!VALID_PLATFORMS.has(p)) {
       fail('VALID_TAXONOMY_VALUES', file, `Invalid platform '${p}'`, id);
     }
   }
 
-  // Status
   if (item.status && !VALID_STATUSES.has(item.status)) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid status '${item.status}'`, id);
   }
 
-  // Maturity level
   if (item.maturity_level !== undefined && !VALID_MATURITY.has(item.maturity_level)) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid maturity_level '${item.maturity_level}' — must be 1–5`, id);
   }
@@ -321,7 +293,6 @@ for (const { file, item } of allChecklistItems) {
     }
   }
 
-  // Primary source required for active items
   if (item.status === 'active') {
     const hasPrimary = Array.isArray(item.sources) && item.sources.some((s: any) => s?.type === 'primary');
     if (!hasPrimary) {
@@ -329,7 +300,6 @@ for (const { file, item } of allChecklistItems) {
     }
   }
 
-  // Emotional register — REQUIRED for human_vulnerability, must be null for all others
   if (item.category === 'human_vulnerability') {
     if (item.emotional_register === undefined || item.emotional_register === null) {
       fail('EMOTIONAL_REGISTER_FOR_HUMAN_ITEMS', file,
@@ -339,18 +309,15 @@ for (const { file, item } of allChecklistItems) {
         `Invalid emotional_register '${item.emotional_register}'`, id);
     }
   } else if (item.emotional_register !== undefined && item.emotional_register !== null) {
-    // Non-human items should not have a non-null emotional_register — flag as warning
     warn('EMOTIONAL_REGISTER_FOR_HUMAN_ITEMS', file,
       `Non-human_vulnerability item has emotional_register set — expected null`, id);
   }
 
-  // Deprecated items need superseded_by
   if (item.status === 'deprecated' && !item.superseded_by) {
     fail('SUPERSEDED_BY_REQUIRED_ON_DEPRECATED', file,
       `Deprecated item must set superseded_by`, id);
   }
 
-  // Threat model multipliers > 2.0 warning
   for (const [adv, mult] of Object.entries(item.threat_model_multipliers ?? {})) {
     if (typeof mult === 'number' && mult > 2.0) {
       warn('NO_MULTIPLIER_ABOVE_TWO', file,
@@ -366,7 +333,6 @@ for (const { file, item } of allChecklistItems) {
   }
 }
 
-// Phase 3: Validate threat nodes
 const THREAT_REQUIRED = [
   'id', 'schema_version', 'version', 'adversary_type', 'attack_vector',
   'title', 'description', 'sophistication_required', 'prevalence',
@@ -429,7 +395,6 @@ for (const { file, item } of allThreats) {
   }
 }
 
-// Phase 4: Validate resources
 const VALID_RESOURCE_PRIVACY = new Set(['privacy_first', 'neutral', 'mixed', 'avoid']);
 const VALID_RESOURCE_STATUSES = new Set(['active', 'deprecated', 'compromised', 'acquired', 'discontinued']);
 
@@ -450,7 +415,6 @@ for (const { file, item } of allResources) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid resource status '${item.status}'`, id);
   }
 
-  // Mixed/avoid resources must have caveats
   if (['mixed', 'avoid'].includes(item.privacy_posture)) {
     if (!Array.isArray(item.caveats) || item.caveats.length === 0) {
       fail('CAVEAT_REQUIRED_FOR_MIXED_POSTURE', file,
@@ -466,46 +430,6 @@ for (const { file, item } of allResources) {
   }
 }
 
-// Phase 4b: Validate landscape events
-// Landscape events live in content/landscape-feed.yaml (content root).
-// IDs use the namespace `landscape-{name}-{year}`.
-// Loaded above from the { events: [] } wrapper — validated independently here.
-const LANDSCAPE_REQUIRED = ['id', 'title', 'description', 'severity', 'multiplier', 'source_url', 'published_at', 'expires_at'];
-const VALID_LANDSCAPE_SEVERITIES = new Set(['critical', 'high', 'moderate', 'low']);
-
-if (allLandscapeEvents.length > 0) {
-  console.log(`${B}Validating ${allLandscapeEvents.length} landscape events…${X}`);
-}
-
-for (const { file, item } of allLandscapeEvents) {
-  const id = item.id ?? '(no id)';
-
-  for (const field of LANDSCAPE_REQUIRED) {
-    if (item[field] === undefined) {
-      fail('REQUIRED_FIELDS', file, `Landscape event missing required field '${field}'`, id);
-    }
-  }
-
-  if (item.severity && !VALID_LANDSCAPE_SEVERITIES.has(item.severity)) {
-    fail('VALID_TAXONOMY_VALUES', file, `Invalid landscape event severity '${item.severity}'`, id);
-  }
-
-  if (item.multiplier !== undefined) {
-    if (typeof item.multiplier !== 'number' || item.multiplier < 1.0) {
-      fail('LANDSCAPE_MULTIPLIER', file, `multiplier must be a number >= 1.0, got ${item.multiplier}`, id);
-    }
-    if (typeof item.multiplier === 'number' && item.multiplier > 1.3) {
-      warn('LANDSCAPE_MULTIPLIER', file,
-        `multiplier ${item.multiplier} > 1.3 — requires additional maintainer review`, id);
-    }
-  }
-
-  if (item.source_url && TRACKING_PARAMS.some(p => item.source_url.includes(p))) {
-    fail('NO_TRACKING_URLS', file, `Landscape event source_url contains tracking parameter: ${item.source_url}`, id);
-  }
-}
-
-// Phase 5: Cross-reference validation
 console.log(`${B}Validating cross-references…${X}`);
 
 for (const { file, item } of allChecklistItems) {
@@ -516,7 +440,7 @@ for (const { file, item } of allChecklistItems) {
     ...(item.depends_on ?? []).map((d: any) => d?.id),
     ...(item.related_items ?? []).map((r: any) => r?.id),
     ...(item.resources ?? []).map((r: any) => r?.id),
-    // controls_implemented references ctrl-* IDs in the controls registry
+
     ...(item.controls_implemented ?? []).filter((c: unknown) => typeof c === 'string'),
     item.superseded_by,
   ].filter((r): r is string => typeof r === 'string');
@@ -554,12 +478,299 @@ for (const { file, item } of allResources) {
   }
 }
 
+console.log(`${B}Validating harm coverage…${X}`);
+
+const CONSTANTS_FILE = 'src/lib/audit/constants.ts';
+
+for (const { file, item } of allChecklistItems) {
+  const id = item.id ?? '?';
+  const assets: Asset[] = (item.assets_protected ?? []).filter(
+    (a: unknown): a is Asset => typeof a === 'string'
+  );
+  const vectors: AttackVector[] = (item.attack_vectors ?? []).filter(
+    (v: unknown): v is AttackVector => typeof v === 'string'
+  );
+
+  const harms = (Object.keys(HARMS) as Harm[]).filter(harm =>
+    HARMS[harm].assets.some(a => assets.includes(a)) ||
+    HARMS[harm].vectors.some(v => vectors.includes(v))
+  );
+
+  if (harms.length === 0) {
+    fail('EVERY_ITEM_RESOLVES_TO_A_HARM', file,
+      `'${id}' resolves to no harm. It carries assets [${assets.join(', ') || 'none'}] and ` +
+      `vectors [${vectors.join(', ') || 'none'}], none of which appear in HARMS ` +
+      `(${CONSTANTS_FILE}). Nothing on the front page can reach it.`, id);
+  }
+}
+
+const PLACEHOLDER_PATTERNS: Array<{ re: RegExp; what: string }> = [
+  { re: /\bMAINTAINER\b/,        what: 'a maintainer note' },
+  { re: /\bTODO\b/,              what: 'a TODO' },
+  { re: /\bTBD\b/,               what: 'a TBD' },
+  { re: /\bFIXME\b/,             what: 'a FIXME' },
+  { re: /\[R\d/,                 what: 'an internal [R<n>] reference' }
+];
+
+const PHONE_PATTERNS: RegExp[] = [
+  /(?:\+\d{1,3}[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/,
+  /\+\d{1,3}[\s-]?\d{3,}[\s-]?\d{3,}/,
+  /\b0\d{3}\s?\d{3}\s?\d{4}\b/
+];
+
+function* stringsIn(node: unknown, path = ''): Generator<{ path: string; value: string }> {
+  if (typeof node === 'string') { yield { path: path || '(root)', value: node }; return; }
+  if (Array.isArray(node)) {
+    for (let i = 0; i < node.length; i++) yield* stringsIn(node[i], `${path}[${i}]`);
+    return;
+  }
+  if (node && typeof node === 'object') {
+    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+      yield* stringsIn(v, path ? `${path}.${k}` : k);
+    }
+  }
+}
+
+function checkRenderedString(file: string, where: string, value: string, id?: string) {
+  for (const { re, what } of PLACEHOLDER_PATTERNS) {
+    if (re.test(value)) {
+      fail('NO_PLACEHOLDER_STRINGS', file,
+        `${where} carries ${what} and is rendered to a reader: "${value.trim().slice(0, 100)}"`, id);
+      break;
+    }
+  }
+  for (const re of PHONE_PATTERNS) {
+    const m = re.exec(value);
+    if (m) {
+      fail('NO_COUNTRY_HELPLINES', file,
+        `${where} carries a phone number (${m[0].trim()}), which is right for one country and ` +
+        `wrong for every other reader: "${value.trim().slice(0, 100)}"`, id);
+      break;
+    }
+  }
+}
+
+console.log(`${B}Checking that nothing unfinished or country-specific renders…${X}`);
+
+for (const { file, item } of [...allChecklistItems, ...allThreats, ...allResources, ...allControls]) {
+  for (const { path, value } of stringsIn(item)) {
+    checkRenderedString(file, `field '${path}'`, value, (item as any).id);
+  }
+}
+
+const COPY_FILES = ['playbooks.ts', 'life-events.ts', 'quiz.ts', 'constants.ts'];
+for (const name of COPY_FILES) {
+  const rel = `src/lib/audit/${name}`;
+  let source: string;
+  try {
+    source = readFileSync(join(ROOT, rel), 'utf-8');
+  } catch {
+    continue;
+  }
+  const withoutComments = source
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  withoutComments.split(/\r?\n/).forEach((line, i) => {
+    if (line.trim()) checkRenderedString(rel, `line ${i + 1}`, line);
+  });
+}
+
+const CO = /\b(Google|Meta|Facebook|Instagram|WhatsApp|Threads|Apple|iCloud|Siri|Alexa|Microsoft|Cortana|Edge|Amazon|LinkedIn|TikTok|Snapchat|Reddit|Discord|Steam|PlayStation|Xbox|Nintendo|Samsung|Twilio|Goldman Sachs|Gemini|Copilot|YouTube|Android|Chrome)\b/;
+const CONDUCT_VERB = /\b(collects?|collected|sells?|sold|shares?|shared|sharing|harvest\w*|monetis\w*|monetiz\w*|tracks?|tracked|tracking|trains?|trained|training|profiles?|profiling|retains?|retained|stores?|stored|reads?|listens?|records?|recorded|scans?|scanned|builds? a|feeds?)\b/i;
+const PERSONAL_DATA = /\b(data|history|activity|recordings?|transcripts?|metadata|profiles?|information|transactions?|location|files?|messages?|searches|voice|behaviou?r|telemetry|analytics)\b/i;
+
+const IS_NAVIGATION = /(→|->|→)/;
+
+function checkConduct(file: string, where: string, value: string, id?: string) {
+  for (const sentence of value.split(/(?<=[.!?])\s+|\n/)) {
+    if (IS_NAVIGATION.test(sentence)) continue;
+    const c = CO.exec(sentence);
+    if (!c) continue;
+    const v = CONDUCT_VERB.exec(sentence);
+    if (!v) continue;
+    if (!PERSONAL_DATA.test(sentence)) continue;
+    fail('NO_COMPANY_CONDUCT', file,
+      `${where} states what ${c[0]} does with personal data ("${v[0]}"). Spectra cannot verify a ` +
+      `company's handling of data and must not imply it did (BLUEPRINT §4). Say what the reader ` +
+      `should look for instead. Sentence: "${sentence.trim().slice(0, 140)}"`, id);
+    return;
+  }
+}
+
+console.log(`${B}Checking that no claim is made about what a company does with your data…${X}`);
+
+const READER_FIELDS = new Set([
+  'title', 'simple_description', 'description', 'threat_narrative', 'platform_notes',
+  'environment_notes', 'legal_notes', 'intro', 'rows', 'notes', 'verify_yourself', 'context'
+]);
+
+for (const { file, item } of [...allChecklistItems, ...allResources]) {
+  for (const [key, value] of Object.entries(item as Record<string, unknown>)) {
+    if (!READER_FIELDS.has(key)) continue;
+    for (const { path, value: s } of stringsIn(value, key)) {
+      checkConduct(file, `field '${path}'`, s, (item as any).id);
+    }
+  }
+}
+
+const allLookups = readAllItems('lookups');
+
+console.log(`${B}Validating ${allLookups.length} lookup tables…${X}`);
+
+const COMPANY_NAMES = /\b(Google|Meta|Facebook|Instagram|WhatsApp|Apple|Microsoft|Amazon|X|Twitter|LinkedIn|TikTok|Snapchat|Reddit|Discord|Steam|PlayStation|Xbox|Nintendo|Samsung|Signal|Bitwarden|Proton|Mullvad|Aegis|KeePassXC|Authy)\b/;
+
+const lookupIds = new Set<string>();
+
+for (const { file, item } of allLookups) {
+  const id = item?.id ?? '(no id)';
+  lookupIds.add(id);
+
+  for (const field of ['id', 'title', 'intro', 'status'] as const) {
+    if (!item?.[field]) {
+      fail('LOOKUP_SHAPE', file, `lookup '${id}' is missing required field '${field}'`, id);
+    }
+  }
+  if (!Array.isArray(item?.rows) || item.rows.length === 0) {
+    fail('LOOKUP_SHAPE', file, `lookup '${id}' has no rows, so it renders an empty box`, id);
+  }
+  for (const row of item?.rows ?? []) {
+    if (!row?.look_for || !row?.why) {
+      fail('LOOKUP_SHAPE', file,
+        `a row in '${id}' is missing look_for or why: ${JSON.stringify(row).slice(0, 80)}`, id);
+    }
+  }
+
+  for (const { path, value } of stringsIn(item)) {
+    if (path === 'sources' || path.startsWith('sources')) continue;
+    const m = COMPANY_NAMES.exec(value);
+    if (m) {
+      fail('LOOKUP_NAMES_NO_ONE', file,
+        `'${id}' names ${m[0]} at '${path}'. A lookup describes wording that recurs everywhere; ` +
+        `naming a company makes it a claim about that company, which BLUEPRINT §4 rules out. ` +
+        `If the row needs a name, it belongs in an item.`, id);
+      break;
+    }
+  }
+}
+
+const referencedLookups = new Set<string>();
+for (const { file, item } of allChecklistItems) {
+  for (const ref of (item as any).lookups ?? []) {
+    referencedLookups.add(ref);
+    if (!lookupIds.has(ref)) {
+      fail('LOOKUP_RESOLVES', file,
+        `'${(item as any).id}' references lookup '${ref}', which does not exist. The reader would ` +
+        `be shown nothing where the step promised a list of things to look for.`, (item as any).id);
+    }
+  }
+}
+for (const id of lookupIds) {
+  if (!referencedLookups.has(id)) {
+    warn('LOOKUP_IS_USED', 'content/lookups',
+      `lookup '${id}' is referenced by no item. An unreferenced table is a catalogue entry that ` +
+      `nobody reads, which is what D4 removed from /resources.`, id);
+  }
+}
+
+const SPOKEN_ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'content'];
+
+
+function renderedStrings(source: string): Array<{ line: number; text: string }> {
+  const out: Array<{ line: number; text: string }> = [];
+  const lineOf = (idx: number) => source.slice(0, idx).split(/\r?\n/).length;
+
+  const blank = (s: string, re: RegExp) =>
+    s.replace(re, m => m.replace(/[^\n]/g, ' '));
+  let src = blank(source, /<!--[\s\S]*?-->/g);
+  src = blank(src, /<style[\s\S]*?<\/style>/gi);
+
+  src = src.replace(/<script[\s\S]*?<\/script>/gi, (block, offset: number) => {
+    const cleaned = blank(blank(block, /\/\*[\s\S]*?\*\//g), /(^|[^:])\/\/[^\n]*/gm);
+    for (const m of cleaned.matchAll(/'([^'\\\n]*)'|"([^"\\\n]*)"|`([^`\\]*)`/g)) {
+      const text = m[1] ?? m[2] ?? m[3] ?? '';
+      if (text.trim()) out.push({ line: lineOf(offset + (m.index ?? 0)), text });
+    }
+    return block.replace(/[^\n]/g, ' ');
+  });
+  for (const attr of SPOKEN_ATTRS) {
+    const re = new RegExp(`\\b${attr}\\s*=\\s*"([^"]*)"`, 'g');
+    for (const m of src.matchAll(re)) {
+      if (m[1].trim()) out.push({ line: lineOf(m.index ?? 0), text: m[1] });
+    }
+  }
+
+  const textOnly = src.replace(/<[^>]*>/g, m => m.replace(/[^\n]/g, ' '))
+                      .replace(/\{[^{}]*\}/g, m => m.replace(/[^\n]/g, ' '));
+  textOnly.split(/\r?\n/).forEach((raw, i) => {
+    const text = raw.replace(/&[a-z]+;/gi, ' ').trim();
+    if (text) out.push({ line: i + 1, text });
+  });
+
+  return out;
+}
+
+const JARGON_NAMES: Array<{ re: RegExp; use: string }> = [
+  { re: /\bSecurity Audit\b/,    use: 'Your list' },
+  { re: /\bthreat map\b/i,       use: 'Your map' },
+  { re: /\bthreat graph\b/i,     use: 'Your map' },
+  { re: /\bguardian mode\b/i,    use: 'Family setup' },
+  { re: /\bincident triage\b/i,  use: 'Something happened' }
+];
+
+const JARGON_WORDS: Array<{ re: RegExp; use: string }> = [
+  { re: /\bthreat model/i,      use: 'your setup' },
+  { re: /\badversar(y|ies)\b/i, use: '"who might try", or name the one' }
+];
+
+const JARGON_LABELS: Record<string, string> = {
+  'audit':        'Your list',
+  'adversaries':  'WHO MIGHT TRY',
+  'controls':     'STEPS THAT HELP',
+  'assets':       'WHAT THEY PROTECT'
+};
+
+function svelteFilesUnder(dir: string, acc: string[] = []): string[] {
+  for (const entry of readdirSync(join(ROOT, dir))) {
+    const rel = `${dir}/${entry}`;
+    if (statSync(join(ROOT, rel)).isDirectory()) svelteFilesUnder(rel, acc);
+    else if (entry.endsWith('.svelte')) acc.push(rel);
+  }
+  return acc;
+}
+
+console.log(`${B}Checking that no product jargon reaches a reader…${X}`);
+
+const JARGON_EXEMPT = new Set(['src/routes/methodology/+page.svelte']);
+const jargonScope = [...svelteFilesUnder('src/routes'), ...svelteFilesUnder('src/lib/components')]
+  .filter(f => !JARGON_EXEMPT.has(f));
+
+for (const rel of jargonScope) {
+  for (const { line, text } of renderedStrings(readFileSync(join(ROOT, rel), 'utf-8'))) {
+    for (const { re, use } of [...JARGON_NAMES, ...JARGON_WORDS]) {
+      const m = re.exec(text);
+      if (m) {
+        fail('NO_JARGON_STRINGS', rel,
+          `line ${line} renders "${m[0]}" to a reader. Plan v4 §2: say "${use}". ` +
+          `Full string: "${text.trim().slice(0, 90)}"`);
+        break;
+      }
+    }
+    const whole = text.trim().toLowerCase().replace(/[:·|]+$/, '').trim();
+    if (JARGON_LABELS[whole]) {
+      fail('NO_JARGON_STRINGS', rel,
+        `line ${line} uses "${text.trim()}" as a label. Plan v4 §2: say ` +
+        `"${JARGON_LABELS[whole]}".`);
+    }
+  }
+}
+
 // Report
 console.log('');
 
 const totalItems =
   allChecklistItems.length + allThreats.length +
-  allResources.length + allLandscapeEvents.length + allControls.length;
+  allResources.length + allControls.length;
 
 if (warnings.length > 0) {
   console.log(`${Y}${BOLD}WARNINGS (${warnings.length})${X}`);
@@ -597,7 +808,7 @@ if (errors.length > 0) {
   console.log(
     `${G}${BOLD}✓ All checks passed.${X} ${D}${totalItems} items validated ` +
     `(${allChecklistItems.length} checklist, ${allThreats.length} threats, ` +
-    `${allResources.length} resources, ${allLandscapeEvents.length} landscape events). ` +
+    `${allResources.length} resources). ` +
     `${warnings.length} warning(s).${X}\n`
   );
   process.exit(0);
