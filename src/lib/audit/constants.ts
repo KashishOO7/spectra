@@ -1,8 +1,8 @@
-// Static option lists and label maps for the audit UI.
+import type {
+  AdversaryType, Track, Platform, EnvironmentFlag,
+  Asset, AssetGroup, AttackVector, Harm
+} from '../types.js';
 
-import type { AdversaryType, Track, Platform, EnvironmentFlag } from '../types.js';
-
-// Onboard options
 export const ADVERSARY_OPTIONS: {
   value: AdversaryType; label: string; description: string; tier: 'common' | 'elevated' | 'high';
 }[] = [
@@ -56,12 +56,14 @@ export const tierLabel: Record<string, string> = { common: 'text-teal-light', el
 
 export const maturityLabels       = ['', 'Essential', 'Baseline', 'Hardened', 'Advanced', 'Expert'];
 export const maturityColors       = ['', 'text-teal-light', 'text-teal-light', 'text-amber-light', 'text-amber-light', 'text-red-light'];
+
+export const maturityBandLabels   = ['', 'Getting started', 'Covered', 'Well covered', 'Nearly complete', 'Complete for now'];
 export const maturityDescriptions = ['',
-  'Your foundation needs work. The good news: the highest-impact steps here are quick, free, and take under an hour.',
-  'Decent start — the basics are in place. A few more essentials and you\'ll be protected against everyday threats.',
-  'Solid baseline. You\'re meaningfully protected against common attacks. Now it\'s about the specifics of your situation.',
-  'Strong posture. You\'ve put in real work and it shows. You\'re well-protected against most realistic threat models.',
-  'Exceptional. You\'re operating at a level most security professionals would respect.'
+  'The essentials are still open.',
+  'The common attacks are handled.',
+  'Most of what Spectra covers is done.',
+  'A few items left.',
+  'You have finished everything Spectra currently covers. More items are being written.'
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -70,11 +72,49 @@ export const CATEGORY_LABELS: Record<string, string> = {
   communications:      'Communications',
   network_security:    'Network Security',
   physical_security:   'Physical Security',
-  human_vulnerability: 'Human Vulnerability',
-  data_management:     'Data Management',
-  osint_footprint:     'OSINT Footprint',
-  incident_response:   'Incident Response',
+  human_vulnerability: 'Spotting scams',
+  data_management:     'Your data',
+  osint_footprint:     'What people can find',
+  incident_response:   'If something happens',
   ai_threats:          'AI Threats'
 };
 
 export const SE_SCALE_LABELS = ['', 'Definitely not', 'Unlikely', 'Maybe', 'Probably', 'Definitely yes'];
+
+export const HARMS: Record<Harm, { assets: Asset[]; vectors: AttackVector[] }> = {
+  'Someone gets into your accounts':      { assets: ['credentials', 'cloud_data'],           vectors: ['credential_stuffing', 'sim_swap'] },
+  'Someone takes your money':             { assets: ['financial'],                           vectors: [] },
+  'Someone talks you into it':            { assets: [],                                      vectors: ['social_engineering', 'phishing', 'spear_phishing'] },
+  'Someone follows where you go':         { assets: ['location', 'relationships'],           vectors: [] },
+  'Someone reads what you say':           { assets: ['communications', 'metadata'],          vectors: ['network_interception', 'metadata_analysis'] },
+  'Someone uses your device against you': { assets: ['devices', 'local_data', 'biometrics'], vectors: ['malware', 'supply_chain', 'physical_access', 'insider_access'] },
+  'Someone pretends to be you':           { assets: [],                                      vectors: ['deepfake', 'voice_clone'] },
+  'Someone already has your details':     { assets: ['reputation', 'behavioral_data'],       vectors: ['osint_passive', 'data_broker_aggregation', 'browser_fingerprinting'] }
+};
+
+export const ASSET_GROUPS: Record<AssetGroup, Asset[]> = {
+  'Your accounts':                     ['credentials', 'cloud_data', 'financial'],
+  "Where you are and who you're with": ['location', 'relationships'],
+  'What people can find about you':    ['reputation', 'behavioral_data'],
+  'Your conversations':                ['communications', 'metadata'],
+  'Your devices':                      ['devices', 'local_data', 'biometrics']
+};
+
+export const HARM_ADVERSARIES: Record<Harm, AdversaryType[]> = {
+  'Someone gets into your accounts':      ['opportunistic', 'criminal_org'],
+  'Someone takes your money':             ['opportunistic', 'criminal_org'],
+  'Someone talks you into it':            ['ai_automated', 'criminal_org', 'targeted_individual'],
+  'Someone follows where you go':         ['intimate_partner', 'targeted_individual'],
+  'Someone reads what you say':           ['isp_network', 'intimate_partner'],
+  'Someone uses your device against you': ['opportunistic', 'intimate_partner'],
+  'Someone pretends to be you':           ['ai_automated', 'targeted_individual'],
+  'Someone already has your details':     ['data_broker', 'opportunistic']
+};
+
+export const ADVERSARY_HARMS: Partial<Record<AdversaryType, Harm[]>> = (() => {
+  const out: Partial<Record<AdversaryType, Harm[]>> = {};
+  for (const [harm, advs] of Object.entries(HARM_ADVERSARIES) as [Harm, AdversaryType[]][]) {
+    for (const adv of advs) (out[adv] ??= []).push(harm);
+  }
+  return out;
+})();

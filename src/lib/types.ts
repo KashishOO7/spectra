@@ -1,5 +1,3 @@
-// Taxonomy primitives
-
 export type Category =
   | 'device_security'
   | 'account_security'
@@ -114,7 +112,21 @@ export type EmotionalRegister =
   | 'loneliness'
   | null;
 
-// Supporting sub-types
+export type AssetGroup =
+  | 'Your accounts'
+  | "Where you are and who you're with"
+  | 'What people can find about you'
+  | 'Your conversations'
+  | 'Your devices';
+export type Harm =
+  | 'Someone gets into your accounts'
+  | 'Someone takes your money'
+  | 'Someone talks you into it'
+  | 'Someone follows where you go'
+  | 'Someone reads what you say'
+  | 'Someone uses your device against you'
+  | 'Someone pretends to be you'
+  | 'Someone already has your details';
 
 export interface Source {
   url: string;
@@ -142,7 +154,7 @@ export interface RelatedItem {
 }
 
 export interface NotApplicableCondition {
-  condition: string; // format: "type:value"
+  condition: string;
   reason: string;
 }
 
@@ -150,6 +162,26 @@ export interface ResourceReference {
   id: string;
   context: string;
   platform_specific: string[];
+}
+export interface LookupRow {
+  look_for: string;
+  also_called?: string;
+  why: string;
+}
+
+export interface Lookup {
+  id: string;
+  schema_version: string;
+  version: string;
+  title: string;
+  intro: string;
+  rows: LookupRow[];
+  notes?: string[];
+  verify_yourself?: string;
+  status: ItemStatus;
+  last_verified?: string;
+  verified_by?: string;
+  sources?: Source[];
 }
 
 export interface LegalNote {
@@ -179,13 +211,13 @@ export interface DistributionChannel {
   note: string;
 }
 
-// Core schema types
 
 export interface ChecklistItem {
   id: string;
   schema_version: string;
   version: string;
   title: string;
+  simple_description?: string;
   description: string;
   threat_narrative: string;
   category: Category;
@@ -203,7 +235,7 @@ export interface ChecklistItem {
     reversibility: number; 
   };
   time_estimate: {
-    setup: '5min' | '30min' | '2hr' | 'half_day' | 'multi_day';
+    setup: '5min' | '10min' | '15min' | '30min' | '2hr' | 'half_day' | 'multi_day';
     ongoing: 'negligible' | 'low' | 'medium' | 'high';
   };
   maturity_level: 1 | 2 | 3 | 4 | 5;
@@ -222,6 +254,7 @@ export interface ChecklistItem {
   verified_by?: string[];
   sources?: Source[];
   resources?: ResourceReference[];
+  lookups?: string[];
   legal_notes?: LegalNote[];
   emotional_register?: EmotionalRegister;
   tags?: string[];
@@ -263,11 +296,10 @@ export interface Resource {
   changelog?: ChangelogEntry[];
 }
 
-// Graph
-
 export interface ContentGraph {
   items: Map<string, ChecklistItem>;
   resources: Map<string, Resource>;
+  lookups: Map<string, Lookup>;
   itemsByCategory: Map<Category, string[]>;
   itemsByAdversary: Map<AdversaryType, string[]>;
   itemsByVector: Map<AttackVector, string[]>;
@@ -275,8 +307,6 @@ export interface ContentGraph {
   itemsByTrack: Map<Track, string[]>;
   itemsByMaturity: Map<number, string[]>;
 }
-
-// Timeline
 
 export interface TimelineEvent {
   id: string;
@@ -300,9 +330,8 @@ export interface TimelineEvent {
   life_event_label?: string;
   note?: string;
   timestamp: string;
+  formula?: 1 | 2;
 }
-
-// Social Engineering Quiz
 
 export interface SEQuizResult {
   completed_at: string;
@@ -310,8 +339,6 @@ export interface SEQuizResult {
   susceptibilities: Record<string, number>;  
   top_register: string;
 }
-
-// Life Events
 
 export interface LifeEventDef {
   id: string;
@@ -322,44 +349,29 @@ export interface LifeEventDef {
   sensitive?: boolean;
 }
 
-// User data
-
 export interface UserProfile {
   id: string;
   created_at: string;
   last_active: string;
   adversaries: AdversaryType[];
+  adversariesManual?: AdversaryType[];
   platforms: Platform[];
   tracks: Track[];
   use_cases: string[];
   implemented: Record<string, boolean>;
+  implemented_versions?: Record<string, string>;
+  harms?: Harm[];
   skipped: Record<string, string>;
+  snoozed?: Record<string, string>;
   notes: Record<string, string>;
   assessment_started: string;
   assessment_version: string;
-  // Extended fields
   timeline?: TimelineEvent[];
   se_quiz?: SEQuizResult | null;
   life_events_applied?: string[];  
   easy_mode?: boolean;             
   environment_flags?: EnvironmentFlag[];
 }
-
-// Landscape feed
-
-export interface LandscapeEvent {
-  id: string;
-  title: string;
-  description: string;
-  related_items: string[];
-  multiplier: number;
-  severity: 'low' | 'moderate' | 'high' | 'critical';
-  published_at: string;
-  expires_at: string;
-  source_url: string;
-}
-
-// Scoring engine output
 
 export interface ScoredItem extends ChecklistItem {
   effective_score: number;
@@ -368,6 +380,7 @@ export interface ScoredItem extends ChecklistItem {
   priority_rank: number;
   is_implemented: boolean;
   is_skipped: boolean;
+  is_snoozed: boolean;
   category_saturation: number;
   compensating_factor: number;
   needs_reverification?: boolean;
@@ -376,7 +389,7 @@ export interface ScoredItem extends ChecklistItem {
 export interface CategoryScore {
   category: Category;
   label: string;
-  score: number;
+  score: number | null;
   max_score: number;
   implemented_count: number;
   total_applicable: number;
@@ -395,5 +408,12 @@ export interface AssessmentResult {
   human_vulnerability_score: number | null;
   total_implemented: number;
   total_applicable: number;
+  total_skipped: number;
+  harms_covered: number;
+  harms_total: number;
+  covered_harms: Harm[];
+  total_snoozed: number;
+  skipped_weight_ratio: number;
+  band_capped_by_skips: boolean;
   last_calculated: string;
 }

@@ -1,5 +1,3 @@
-// Incident-triage playbooks shown in /audit?mode=incident.
-
 export interface IncidentPlaybook {
   id: string;
   icon: string;
@@ -15,7 +13,7 @@ export interface IncidentPlaybook {
 export const INCIDENT_PLAYBOOKS: IncidentPlaybook[] = [
   {
     id: 'account_hacked',
-    icon: '🔓',
+    icon: '○',
     title: 'Account Hacked',
     subtitle: "You can't log in, or see activity you didn't do",
     severity: 'critical',
@@ -33,14 +31,16 @@ export const INCIDENT_PLAYBOOKS: IncidentPlaybook[] = [
       'Once back in, look for "Active sessions" or "Devices" in Settings and sign out of everything.',
       'If you used the same password anywhere else, change it on those sites too.',
       'Turn on two-step verification now — this is what stops it happening again even if your password leaks.',
-      'If it was your email: check Settings for any forwarding rules or replies you didn\'t set up.'
+      'If it was your email: check Settings for any forwarding rules or auto-replies you didn\'t set up.',
+      'Look for "Connected apps", "Third-party access" or "Apps with account access" in Settings and remove anything you don\'t recognise — a password change does not lock these out.',
+      'If your phone number can reset the account, call your mobile provider and ask them to lock the number against transfers.'
     ],
     relatedItemIds: ['auth-2fa-001', 'auth-password-manager-001', 'auth-backup-codes-001', 'incident-breach-monitor-001'],
     doNotText: 'Do not use the potentially compromised device to do recovery — use your phone or a different computer.'
   },
   {
     id: 'device_stolen',
-    icon: '💻',
+    icon: '◈',
     title: 'Device Stolen',
     subtitle: 'Your phone, laptop, or tablet is missing',
     severity: 'critical',
@@ -58,39 +58,44 @@ export const INCIDENT_PLAYBOOKS: IncidentPlaybook[] = [
       'For a laptop: icloud.com/find (Mac) or account.microsoft.com → Devices → Find My Device (Windows).',
       'Change your email and banking passwords right now from a different device.',
       'If it was a phone: call your mobile carrier and ask them to suspend the SIM.',
-      'Remove the device from trusted devices in your Google, Apple, or Microsoft account settings.'
+      'Remove the device from trusted devices in your Google, Apple, or Microsoft account settings.',
+      'Report it to the police with the serial number — you can find it on the original box or in your account\'s purchase history. Insurers usually ask for the report number.'
     ],
     relatedItemIds: ['device-encrypt-001', 'device-screenlock-001', 'auth-2fa-001'],
     doNotText: 'Do not wait — remote wipe becomes useless once the device is wiped by someone else or the SIM is swapped.'
   },
   {
     id: 'stalkerware',
-    icon: '👁',
+    icon: '◉',
     title: 'Monitoring Suspected',
     subtitle: 'Someone may have installed software to watch you',
     severity: 'critical',
     immediateSteps: [
-      'Do not do this research on the device you suspect is compromised — use a different phone or a library computer.',
-      'On Android: Settings → Apps → look for anything unfamiliar with "accessibility" or "device admin" permissions. On iPhone: Settings → Privacy & Security → check VPN/Device Management profiles.',
-      'If you find something or are unsure: a factory reset is the most reliable solution. Back up photos/contacts to a fresh account first.',
-      'Change passwords for everything — email, social, banking — from a safe device AFTER the reset.',
-      'If this involves an intimate partner situation: contact a domestic violence tech safety specialist before taking action. Some monitoring software alerts the abuser if removed.',
-      'National DV Hotline (US): 1-800-799-7233. Safety Net at NNEDV provides tech safety support.'
+      'Do not confront the person you suspect, and do not remove anything yet. Removal is what tells them they have been found, and that is the moment these situations escalate.',
+      'Treat the device as watched. Assume its screen, keystrokes and location are visible, and do not read this page or plan anything on it.',
+      'Move to a device the other person has never had access to — a friend\'s phone, a work laptop, a library computer.',
+      'Preserve what you have before changing anything: photograph unfamiliar apps, notification history, and any messages showing they knew something they should not. Store it in an account they do not know about. A reset destroys all of it.',
+      'Contact a domestic violence tech safety specialist and describe what you have seen. They can walk the device safely, advise on timing, and help with evidence — none of which is safe to improvise.',
+      'If someone close to you may have access to your phone or accounts, a domestic violence service in your country can help. Ask for their tech safety team. They handle phones and accounts specifically, and they can tell you what is safe to change first.',
+      'When the specialist says it is safe: change passwords for email first, then banking, then everything else — from the safe device, and only after the device is clean or replaced.',
+      'Turn on two-factor authentication as you go, and check account recovery options — a phone number or backup email the other person controls reopens the door immediately.'
     ],
     simpleSteps: [
-      'Do not do any of this on the phone or computer you think is being monitored — use a different device.',
-      'On iPhone: go to Settings → General → VPN & Device Management. If you see anything unfamiliar, it may be monitoring software.',
-      'On Android: Settings → Apps → look for anything with "Accessibility" permissions you don\'t recognise.',
-      'If you find something suspicious, or just aren\'t sure: a factory reset is the safest option. Back up photos and contacts to a fresh account first.',
-      'If this involves a partner or family member: contact a safety specialist before doing anything. Some apps alert the person who installed them if removed.',
-      'US: National DV Hotline 1-800-799-7233. Ask specifically about tech safety resources.'
+      'Do not say anything to the person you suspect, and do not delete anything yet. Deleting it is what tells them you know, and that is when things often get worse.',
+      'Assume the device is being watched — screen, typing, location. Do not read this page or make plans on it.',
+      'Use a different device that person has never touched: a friend\'s phone, a work computer, or one at a library.',
+      'Before you change anything, save proof: take photos of apps you do not recognise, and of any message showing they knew something they should not have. Put it somewhere they cannot reach. Resetting the device erases all of it.',
+      'Talk to a domestic violence tech safety specialist before you touch the device. They can check it safely and tell you when it is the right moment to act.',
+      'If someone close to you may have access to your phone or accounts, a domestic violence service in your country can help. Ask for their tech safety team. They handle phones and accounts specifically, and they can tell you what is safe to change first.',
+      'Once they say it is safe: change your email password first, then banking, then the rest — on the safe device, not the old one.',
+      'Turn on two-step login while you are there, and check the recovery phone number and backup email on each account. If either one is theirs, change it.'
     ],
     relatedItemIds: ['device-screenlock-001', 'device-encrypt-001', 'device-updates-001'],
-    doNotText: 'Do not confront the person first — removing stalkerware can alert them and escalate a dangerous situation.'
+    doNotText: 'Do not confront the person, and do not remove anything yet. Removing monitoring software tells them you know, and that is when these situations escalate. Talk to a specialist first.'
   },
   {
     id: 'phishing_clicked',
-    icon: '🎣',
+    icon: '◆',
     title: 'Phishing Link Clicked',
     subtitle: 'You clicked a suspicious link or entered credentials on an unfamiliar site',
     severity: 'high',
@@ -100,7 +105,7 @@ export const INCIDENT_PLAYBOOKS: IncidentPlaybook[] = [
       'Check whether you use the same password anywhere else — change it on every service that shares it.',
       'If the link opened a file or installer: disconnect from the internet and run a malware scan. On Windows: Windows Defender. On Mac: Malwarebytes.',
       'Check your email for any "unusual sign-in" notifications from the affected account — these may have already arrived.',
-      'Watch that account\'s activity for 1-2 weeks: new email rules, sent mail you didn\'t send, profile changes.'
+      'Watch that account\'s activity for 1-2 weeks: new forwarding rules or auto-replies, sent mail you didn\'t send, and changes to recovery email or phone.'
     ],
     simpleSteps: [
       'If you typed in a password on that page: change it right now on a different browser or device.',
@@ -108,14 +113,14 @@ export const INCIDENT_PLAYBOOKS: IncidentPlaybook[] = [
       'Did you use that password on other websites? Change it on those too.',
       'If the link made you download or open a file: disconnect from WiFi and run a virus scan (Windows Defender on Windows, Malwarebytes on Mac).',
       'Check your inbox — you may already have "unusual sign-in" alert emails from that account.',
-      'Keep an eye on that account for the next week or two for anything you didn\'t do.'
+      'Keep an eye on that account for the next week or two — specifically new forwarding rules, messages in Sent that you did not send, and changes to your recovery email or phone number.'
     ],
     relatedItemIds: ['auth-2fa-001', 'auth-password-manager-001', 'human-urgency-001', 'human-verify-001'],
     doNotText: 'Do not ignore it hoping nothing happens — credential theft from phishing is typically automated and immediate.'
   },
   {
     id: 'data_breach',
-    icon: '💾',
+    icon: '●',
     title: 'Data Breach Notification',
     subtitle: 'A service you use has been breached',
     severity: 'high',

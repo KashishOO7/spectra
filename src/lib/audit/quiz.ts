@@ -1,5 +1,3 @@
-// Social-engineering susceptibility quiz scenarios.
-
 export interface SEQuestion {
   id: string;
   register: string;
