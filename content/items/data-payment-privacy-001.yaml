@@ -1,7 +1,8 @@
-id: "data-payment-privacy-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Review privacy and data sharing settings in payment apps"
+id: data-payment-privacy-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Review privacy and data sharing settings in payment apps
+simple_description: Turn off data sharing in your payment apps.
 description: |
   Payment services track transaction history, merchant categories, spending
   patterns, and location of purchases. This data is used for ad targeting,
@@ -16,61 +17,42 @@ threat_narrative: |
   with access to shared payment accounts can track your movements through
   purchase locations. A data broker aggregating payment data builds a
   financial profile that follows you across institutions.
-category: "data_management"
-subcategory: "data_minimization"
+category: data_management
+subcategory: data_minimization
 tracks:
-  - "general"
-  - "womens_safety"
+  - general
+  - womens_safety
 platforms:
-  - "android"
-  - "ios"
-  - "web"
+  - android
+  - ios
+  - web
 platform_notes:
-  android: |
-    GOOGLE PAY / GOOGLE WALLET
-    • pay.google.com/payments/home → Settings → disable transaction notifications
-      shared with Google for ad personalisation.
-    • Review linked accounts and remove cards/banks you no longer use.
-    • Check Google Pay activity in myaccount.google.com/activitycontrols — purchase
-      history feeds into the same profile as search and location.
+  all: >-
+    Do this
 
-    BANKING AND UPI APPS
-    • Open each banking app → Settings → Privacy/Marketing/Notifications.
-    • Disable marketing communications, personalised offers, and partner data sharing.
-    • UPI apps (GPay, PhonePe, Paytm): check for merchant data sharing,
-      transaction-based recommendations, and promotional settings. Turn off.
-  ios: |
-    APPLE PAY / WALLET
-    • Settings → Wallet & Apple Pay → review linked cards.
-    • Apple does not share transaction details with merchants beyond what's needed
-      for the transaction. But third-party payment apps on iOS do.
-    • Review Apple Card statements if applicable — Goldman Sachs collects
-      transaction data under a separate privacy policy.
+    Turn off data sharing and marketing in the payment and banking apps you use.
 
-    BANKING APPS
-    • Same as Android: open each app, find Privacy/Marketing settings, disable
-      partner sharing and personalised offers.
-  web: |
-    PAYPAL — paypal.com/myaccount/privacy/
-    • Privacy Settings → Manage your data → review and restrict sharing with
-      third-party merchants and PayPal partners.
-    • Disable personalised shopping experiences and targeted offers.
-    • Review Connected Apps and remove services you no longer use.
 
-    ONLINE BANKING
-    • Log into each bank's web portal → Settings/Privacy/Communications.
-    • Disable marketing preferences, data sharing with affiliates, and
-      pre-screened credit offers.
-    • In the US: opt out of pre-screened offers at optoutprescreen.com.
-    • Review connected third-party services (Plaid, Yodlee) that have read
-      access to your transactions.
+    What to look for
 
-    General principle: any app that can see your money can see your patterns.
-    Disable everything that isn't required for the service to function.
-platform_notes_verified:
-  android: "2026-04-01"
-  ios: "2026-04-01"
-  web: "2026-04-01"
+    Settings, then Privacy or Marketing.
+
+    Turn off offers picked for you, sharing with partners, and anything about using what you buy to
+    suggest things.
+
+    Remove cards and accounts you no longer use while you are in there.
+
+
+    Worth knowing
+
+    Do not assume a payment app passes nothing on. Open its privacy settings and read what it says
+    it does.
+
+
+    Test it
+
+    Find the ad or interests page on the same account. If it lists shops or brands you know, what
+    you buy is feeding it.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -78,24 +60,24 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "30min"
-  ongoing: "low"
+  setup: 30min
+  ongoing: low
 maturity_level: 1
 adversaries:
-  - "data_broker"
-  - "intimate_partner"
-  - "opportunistic"
-  - "targeted_individual"
-  - "employer"
+  - data_broker
+  - intimate_partner
+  - opportunistic
+  - targeted_individual
+  - employer
 attack_vectors:
-  - "data_broker_aggregation"
-  - "osint_passive"
-  - "insider_access"
+  - data_broker_aggregation
+  - osint_passive
+  - insider_access
 assets_protected:
-  - "financial"
-  - "behavioral_data"
-  - "location"
-  - "identity"
+  - financial
+  - behavioral_data
+  - location
+  - identity
 controls_implemented: []
 score_weight: 6.5
 threat_model_multipliers:
@@ -107,23 +89,27 @@ threat_model_multipliers:
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "data-ecosystem-audit-001"
-    relationship: "complementary"
-    note: "Ecosystem audits cover platform-level collection. Payment privacy covers financial data leakage specifically."
-status: "active"
+  - id: data-ecosystem-audit-001
+    relationship: complementary
+    note: >-
+      Ecosystem audits cover platform-level collection. Payment privacy covers financial data
+      leakage specifically.
+status: active
 superseded_by: null
-last_verified: "2026-04-01"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://ssd.eff.org/module/protecting-yourself-on-social-networks"
-    title: "Protecting Yourself on Social Networks — EFF SSD"
-    type: "primary"
-    accessed: "2026-04-01"
+  - url: https://ssd.eff.org/module/protecting-yourself-social-networks
+    title: Protecting Yourself on Social Networks — EFF SSD
+    type: primary
+    accessed: '2026-08-26'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only. Financial privacy regulations vary significantly. Some jurisdictions require banks to allow opt-out of data sharing with affiliates."
+  - jurisdiction: global
+    note: >-
+      Educational purposes only. Financial privacy regulations vary significantly. Some
+      jurisdictions require banks to allow opt-out of data sharing with affiliates.
 environment_notes:
   has_data_protection_rights: |
     If you have data protection rights (GDPR, CCPA, etc.), you can request
@@ -132,14 +118,16 @@ environment_notes:
     provider. They must respond within the statutory period.
 emotional_register: null
 tags:
-  - "free"
-  - "quick_win"
-  - "financial"
-  - "data_leakage"
-created_at: "2026-04-01"
-created_by: "github:@KashishOO7"
+  - free
+  - quick_win
+  - financial
+  - data_leakage
+created_at: '2026-04-01'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-04-01"
-    changes: "Initial item."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2026-04-01'
+    changes: Initial item.
+    author: github:@KashishOO7
+lookups:
+  - lookup-account-settings-001

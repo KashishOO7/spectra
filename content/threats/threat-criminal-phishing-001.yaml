@@ -23,10 +23,6 @@ real_world_examples:
     title: "EFF SSD — How to Avoid Phishing Attacks"
     description: "EFF's surveillance self-defence guide to recognising and resisting phishing at all sophistication levels."
     type: "case_study"
-  - url: "https://krebsonsecurity.com/category/phishing/"
-    title: "Krebs on Security — Phishing Coverage"
-    description: "Ongoing documentation of real-world criminal phishing operations and infrastructure."
-    type: "journalism"
 
 prevalence_data:
   - stat: "Phishing remains the most common initial access vector in financially motivated cybercrime."

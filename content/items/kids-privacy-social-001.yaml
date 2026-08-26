@@ -1,34 +1,54 @@
-id: "kids-privacy-social-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Set all social and gaming accounts to private or friends-only"
-description: "Public profiles on social media and gaming platforms make it easy for strangers to find, follow, and contact you. Setting accounts to private means only people you've approved can see your posts, your friend list, and who you are. This is the single highest-impact privacy action for anyone who uses social media."
-threat_narrative: "Predators, scammers, and online bullies use public profiles to identify targets, learn personal details, and make contact before you can recognise a threat. A public profile showing your school, location, and friend network is an open invitation. Private settings remove you from public search results and stop unsolicited contact from strangers — while keeping everything visible to people you've actually chosen."
-category: "osint_footprint"
-subcategory: "social_media_exposure"
+id: kids-privacy-social-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Set all social and gaming accounts to private or friends-only
+simple_description: Set your child's social and gaming accounts to private.
+description: >-
+  Public profiles on social media and gaming platforms make it easy for strangers to find, follow,
+  and contact you. Setting accounts to private means only people you've approved can see your posts,
+  your friend list, and who you are. This is the single highest-impact privacy action for anyone who
+  uses social media.
+threat_narrative: >-
+  Predators, scammers, and online bullies use public profiles to identify targets, learn personal
+  details, and make contact before you can recognise a threat. A public profile showing your school,
+  location, and friend network is an open invitation. Private settings remove you from public search
+  results and stop unsolicited contact from strangers — while keeping everything visible to people
+  you've actually chosen.
+category: osint_footprint
+subcategory: social_media_exposure
 tracks:
-  - "kids_teen"
-  - "general"
+  - kids_teen
+  - general
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: |
-    Instagram: Settings → Privacy → Account Privacy → Private Account.
-    Also: Settings → Privacy → Messages → set who can DM you to "People You Follow."
+  all: >-
+    Do this
 
-    TikTok: Profile → ☰ → Settings → Privacy → Private Account. Also disable "Suggest your account to others."
+    Set every social and gaming account your child uses to private, or to friends only.
 
-    Snapchat: ⚙ Settings → Privacy Controls → set both "Contact Me" and "View My Story" to Friends.
 
-    Discord: User Settings → Privacy & Safety → set "Who can add you as a friend" and close DMs from server members.
-    Only join servers you or a trusted adult chose — Discord servers are public communities.
+    What to change
 
-    Gaming (Xbox, PlayStation, Steam): each has Account / Privacy settings.
-    Xbox: xbox.com → Settings → Privacy & Online Safety → set to "Friends only."
-    PlayStation: Settings → Account Management → Privacy Settings.
-    Steam: Profile → Edit Profile → Privacy Settings → set all to Friends Only or Private.
-platform_notes_verified:
-  all: "2026-03-04"
+    Look under Privacy in each app.
+
+    Set the account to private. Limit who can message them.
+
+    Limit who can see posts and stories, and turn off anything that suggests their account to
+    strangers.
+
+    Gaming accounts have the same controls under Account or Privacy. Set who can see what they play
+    and who can send friend requests.
+
+
+    Do it together
+
+    Change it with them rather than behind them. Anything they do not understand, they will undo.
+
+
+    Test it
+
+    Search for their username while logged out. If you can see their posts, so can anyone.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -36,20 +56,20 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "30min"
-  ongoing: "negligible"
+  setup: 30min
+  ongoing: negligible
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
+  - opportunistic
+  - targeted_individual
 attack_vectors:
-  - "osint_passive"
-  - "social_engineering"
+  - osint_passive
+  - social_engineering
 assets_protected:
-  - "location"
-  - "relationships"
-  - "identity"
-  - "reputation"
+  - location
+  - relationships
+  - identity
+  - reputation
 controls_implemented: []
 score_weight: 7.5
 threat_model_multipliers:
@@ -58,36 +78,42 @@ threat_model_multipliers:
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "osint-self-001"
-    relationship: "complementary"
-    note: "After setting accounts private, do a self-OSINT check to see what's still publicly visible."
-  - id: "kids-oversharing-001"
-    relationship: "required_companion"
-    note: "Private settings reduce who sees content — but not oversharing in the first place is the deeper protection."
-status: "active"
+  - id: osint-self-001
+    relationship: complementary
+    note: After setting accounts private, do a self-OSINT check to see what's still publicly visible.
+  - id: kids-oversharing-001
+    relationship: required_companion
+    note: >-
+      Private settings reduce who sees content — but not oversharing in the first place is the
+      deeper protection.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://ssd.eff.org/module/protecting-yourself-social-networks"
-    title: "Protecting Yourself on Social Networks — EFF SSD"
-    type: "primary"
-    accessed: "2026-03-04"
+  - url: https://ssd.eff.org/module/protecting-yourself-social-networks
+    title: Protecting Yourself on Social Networks — EFF SSD
+    type: primary
+    accessed: '2026-08-26'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only. Platform privacy settings change frequently — verify current options in your account settings."
+  - jurisdiction: global
+    note: >-
+      Educational purposes only. Platform privacy settings change frequently — verify current
+      options in your account settings.
 emotional_register: null
 tags:
-  - "free"
-  - "quick"
-  - "high_impact"
-  - "kids_appropriate"
-created_at: "2026-03-04"
-created_by: "github:KashishOO7"
+  - free
+  - quick
+  - high_impact
+  - kids_appropriate
+created_at: '2026-03-04'
+created_by: github:KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-03-04"
-    changes: "Initial item."
-    author: "github:KashishOO7"
+  - version: 1.0.0
+    date: '2026-03-04'
+    changes: Initial item.
+    author: github:KashishOO7
+lookups:
+  - lookup-account-settings-001

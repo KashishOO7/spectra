@@ -1,19 +1,49 @@
-id: "auth-backup-codes-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Generate and securely store 2FA backup codes"
-description: "Backup codes are one-time recovery codes generated when you enable 2FA. If you lose your authenticator device, they are your only way back in. Most people never save them and lose account access permanently."
-threat_narrative: "A stolen or broken phone without backup codes means permanent lockout from accounts without recovery options. This happens thousands of times daily. The cost of not having backup codes is losing your account entirely — not a security incident, just a self-inflicted one."
-category: "account_security"
-subcategory: "recovery"
+id: auth-backup-codes-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Save your backup codes somewhere you can reach them
+simple_description: Write down your account backup codes and keep them somewhere safe.
+description: >-
+  Backup codes are one-time recovery codes generated when you enable 2FA. If you lose your
+  authenticator device, they are your only way back in. Most people never save them and lose account
+  access permanently.
+threat_narrative: >-
+  A stolen or broken phone without backup codes means permanent lockout from accounts without
+  recovery options. This happens thousands of times daily. The cost of not having backup codes is
+  losing your account entirely — not a security incident, just a self-inflicted one.
+category: account_security
+subcategory: recovery
 tracks:
-  - "general"
+  - general
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: "After enabling 2FA on any service, locate 'backup codes' or 'recovery codes' in security settings. Download them and store in your password manager's secure notes, or print and store physically in a locked location. Never store in email, cloud notes, or screenshots on your phone."
-platform_notes_verified:
-  all: "2025-01"
+  all: >-
+    Do this
+
+    Save the backup codes for your important accounts somewhere you can actually reach.
+
+
+    Where to find them
+
+    In the security settings of any account with two-step login, look for backup codes or recovery
+    codes.
+
+
+    Where to put them
+
+    In your password manager's notes, or printed and kept somewhere safe. Both is better than
+    either.
+
+    Not in your email. Not in a note on the same phone that makes the codes.
+
+    If losing the phone is the problem, the answer cannot live on the phone.
+
+
+    Test it
+
+    Imagine your phone is gone right now. Could you still get into your email? If not, the codes are
+    in the wrong place.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -21,48 +51,48 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "negligible"
+  setup: 5min
+  ongoing: negligible
 maturity_level: 1
 adversaries:
-  - "opportunistic"
+  - opportunistic
 attack_vectors: []
 assets_protected:
-  - "credentials"
-  - "cloud_data"
+  - credentials
+  - cloud_data
 controls_implemented: []
-score_weight: 5.0
+score_weight: 5
 threat_model_multipliers:
-  opportunistic: 1.0
+  opportunistic: 1
 compensating_controls: []
 depends_on:
-  - id: "auth-2fa-001"
-    reason: "Backup codes exist because of 2FA. Enable 2FA first."
+  - id: auth-2fa-001
+    reason: Backup codes exist because of 2FA. Enable 2FA first.
     hard_dependency: true
 related_items: []
-status: "active"
+status: active
 superseded_by: null
-last_verified: "2026-03-31"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:privacyguides.org"
+  - org:privacyguides.org
 sources:
-  - url: "https://privacyguides.org/en/basics/multi-factor-authentication/"
-    title: "Multi-Factor Authentication — Privacy Guides"
-    type: "primary"
-    accessed: "2025-01-01"
+  - url: https://privacyguides.org/en/basics/multi-factor-authentication/
+    title: Multi-Factor Authentication — Privacy Guides
+    type: primary
+    accessed: '2026-08-26'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only."
+  - jurisdiction: global
+    note: Educational purposes only.
 emotional_register: null
 tags:
-  - "free"
-  - "quick"
-  - "recovery"
-created_at: "2025-01-01"
-created_by: "github:@KashishOO7"
+  - free
+  - quick
+  - recovery
+created_at: '2025-01-01'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2025-01-01"
-    changes: "Initial item."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2025-01-01'
+    changes: Initial item.
+    author: github:@KashishOO7

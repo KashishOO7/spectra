@@ -1,19 +1,50 @@
-id: "human-urgency-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Train yourself to pause when you feel urgency from external messages"
-description: "Urgency is the most common manipulation technique in phishing, fraud calls, and social engineering. Attackers manufacture time pressure specifically to disable critical thinking. Any message demanding immediate action without time to verify deserves maximum suspicion."
-threat_narrative: "Every successful social engineering attack works by preventing you from thinking. 'Your account will be closed in 24 hours.' 'This is IT support — your computer is compromised right now.' 'The boss needs gift cards immediately.' All exploit the same psychological trigger. Urgency is a red flag, never a reason to act faster. Training yourself to pause for 10 minutes before responding to any urgent external request costs nothing and defeats the most common attack vector in existence."
-category: "human_vulnerability"
-subcategory: "emotional_triggers"
+id: human-urgency-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Train yourself to pause when you feel urgency from external messages
+simple_description: Slow down when a message pressures you to act immediately.
+description: >-
+  Urgency is the most common manipulation technique in phishing, fraud calls, and social
+  engineering. Attackers manufacture time pressure specifically to disable critical thinking. Any
+  message demanding immediate action without time to verify deserves maximum suspicion.
+threat_narrative: >-
+  Every successful social engineering attack works by preventing you from thinking. 'Your account
+  will be closed in 24 hours.' 'This is IT support — your computer is compromised right now.' 'The
+  boss needs gift cards immediately.' All exploit the same psychological trigger. Urgency is a red
+  flag, never a reason to act faster. Training yourself to pause for 10 minutes before responding to
+  any urgent external request costs nothing and defeats the most common attack vector in existence.
+category: human_vulnerability
+subcategory: emotional_triggers
 tracks:
-  - "general"
+  - general
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: "This is a behavioral practice, not a software setting. The rule: when you feel urgency from an external message or call, wait 10 minutes before responding. Verify through an independent channel — look up the phone number yourself from the official website, not from the message. Every real emergency can survive 10 minutes."
-platform_notes_verified:
-  all: "2025-01"
+  all: >-
+    Do this
+
+    When a message or a call pushes you to act right now, wait ten minutes before you do anything.
+
+
+    Why ten minutes
+
+    The pressure is the tool. It is there to stop you checking.
+
+    Ten minutes is long enough to notice it, and every real emergency survives it.
+
+
+    Then check
+
+    Go back a different way. Look the number up yourself, or type the address in. Never the number
+    or link in the message.
+
+
+    Test it
+
+    Next time something urgent arrives, notice how it makes you feel before you work out what it
+    says.
+
+    That feeling is the thing you are training against.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -21,64 +52,68 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "ongoing_low"
+  setup: 5min
+  ongoing: low
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
-  - "criminal_org"
-  - "ai_automated"
+  - opportunistic
+  - targeted_individual
+  - criminal_org
+  - ai_automated
 attack_vectors:
-  - "phishing"
-  - "spear_phishing"
-  - "social_engineering"
-  - "voice_clone"
+  - phishing
+  - spear_phishing
+  - social_engineering
+  - voice_clone
 assets_protected:
-  - "credentials"
-  - "financial"
-  - "identity"
-  - "cloud_data"
+  - credentials
+  - financial
+  - identity
+  - cloud_data
 controls_implemented: []
-score_weight: 8.0
+score_weight: 8
 threat_model_multipliers:
   opportunistic: 1.2
   targeted_individual: 1.5
   criminal_org: 1.4
-  ai_automated: 2.0
+  ai_automated: 2
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "human-verify-001"
-    relationship: "required_companion"
-    note: "Pausing is the first step. Independent verification is the second."
-  - id: "ai-voice-clone-001"
-    relationship: "complementary"
-    note: "AI voice cloning makes urgency attacks more convincing. These defenses work together."
-status: "active"
+  - id: human-verify-001
+    relationship: required_companion
+    note: Pausing is the first step. Independent verification is the second.
+  - id: ai-voice-clone-001
+    relationship: complementary
+    note: AI voice cloning makes urgency attacks more convincing. These defenses work together.
+status: active
 superseded_by: null
-last_verified: "2026-03-31"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://ssd.eff.org/module/how-avoid-phishing-attacks"
-    title: "How to Avoid Phishing Attacks — EFF SSD"
-    type: "primary"
-    accessed: "2025-01-01"
+  - url: https://ssd.eff.org/module/how-avoid-phishing-attacks
+    title: How to Avoid Phishing Attacks — EFF SSD
+    type: primary
+    accessed: '2026-08-26'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only. This is behavioral guidance based on published social psychology research."
-emotional_register: "urgency"
+  - jurisdiction: global
+    note: >-
+      Educational purposes only. This is behavioral guidance based on published social psychology
+      research.
+emotional_register: urgency
 tags:
-  - "behavioral"
-  - "high_impact"
-  - "free"
-  - "no_tools_required"
-created_at: "2025-01-01"
-created_by: "github:@KashishOO7"
+  - behavioral
+  - high_impact
+  - free
+  - no_tools_required
+created_at: '2025-01-01'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2025-01-01"
-    changes: "Initial item."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2025-01-01'
+    changes: Initial item.
+    author: github:@KashishOO7
+lookups:
+  - lookup-is-this-a-scam-001

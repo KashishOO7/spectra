@@ -1,16 +1,14 @@
-id: "womens-online-harassment-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-
-title: "Prepare a response plan for targeted online harassment"
-
+id: womens-online-harassment-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Prepare a response plan for targeted online harassment
+simple_description: Write down what you would do if someone targets you online.
 description: |
   Targeted online harassment campaigns follow recognisable patterns: coordinated
   contact across platforms, public posts designed to amplify, doxxing, and contact
   attempts to employers or family. Having a prepared plan — documentation strategy,
   reporting pathways, privacy hardening steps — before an incident makes response
   faster and more effective. This item helps you build that plan.
-
 threat_narrative: |
   Online harassment campaigns targeting women can escalate from social media attacks
   to physical-world contact within days, especially when home addresses or employer
@@ -19,168 +17,143 @@ threat_narrative: |
   sustained harassment is well-documented and severe. A prepared response plan
   doesn't prevent harassment, but it dramatically reduces the time between
   onset and effective action — and preserves the evidence needed for legal remedies.
-
-category: "incident_response"
-subcategory: "reporting"
-
+category: incident_response
+subcategory: reporting
 tracks:
-  - "womens_safety"
-
+  - womens_safety
 platforms:
-  - "all"
-
+  - all
 platform_notes:
-  web: |
-    Documentation first — before blocking or reporting:
-    Take screenshots with timestamps, noting platform, username, date, and content.
-    Tools: GoFullPage (Chrome extension) for full-page captures.
-    Hunchly (hunch.ly) for systematic evidence collection with automatic timestamps.
-    A plain folder of dated screenshots is sufficient if nothing else is available.
-    
-    Reporting pathways by platform:
-    - Twitter/X: twitter.com/en/safety/report-abuse — use "targeted harassment" category
-    - Meta (Instagram/Facebook): Help Centre → Report → Harassment
-    - TikTok: Long-press content → Report
-    - YouTube: Three dots → Report
-    
-    For coordinated campaigns: Platforms have escalated review teams. Use terms
-    "coordinated harassment" and "brigading" in reports — these route differently
-    than individual content reports. For high-volume campaigns, contact Trust &
-    Safety teams directly via email if available (most major platforms have these).
-    
-    PEN America's Online Harassment Field Manual (onlineharassmentfieldmanual.pen.org)
-    has platform-by-platform reporting guides kept current. Use it.
-  android: |
-    Enable 2-step verification on Google account immediately — harassment campaigns
-    often include account takeover attempts.
-    Review location history: Settings → Google → Manage your Google Account →
-    Data & Privacy → Location History.
-    Turn off "Find my device" broadcasting if concerned about location exposure.
-  ios: |
-    Enable 2FA on Apple ID immediately if not already active.
-    Review which apps can access your location and contacts.
-    Settings → Privacy & Security → Location Services — audit every app.
-    Consider switching to a separate Apple ID for less identifiable accounts.
+  all: >-
+    Before you start
 
-platform_notes_verified:
-  web: "2026-03"
-  android: "2026-03"
-  ios: "2026-03"
+    Keep the evidence before you block or report anything. Screenshots with the date, the platform
+    and the username.
 
+    Once you block, you may lose your access to it.
+
+
+    Do this
+
+    Decide what you will do now, so you are not deciding it while it is happening.
+
+
+    Your plan, in order
+
+    Record first. A dated folder of screenshots is enough.
+
+    Lock your accounts.
+
+    These campaigns often arrive with attempts to get into your accounts, so two-step login matters
+    more this week than any other.
+
+    Report with the right words. If several accounts are involved say coordinated harassment, not
+    just harassment.
+
+    That phrase routes to a different team on most platforms.
+
+    Do not reply. Engagement is what keeps it going.
+
+
+    Where to get help
+
+    PEN America's Online Harassment Field Manual keeps reporting guides for each platform current.
+
+    onlineharassmentfieldmanual.pen.org
+
+    The Cyber Civil Rights Initiative runs a crisis line: cybercivilrights.org/ccri-safety-center/
 not_applicable_if: []
-
 sensitive: true
-
 difficulty:
   technical: 1
   disruption: 2
   reversibility: 1
-
 time_estimate:
-  setup: "2hr"
-  ongoing: "low"
-
+  setup: 2hr
+  ongoing: low
 maturity_level: 2
-
 adversaries:
-  - "targeted_individual"
-  - "opportunistic"
-  - "ai_automated"
-
+  - targeted_individual
+  - opportunistic
+  - ai_automated
 attack_vectors:
-  - "osint_passive"
-  - "social_engineering"
-  - "data_broker_aggregation"
-  - "phishing"
-
+  - osint_passive
+  - social_engineering
+  - data_broker_aggregation
+  - phishing
 assets_protected:
-  - "reputation"
-  - "location"
-  - "relationships"
-  - "identity"
-  - "financial"
-
+  - reputation
+  - location
+  - relationships
+  - identity
+  - financial
 controls_implemented: []
-
 score_weight: 7.5
-
 threat_model_multipliers:
   targeted_individual: 1.8
   opportunistic: 1.2
   ai_automated: 1.5
-
 compensating_controls: []
-
 depends_on: []
-
 related_items:
-  - id: "womens-image-abuse-001"
-    relationship: "related_concept"
-    note: "NCII is frequently weaponised as part of harassment campaigns."
-  - id: "womens-stalkerware-001"
-    relationship: "related_concept"
-    note: "Harassment often escalates when an abuser has physical or device access."
-  - id: "osint-self-001"
-    relationship: "related_concept"
-    note: "Self-OSINT reveals what information a harasser can find about you. Do this first."
-  - id: "data-broker-optout-001"
-    relationship: "related_concept"
-    note: "Data brokers are frequently the source of home addresses in doxxing attacks."
-  - id: "incident-breach-monitor-001"
-    relationship: "related_concept"
-    note: "Harassers sometimes use breached credentials as an entry point. Monitor for this."
-
-status: "active"
+  - id: womens-image-abuse-001
+    relationship: related_concept
+    note: NCII is frequently weaponised as part of harassment campaigns.
+  - id: womens-stalkerware-001
+    relationship: related_concept
+    note: Harassment often escalates when an abuser has physical or device access.
+  - id: osint-self-001
+    relationship: related_concept
+    note: Self-OSINT reveals what information a harasser can find about you. Do this first.
+  - id: data-broker-optout-001
+    relationship: related_concept
+    note: Data brokers are frequently the source of home addresses in doxxing attacks.
+  - id: incident-breach-monitor-001
+    relationship: related_concept
+    note: Harassers sometimes use breached credentials as an entry point. Monitor for this.
+status: active
 superseded_by: null
-
-last_verified: "2026-03-01"
-
+last_verified: '2026-03-01'
 verified_by:
-  - "org:eff.org"
-
+  - org:eff.org
 sources:
-  - url: "https://onlineharassmentfieldmanual.pen.org"
-    title: "PEN America Online Harassment Field Manual"
-    type: "primary"
-    accessed: "2026-03-01"
-  - url: "https://www.eff.org/issues/online-harassment"
-    title: "EFF — Online Harassment"
-    type: "supporting"
-    accessed: "2026-03-01"
-
+  - url: https://onlineharassmentfieldmanual.pen.org
+    title: PEN America Online Harassment Field Manual
+    type: primary
+    accessed: '2026-03-01'
+  - url: https://www.eff.org/issues/online-harassment
+    title: EFF — Online Harassment
+    type: supporting
+    accessed: '2026-03-01'
 resources: []
-
 legal_notes:
-  - jurisdiction: "global"
+  - jurisdiction: global
     note: |
       Educational guidance only — not legal advice. Document everything before
       acting: evidence preserved now may be essential for legal action later.
       Organisations that can help:
-      - Cyber Civil Rights Initiative: cybercivilrights.org (crisis line: +1-844-878-2274)
+      - Cyber Civil Rights Initiative: cybercivilrights.org/ccri-safety-center/
       - Coalition Against Online Violence: onlineviolenceresponsehub.org
       - Online SOS (journalists): onlinesos.org
       Laws around harassment, doxxing, and threatening communications vary by
       jurisdiction. A qualified attorney familiar with online abuse cases can advise
       on civil and criminal options.
-  - jurisdiction: "GB"
+  - jurisdiction: GB
     note: |
       The Online Safety Act 2023 covers coordinated harassment and sending harmful
       content. Report to police and to Ofcom for systemic platform failures.
       Suzy Lamplugh Trust (suzylamplugh.org) provides practical safety advice.
-
 emotional_register: null
-
 tags:
-  - "free"
-  - "response_pathway"
-  - "requires_preparation"
-  - "high_impact"
-  - "documentation_required"
-
-created_at: "2026-03-04"
-created_by: "github:@KashishOO7"
+  - free
+  - response_pathway
+  - requires_preparation
+  - high_impact
+  - documentation_required
+created_at: '2026-03-04'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-03-04"
-    changes: "Initial item creation."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2026-03-04'
+    changes: Initial item creation.
+    author: github:@KashishOO7

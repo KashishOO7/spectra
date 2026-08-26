@@ -1,7 +1,8 @@
-id: "data-permissions-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Audit and revoke excessive app permissions"
+id: data-permissions-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Check which apps can see your camera, mic and location
+simple_description: Turn off camera, microphone and location access for apps that do not need it.
 description: |
   Apps routinely request access to your location, microphone, camera, contacts, and photos
   far beyond what their core function requires. Each granted permission is a standing data
@@ -16,56 +17,40 @@ threat_narrative: |
   someone you didn't choose to share with.
 category: data_management
 subcategory: data_minimization
-tracks: ["general"]
-platforms: ["android", "ios", "windows", "macos"]
+tracks:
+  - general
+platforms:
+  - android
+  - ios
+  - windows
+  - macos
 platform_notes:
-  android: |
-    Settings → Privacy → Permission Manager
-    Review each category: Location, Microphone, Camera, Contacts, Storage, Phone.
-    For Location specifically: change most apps from "Allow all the time" to
-    "Allow only while using" or "Deny". Only navigation apps need always-on location.
+  all: >-
+    Do this
 
-    Also audit: Settings → Apps → [App] → Permissions for per-app view.
+    Go through the apps on your phone and take back the permissions they do not need.
 
-    Key red flags to revoke immediately:
-    - Flashlight apps with location
-    - Games with contacts or microphone
-    - Utilities with camera access
-    - Keyboards with network access (use Gboard or AOSP keyboard instead)
 
-    Use "Permission Remover" mindset: if you cannot immediately explain WHY the app
-    needs this permission for its core function, revoke it.
-  ios: |
-    Settings → Privacy & Security → [Each category]
-    iOS is more restrictive by default but still worth auditing.
+    The question to ask
 
-    Focus areas:
-    - Location Services: Set most to "Never" or "While Using". Check for "Always" — should
-      be only Maps or navigation apps.
-    - Tracking: Settings → Privacy & Security → Tracking → disable "Allow Apps to Request"
-    - Photos: most apps should have "Selected Photos" not "Full Access"
-    - Contacts: revoke from social apps that don't need to find your contacts
+    If you cannot say why an app needs your camera, microphone, contacts or location to do its
+    actual job, turn it off.
 
-    Check Settings → [App Name] for per-app permission summary.
-  windows: |
-    Settings → Privacy & Security → App Permissions
-    Review each category: Location, Camera, Microphone, Contacts, Calendar.
-    Disable access for the Microsoft Store categories entirely if you don't use those features.
+    A torch app does not need to know where you are.
 
-    Also check: Settings → Privacy & Security → General → disable advertising ID and
-    "Let websites show locally relevant content" (shares location to sites).
-  macos: |
-    System Settings → Privacy & Security
-    Review: Location Services, Contacts, Calendars, Reminders, Photos, Camera, Microphone.
-    For each: identify apps with access and revoke those with no clear need.
 
-    Also check: System Settings → Privacy & Security → Accessibility — apps with
-    accessibility access have broad system control. Only grant to trusted utilities.
-platform_notes_verified:
-  android: "2026-02-25"
-  ios: "2026-02-25"
-  windows: "2026-02-25"
-  macos: "2026-02-25"
+    Location especially
+
+    Change apps from always on to only while you are using them. Very little needs your location
+    when it is closed.
+
+
+    Test it
+
+    Your phone keeps a recent access list, showing which apps used your camera, mic or location and
+    when.
+
+    Open it after a day and see who has been busy.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -73,31 +58,31 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "30min"
-  ongoing: "low"
+  setup: 30min
+  ongoing: low
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "data_broker"
-  - "criminal_org"
-  - "intimate_partner"
-  - "employer"
-  - "ai_automated"
+  - opportunistic
+  - data_broker
+  - criminal_org
+  - intimate_partner
+  - employer
+  - ai_automated
 attack_vectors:
-  - "malware"
-  - "data_broker_aggregation"
-  - "osint_passive"
-  - "insider_access"
+  - malware
+  - data_broker_aggregation
+  - osint_passive
+  - insider_access
 assets_protected:
-  - "location"
-  - "behavioral_data"
-  - "relationships"
-  - "communications"
-  - "biometrics"
+  - location
+  - behavioral_data
+  - relationships
+  - communications
+  - biometrics
 controls_implemented: []
-score_weight: 7.0
+score_weight: 7
 threat_model_multipliers:
-  opportunistic: 1.0
+  opportunistic: 1
   targeted_individual: 1.3
   criminal_org: 1.1
   intimate_partner: 1.4
@@ -105,44 +90,46 @@ threat_model_multipliers:
   isp_network: 0.4
   data_broker: 1.8
   domestic_government: 1.2
-  foreign_government: 1.0
+  foreign_government: 1
   ai_automated: 1.5
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "device-updates-001"
-    relationship: "complementary"
-    note: "Keep apps updated — new permissions are sometimes added silently in updates."
-status: "active"
+  - id: device-updates-001
+    relationship: complementary
+    note: Keep apps updated — new permissions are sometimes added silently in updates.
+status: active
 superseded_by: null
-last_verified: "2026-02-25"
+last_verified: '2026-02-25'
 verified_by:
-  - "org:eff.org"
-  - "org:privacyguides.org"
+  - org:eff.org
+  - org:privacyguides.org
 sources:
-  - url: "https://ssd.eff.org/module/how-to-get-to-know-android-privacy-and-security-settings"
-    title: "Android Privacy and Security Settings — EFF Surveillance Self-Defense"
-    type: "primary"
-    accessed: "2026-03-06"
-  - url: "https://privacyguides.org/en/android/"
-    title: "Android Privacy and Security Settings — EFF Surveillance Self-Defense"
-    type: "supporting"
-    accessed: "2026-02-25"
+  - url: https://ssd.eff.org/module/how-to-get-to-know-android-privacy-and-security-settings
+    title: Android Privacy and Security Settings — EFF Surveillance Self-Defense
+    type: primary
+    accessed: '2026-03-06'
+  - url: https://privacyguides.org/en/android/
+    title: Android Privacy and Security Settings — EFF Surveillance Self-Defense
+    type: supporting
+    accessed: '2026-02-25'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "This is educational information only. Revoking permissions may limit app functionality."
+  - jurisdiction: global
+    note: This is educational information only. Revoking permissions may limit app functionality.
 emotional_register: null
 tags:
-  - "free"
-  - "quick_win"
-  - "mobile_focused"
-  - "no_tools_required"
-  - "high_impact_low_effort"
-created_at: "2026-02-25"
-created_by: "github:KashishOO7"
+  - free
+  - quick_win
+  - mobile_focused
+  - no_tools_required
+  - high_impact_low_effort
+created_at: '2026-02-25'
+created_by: github:KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-02-25"
-    changes: "Initial item."
-    author: "github:KashishOO7"
+  - version: 1.0.0
+    date: '2026-02-25'
+    changes: Initial item.
+    author: github:KashishOO7
+lookups:
+  - lookup-account-settings-001

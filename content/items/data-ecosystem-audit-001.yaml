@@ -1,118 +1,48 @@
-id: "data-ecosystem-audit-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Audit privacy settings on your primary account ecosystems"
-description: |
-  Google, Microsoft, Apple, and Meta each run a privacy dashboard where dozens
-  of data collection toggles are enabled by default. Activity tracking, ad
-  personalisation, location history, voice recordings, AI training opt-ins,
-  diagnostic telemetry. Most people never open these dashboards. The data
-  collected feeds ad networks, trains models, and builds profiles that persist
-  even if you delete the app.
-threat_narrative: |
-  Your account ecosystem knows more about you than any single app. Google
-  tracks search history, location, YouTube watches, voice commands, and app
-  usage across every Android device. Microsoft collects activity history,
-  Cortana recordings, and browsing data through Edge. Apple collects Siri
-  transcripts and analytics. Meta builds a shadow profile from your activity
-  across Facebook, Instagram, Threads, and WhatsApp metadata. All of this is
-  on by default. An attacker who compromises your account inherits this entire
-  history. A data broker who buys aggregated ad data gets a slice of it.
-category: "data_management"
-subcategory: "data_minimization"
+id: data-ecosystem-audit-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Check the privacy settings on the accounts you use most
+simple_description: Turn off ad tracking and history in the accounts you use most.
+description: >-
+  Every big account provider has a privacy dashboard, and most people have never opened theirs.
+  Activity history, ad personalisation, location history, voice recordings and AI training settings
+  all live there. You will not know what is switched on until you look, and the answer differs by
+  company, by country, and by when you made the account.
+threat_narrative: >-
+  The accounts you sign in with know more about you than any single app, because they see you across
+  all of it. Two things follow. Anyone who gets into one of those accounts inherits whatever history
+  it holds, not just the login. And whatever is shared onward for advertising is out of your hands
+  once it goes. Neither depends on which provider you use, which is why the fix is the same
+  everywhere: open the dashboard and see for yourself.
+category: data_management
+subcategory: data_minimization
 tracks:
-  - "general"
+  - general
 platforms:
-  - "android"
-  - "ios"
-  - "windows"
-  - "macos"
-  - "web"
+  - android
+  - ios
+  - windows
+  - macos
+  - web
 platform_notes:
-  android: |
-    YOUR GOOGLE ACCOUNT — myaccount.google.com/privacycheckup
+  all: >-
+    Do this
 
-    Walk through Google's Privacy Checkup. Focus on these categories:
-    • Web & App Activity — controls search, Maps, Assistant, and app usage tracking.
-      Turn off or set to auto-delete (3 months minimum).
-    • Location History (Timeline) — tracks everywhere you go. Turn off entirely
-      unless you actively use Timeline.
-    • YouTube History — watch and search history. Turn off or auto-delete.
-    • Ad Personalisation — myaccount.google.com/data-and-privacy → Ad settings.
-      Turn off personalised ads.
-    • Google AI and Gemini — check for training data opt-ins under Data & Privacy.
-    • Device information, Voice & Audio Activity, Chrome history sync — disable
-      if you don't actively use these features cross-device.
+    Open the settings on the accounts you use most. Turn off what you do not need.
 
-    Also check: Settings → Google → (all services). Many toggles here are on by
-    default including diagnostics, usage stats, and personalised recommendations.
-  ios: |
-    YOUR APPLE ACCOUNT — Settings → [Your Name] → Privacy & Security
 
-    • Analytics & Improvements — disable Share iPhone Analytics, Improve Siri,
-      Share with App Developers.
-    • Apple Advertising — Settings → Privacy & Security → Apple Advertising →
-      disable Personalised Ads.
-    • Siri & Search — review per-app Siri access. Disable "Listen for Hey Siri"
-      if you don't use it. Check Siri & Dictation History and delete it.
-    • iCloud data — review what syncs. Each synced category is stored on Apple
-      servers. Disable sync for data you want to keep local only.
-    • Sign in with Apple — review which apps use it. Revoke access for apps you
-      no longer use.
+    Which ones first
 
-    Also check appleid.apple.com for a web view of devices, app-specific
-    passwords, and data/privacy requests.
-  windows: |
-    YOUR MICROSOFT ACCOUNT — account.microsoft.com/privacy
+    Start with the accounts you use to log in to other things. Your main email. Your phone account.
+    Your social apps.
 
-    • Activity History — disable "Store my activity history on this device" and
-      cloud sync. Clear existing history.
-    • Advertising ID — Settings → Privacy & Security → General → disable all
-      four toggles (advertising ID, language list, app launches, suggested content).
-    • Diagnostic data — Settings → Privacy & Security → Diagnostics & feedback →
-      set to Required only. Disable tailored experiences and improve inking.
-    • Speech, Inking, Typing — disable online speech recognition if you don't use
-      voice features.
-    • Copilot/AI — review any data sharing with Microsoft AI features. Opt out
-      of training data contributions.
+    Your shopping account. Your console.
 
-    Visit privacy.microsoft.com/privacystatement for what Microsoft collects
-    and account.microsoft.com/privacy/ad-settings to disable ad personalisation.
-  macos: |
-    Same Apple account as iOS — see iOS tab for iCloud and Apple ID settings.
 
-    Additional macOS-specific:
-    • System Settings → Privacy & Security → Analytics & Improvements — disable
-      Share Mac Analytics, Improve Siri.
-    • System Settings → Privacy & Security → Apple Advertising → disable.
-    • Spotlight Suggestions — System Settings → Siri & Spotlight → disable
-      Suggestions in Spotlight if you don't want queries sent to Apple.
-  web: |
-    YOUR META ACCOUNTS — facebook.com/privacy/checkup and
-    accountscenter.instagram.com/info_and_permissions/
+    Test it
 
-    • Ad Preferences — disable ad personalisation, clear ad interest categories,
-      turn off activity from partners (off-Meta tracking).
-    • Apps and Websites — revoke access for every app you don't actively use.
-    • Face recognition — disable if offered.
-    • Profile visibility — restrict who can see your friends list, posts, and
-      profile details.
-
-    YOUR AMAZON ACCOUNT — amazon.com/privacyprefs
-
-    • Advertising Preferences — disable personalised ads.
-    • Alexa Privacy — amazon.com/alexa-privacy → review and delete voice
-      recordings. Disable "Help improve Alexa."
-    • Browse and search history — clear and disable.
-
-    General principle for ANY account: find Settings → Privacy, turn off
-    everything you don't actively use, delete existing history where offered.
-platform_notes_verified:
-  android: "2026-04-01"
-  ios: "2026-04-01"
-  windows: "2026-04-01"
-  macos: "2026-04-01"
-  web: "2026-04-01"
+    Find the ad settings page in one of them. If it lists interests you never picked, ads are still
+    being aimed at you.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -120,32 +50,32 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "2hr"
-  ongoing: "low"
+  setup: 2hr
+  ongoing: low
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "data_broker"
-  - "criminal_org"
-  - "targeted_individual"
-  - "intimate_partner"
-  - "employer"
-  - "ai_automated"
+  - opportunistic
+  - data_broker
+  - criminal_org
+  - targeted_individual
+  - intimate_partner
+  - employer
+  - ai_automated
 attack_vectors:
-  - "data_broker_aggregation"
-  - "osint_passive"
-  - "insider_access"
+  - data_broker_aggregation
+  - osint_passive
+  - insider_access
 assets_protected:
-  - "behavioral_data"
-  - "location"
-  - "communications"
-  - "identity"
-  - "relationships"
+  - behavioral_data
+  - location
+  - communications
+  - identity
+  - relationships
 controls_implemented: []
 score_weight: 8.5
 threat_model_multipliers:
-  opportunistic: 1.0
-  data_broker: 2.0
+  opportunistic: 1
+  data_broker: 2
   criminal_org: 1.1
   targeted_individual: 1.4
   intimate_partner: 1.5
@@ -154,36 +84,44 @@ threat_model_multipliers:
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "data-permissions-001"
-    relationship: "complementary"
-    note: "OS-level permissions control what apps can access. Ecosystem settings control what the platform itself collects."
-  - id: "data-browser-hygiene-001"
-    relationship: "complementary"
-    note: "Browser hygiene reduces tracking from third parties. Ecosystem audits reduce tracking from your primary account provider."
-status: "active"
+  - id: data-permissions-001
+    relationship: complementary
+    note: >-
+      OS-level permissions control what apps can access. Ecosystem settings control what the
+      platform itself collects.
+  - id: data-browser-hygiene-001
+    relationship: complementary
+    note: >-
+      Browser hygiene reduces tracking from third parties. Ecosystem audits reduce tracking from
+      your primary account provider.
+status: active
 superseded_by: null
-last_verified: "2026-04-01"
+last_verified: '2026-04-01'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://ssd.eff.org/module/how-to-get-to-know-android-privacy-and-security-settings"
-    title: "Android Privacy and Security Settings — EFF Surveillance Self-Defense"
-    type: "primary"
-    accessed: "2026-04-01"
+  - url: https://ssd.eff.org/module/how-to-get-to-know-android-privacy-and-security-settings
+    title: Android Privacy and Security Settings — EFF Surveillance Self-Defense
+    type: primary
+    accessed: '2026-04-01'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only. Dashboard URLs and setting names may change. The categories of concern (tracking, ads, location, sharing, AI) remain consistent across platform redesigns."
+  - jurisdiction: global
+    note: >-
+      Educational purposes only. Setting names and menus change often. What they control does not,
+      which is why this step gives you the words rather than the clicks.
 emotional_register: null
 tags:
-  - "free"
-  - "high_impact"
-  - "default_settings"
-  - "data_leakage"
-created_at: "2026-04-01"
-created_by: "github:@KashishOO7"
+  - free
+  - high_impact
+  - default_settings
+  - data_leakage
+created_at: '2026-04-01'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-04-01"
-    changes: "Initial item."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2026-04-01'
+    changes: Initial item.
+    author: github:@KashishOO7
+lookups:
+  - lookup-account-settings-001

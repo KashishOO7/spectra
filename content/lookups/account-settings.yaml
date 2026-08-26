@@ -1,0 +1,39 @@
+# Table A. The words companies use for their own settings sections.
+
+- id: lookup-account-settings-001
+  schema_version: 1.0.0
+  version: 1.0.0
+  title: Where to look in any account
+  intro: >-
+    Every company lays its settings out differently. Most use the same words. These are the
+    sections worth opening on any account you care about.
+  status: active
+  last_verified: '2026-08-26'
+  verified_by: spectra-maintainer
+  rows:
+    - look_for: Privacy
+      also_called: Privacy & Safety · Privacy and security · Audience
+      why: Who can see what you post, and who can contact you.
+    - look_for: Ads
+      also_called: Ad preferences · Personalisation · Interest-based ads
+      why: Whether ads are picked using what you do on other sites and apps.
+    - look_for: Data
+      also_called: Your data · Data sharing · Download your information
+      why: What gets passed to partners, and how to get a copy of what they hold.
+    - look_for: Activity
+      also_called: History · Activity log · My activity
+      why: What is kept about you, and whether it deletes itself after a while.
+    - look_for: Connected apps
+      also_called: Apps and websites · Third-party apps · Linked accounts
+      why: Other services still holding access, often ones you forgot about.
+    - look_for: Visibility
+      also_called: Who can find me · Discoverability · Search settings
+      why: Whether people can find you by your phone number or email address.
+    - look_for: Security
+      also_called: Login & security · Sign-in · Two-step verification
+      why: Two-step login, and which devices are signed in right now.
+  notes:
+    - Most of these are switched on by default.
+    - Worth checking again once a year. Settings reappear after policy changes and redesigns.
+  sources: []
+  verify_yourself: Open the settings on an account you already have. You should recognise most of these words.

@@ -1,0 +1,38 @@
+# Table B. How to judge a tool, so we never have to name one.
+
+- id: lookup-choosing-a-tool-001
+  schema_version: 1.0.0
+  version: 1.0.0
+  title: How to judge a tool before you trust it
+  intro: >-
+    We do not tell you which app to install. Companies get bought, change their terms, or quietly
+    start doing something new, and a recommendation written last year cannot know that. Here is
+    what to check instead, whichever tool you are looking at.
+  status: active
+  last_verified: '2026-08-26'
+  verified_by: spectra-maintainer
+  rows:
+    - look_for: You can see the code
+      also_called: Open source
+      why: Anyone can check what it really does. Not a guarantee, but closed tools cannot be checked at all.
+    - look_for: Someone independent has checked it
+      also_called: Security audit · Third-party review
+      why: A published audit, with the findings public. A claim of being audited is not the same thing.
+    - look_for: It is still being worked on
+      also_called: Active development
+      why: Look at when it was last updated. Security tools that stop getting fixed stop being safe.
+    - look_for: You can see how it makes money
+      also_called: Funding · Business model
+      why: If you are not paying and there are no ads, something else is paying, and it is worth knowing what.
+    - look_for: It works on your devices
+      also_called: Cross-platform
+      why: A tool you can only use on one device is one you will stop using.
+    - look_for: You can actually use it
+      also_called: Usability · Documentation
+      why: The safest tool is the one you keep using. Complicated is not the same as secure.
+  notes:
+    - No single row settles it. Weigh them together.
+    - For a current shortlist in any category, use the guides on the resources page. They update far more often than we could.
+  sources:
+    - title: 'Privacy Guides: general criteria for recommendations'
+      url: https://www.privacyguides.org/en/about/criteria/

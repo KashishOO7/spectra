@@ -1,19 +1,52 @@
-id: "incident-breach-monitor-001"
-schema_version: "1.0.0"
-version: "1.1.0"
-title: "Set up breach monitoring for your email addresses"
-description: "Breach monitoring services alert you when your email address or password appears in a known data breach. This gives you early warning to change compromised credentials before attackers use them — typically weeks or months before you would otherwise know."
-threat_narrative: "Most people discover their credentials were breached when their accounts are already compromised. The average time between a breach occurring and an individual discovering their data was exposed is over 200 days. Breach monitoring services index billions of leaked credentials and notify you within days of exposure. Early warning is the difference between rotating a password and recovering a hijacked account."
-category: "incident_response"
-subcategory: "breach_detection"
+id: incident-breach-monitor-001
+schema_version: 1.0.0
+version: 1.2.0
+title: Set up breach monitoring for your email addresses
+simple_description: Sign up to be told when your email turns up in a data leak.
+description: >-
+  Breach monitoring services alert you when your email address or password appears in a known data
+  breach. This gives you early warning to change compromised credentials before attackers use them —
+  typically weeks or months before you would otherwise know.
+threat_narrative: >-
+  Most people discover their credentials were breached when their accounts are already compromised.
+  The average time between a breach occurring and an individual discovering their data was exposed
+  is over 200 days. Breach monitoring services index billions of leaked credentials and notify you
+  within days of exposure. Early warning is the difference between rotating a password and
+  recovering a hijacked account.
+category: incident_response
+subcategory: breach_detection
 tracks:
-  - "general"
+  - general
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: "Sign up at haveibeenpwned.com with every email address you use (free). Mozilla Monitor (monitor.mozilla.org) wraps the same database and supports up to 20 email addresses per account. For ongoing monitoring, some password managers (Bitwarden, 1Password) include breach alerts built in."
-platform_notes_verified:
-  all: "2025-01"
+  all: >-
+    Do this
+
+    Set up an alert so you hear about it when your email turns up in a leak.
+
+
+    How
+
+    Put each address you use into Have I Been Pwned at haveibeenpwned. com.
+
+    Searching is free and needs no account, and it can tell you when a new leak includes you.
+
+    Many password managers run the same check for the accounts they hold, so look there too if you
+    use one.
+
+
+    When one arrives
+
+    Change that password, then change it anywhere else you used the same one.
+
+    The second part is the part people skip, and it is the part that matters.
+
+
+    Test it
+
+    Search an address you have had for years. Most turn up in something, and that is rather the
+    point.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -21,20 +54,20 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "negligible"
+  setup: 5min
+  ongoing: negligible
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "criminal_org"
-  - "targeted_individual"
+  - opportunistic
+  - criminal_org
+  - targeted_individual
 attack_vectors:
-  - "credential_stuffing"
-  - "data_broker_aggregation"
+  - credential_stuffing
+  - data_broker_aggregation
 assets_protected:
-  - "credentials"
-  - "cloud_data"
-  - "financial"
+  - credentials
+  - cloud_data
+  - financial
 controls_implemented: []
 score_weight: 6.5
 threat_model_multipliers:
@@ -44,37 +77,48 @@ threat_model_multipliers:
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "auth-password-manager-001"
-    relationship: "required_companion"
-    note: "Breach monitoring alerts you. A password manager makes acting on the alert fast — change just that one unique password."
-status: "active"
+  - id: auth-password-manager-001
+    relationship: required_companion
+    note: >-
+      Breach monitoring alerts you. A password manager makes acting on the alert fast — change just
+      that one unique password.
+status: active
 superseded_by: null
-last_verified: "2026-03-31"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://haveibeenpwned.com/FAQs"
-    title: "Have I Been Pwned FAQ — How breach monitoring works"
-    type: "primary"
-    accessed: "2025-01-01"
-resources: []
+  - url: https://haveibeenpwned.com/FAQs
+    title: Have I Been Pwned FAQ — How breach monitoring works
+    type: primary
+    accessed: '2026-08-26'
+resources:
+  - id: res-guide-passwords-001
+    context: lists managers, some of which check for breaches for you.
+    platform_specific: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only. These services check your credentials against known breach databases — your credentials are hashed and not stored in plaintext."
+  - jurisdiction: global
+    note: >-
+      Educational purposes only. These services check your credentials against known breach
+      databases — your credentials are hashed and not stored in plaintext.
 emotional_register: null
 tags:
-  - "free"
-  - "quick"
-  - "monitoring"
-  - "incident_response"
-created_at: "2025-01-01"
-created_by: "github:@KashishOO7"
+  - free
+  - quick
+  - monitoring
+  - incident_response
+created_at: '2025-01-01'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.1.0"
-    date: "2026-04-01"
-    changes: "Firefox Monitor renamed to Mozilla Monitor. Updated URL and added 20-email limit detail. Monitor Plus shut down Dec 2025; free tier unaffected."
-    author: "github:@KashishOO7"
-  - version: "1.0.0"
-    date: "2025-01-01"
-    changes: "Initial item."
-    author: "github:@KashishOO7"
+  - version: 1.1.0
+    date: '2026-04-01'
+    changes: >-
+      Firefox Monitor renamed to Mozilla Monitor. Updated URL and added 20-email limit detail.
+      Monitor Plus shut down Dec 2025; free tier unaffected.
+    author: github:@KashishOO7
+  - version: 1.0.0
+    date: '2025-01-01'
+    changes: Initial item.
+    author: github:@KashishOO7
+lookups:
+  - lookup-choosing-a-tool-001

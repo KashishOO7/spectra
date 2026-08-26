@@ -1,7 +1,8 @@
-id: "comm-messaging-001"
-schema_version: "1.0.0"
-version: "2.0.0"
-title: "Switch primary messaging to an end-to-end encrypted app"
+id: comm-messaging-001
+schema_version: 1.0.0
+version: 2.1.0
+title: Switch primary messaging to an end-to-end encrypted app
+simple_description: Move your everyday messages to a chat app that encrypts them.
 description: |
   End-to-end encryption (E2EE) means only you and the recipient can read messages — 
   not the app company, not your ISP, not anyone intercepting the connection. SMS and 
@@ -11,31 +12,45 @@ threat_narrative: |
   with SS7 network access. WhatsApp uses E2EE for messages but its metadata (who you 
   message, when, how often) goes to Meta. For true privacy, you need E2EE paired with 
   zero-knowledge metadata architecture.
-category: "communications"
-subcategory: "messaging"
+category: communications
+subcategory: messaging
 tracks:
-  - "general"
-  - "journalist"
-  - "womens_safety"
+  - general
+  - journalist
+  - womens_safety
 platforms:
-  - "all"
+  - all
 platform_notes:
-  general: |
-    TIER 1 — Best for Most: Signal
-    The gold standard for E2EE. Audited, open-source, non-profit. Metadata is sealed.
-    Caveat: Requires a phone number to register (though you can now hide it in app settings).
-    
-    TIER 2 — Advanced Anonymity: SimpleX Chat or Session
-    For threat models where linking a phone number to an identity is dangerous.
-    • SimpleX: No user IDs whatsoever. Routes traffic via decentralized servers.
-    • Session: Uses onion-routing to hide IP addresses. No phone number required.
-  android: "Install Signal from Play Store or signal.org/android. Do not use standard SMS apps for sensitive data."
-  ios: "Signal available on App Store. While iMessage is E2EE, it lacks cross-platform compatibility and Apple retains metadata/backups if Advanced Data Protection is off."
-  windows: "Signal desktop app at signal.org. Must be linked to a mobile Signal account."
-  macos: "Signal desktop at signal.org."
-  linux: "Signal available via apt or flatpak for standard distros."
-platform_notes_verified:
-  all: "2026-03-04"
+  all: >-
+    Do this
+
+    Move your everyday messages to an app that encrypts them end to end.
+
+
+    What to look for
+
+    Encryption on by default, for every chat, not something you switch on each time.
+
+    Code others can inspect.
+
+    And ask what it knows besides your messages, because who you spoke to and when is its own kind
+    of record.
+
+    If giving a phone number is a problem for you, some apps do not ask for one.
+
+
+    Worth knowing
+
+    Encryption protects a message on its way. Anyone holding an unlocked phone at either end reads
+    it anyway.
+
+
+    Test it
+
+    Open a chat and find the safety or verification screen.
+
+    If you can compare a short code with the other person, the encryption is real and nobody is
+    sitting in the middle.
 environment_notes:
   encrypted_comms_restricted: |
     Switching to Signal may be visible to your ISP or carrier even if message
@@ -53,59 +68,66 @@ difficulty:
   disruption: 2
   reversibility: 1
 time_estimate:
-  setup: "10min"
-  ongoing: "negligible"
+  setup: 10min
+  ongoing: negligible
 maturity_level: 2
 adversaries:
-  - "isp_network"
-  - "domestic_government"
-  - "foreign_government"
-  - "criminal_org"
-  - "targeted_individual"
+  - isp_network
+  - domestic_government
+  - foreign_government
+  - criminal_org
+  - targeted_individual
 attack_vectors:
-  - "network_interception"
-  - "metadata_analysis"
+  - network_interception
+  - metadata_analysis
 assets_protected:
-  - "communications"
-  - "metadata"
-  - "relationships"
+  - communications
+  - metadata
+  - relationships
 controls_implemented: []
-score_weight: 8.0
+score_weight: 8
 threat_model_multipliers:
   isp_network: 1.8
-  domestic_government: 2.0
-  foreign_government: 2.0
+  domestic_government: 2
+  foreign_government: 2
   criminal_org: 1.4
   targeted_individual: 1.5
   intimate_partner: 1.2
 compensating_controls: []
 depends_on: []
 related_items: []
-status: "active"
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:privacyguides.org"
-  - "org:eff.org"
+  - org:privacyguides.org
+  - org:eff.org
 sources:
-  - url: "https://privacyguides.org/en/real-time-communication/"
-    title: "Real-Time Communication — Privacy Guides"
-    type: "primary"
-    accessed: "2026-03-04"
-  - url: "https://ssd.eff.org/module/communicating-others"
-    title: "Communicating with Others — EFF Surveillance Self-Defense"
-    type: "supporting"
-    accessed: "2026-03-04"
-resources: []
+  - url: https://privacyguides.org/en/real-time-communication/
+    title: Real-Time Communication — Privacy Guides
+    type: primary
+    accessed: '2026-03-04'
+  - url: https://ssd.eff.org/module/communicating-others
+    title: Communicating with Others — EFF Surveillance Self-Defense
+    type: supporting
+    accessed: '2026-03-04'
+resources:
+  - id: res-guide-messaging-001
+    context: lists current end-to-end encrypted messaging apps.
+    platform_specific: []
 legal_notes: []
 emotional_register: null
 tags:
-  - "e2ee"
-  - "open_source"
-created_at: "2026-02-25"
-created_by: "github:@KashishOO7"
+  - e2ee
+  - open_source
+created_at: '2026-02-25'
+created_by: github:@KashishOO7
 changelog:
-  - version: "2.0.0"
-    date: "2026-03-04"
-    changes: "Added Tiered structure (Signal vs SimpleX/Session) for threat models requiring strict anonymity. Updated EFF/Privacy Guides sourcing."
-    author: "github:@KashishOO7"
+  - version: 2.0.0
+    date: '2026-03-04'
+    changes: >-
+      Added Tiered structure (Signal vs SimpleX/Session) for threat models requiring strict
+      anonymity. Updated EFF/Privacy Guides sourcing.
+    author: github:@KashishOO7
+lookups:
+  - lookup-choosing-a-tool-001

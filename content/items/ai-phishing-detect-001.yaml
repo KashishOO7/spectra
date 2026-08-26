@@ -1,7 +1,8 @@
-id: "ai-phishing-detect-001"
-schema_version: "1.0.0"
-version: "1.1.0"
-title: "Update your phishing detection instincts — grammar is no longer a red flag"
+id: ai-phishing-detect-001
+schema_version: 1.0.0
+version: 1.2.0
+title: Check who a message is really from, however well written
+simple_description: Check the sender before you trust a message, even a well-written one.
 description: |
   Traditional phishing had obvious tells: bad grammar, generic greetings, suspicious links. 
   AI-generated phishing is grammatically perfect, highly personalized using OSINT, and 
@@ -10,24 +11,35 @@ threat_narrative: |
   Attackers use Large Language Models (LLMs) to scrape your LinkedIn, public tweets, and 
   company news to draft spear-phishing emails in seconds. Because the text is flawless, 
   the old rule of "look for typos" is dangerously obsolete. 
-category: "ai_threats"
-subcategory: "ai_phishing_detection"
+category: ai_threats
+subcategory: ai_phishing_detection
 tracks:
-  - "general"
-  - "ai_focused"
+  - general
+  - ai_focused
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: |
-    Replace the "grammar check" mental model with the Zero-Trust Evaluation model.
-    Ask these three questions before acting:
-    1. Initiation: Did I initiate this conversation or request? (If no, escalate suspicion).
-    2. Emotion: Does this message create a sense of urgency, fear, or sudden reward?
-    3. Action: Is it asking me to click a link, download a file, or enter a password?
-    If an uninitiated message creates urgency and demands action, it is hostile until 
-    proven otherwise via an independent channel.
+  all: >-
+    Do this
+
+    Check where a message came from before you act on it, even when it is well written.
+
+
+    Why the old advice stopped working
+
+    Bad spelling used to be the giveaway. Anything can write clean English now, so how a message
+    reads tells you almost nothing.
+
+
+    Test it
+
+    Next time a message says there is a problem with an account, do not use its link.
+
+    Type the address in yourself and sign in.
+
+    If the real site shows no such problem, the message was not real.
 platform_notes_verified:
-  all: "2026-03-04"
+  all: '2026-03-04'
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -35,61 +47,63 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "ongoing_low"
+  setup: 5min
+  ongoing: low
 maturity_level: 2
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
-  - "criminal_org"
-  - "ai_automated"
-  - "foreign_government"
+  - opportunistic
+  - targeted_individual
+  - criminal_org
+  - ai_automated
+  - foreign_government
 attack_vectors:
-  - "phishing"
-  - "spear_phishing"
-  - "social_engineering"
+  - phishing
+  - spear_phishing
+  - social_engineering
 assets_protected:
-  - "credentials"
-  - "financial"
-  - "cloud_data"
-  - "identity"
+  - credentials
+  - financial
+  - cloud_data
+  - identity
 controls_implemented: []
-score_weight: 8.0
+score_weight: 8
 threat_model_multipliers:
   opportunistic: 1.1
   targeted_individual: 1.6
   criminal_org: 1.4
-  ai_automated: 2.0
+  ai_automated: 2
   foreign_government: 1.6
 compensating_controls: []
 depends_on:
-  - id: "human-urgency-001"
-    reason: "Recognizing urgency is the prerequisite to detecting AI manipulation."
+  - id: human-urgency-001
+    reason: Recognizing urgency is the prerequisite to detecting AI manipulation.
     hard_dependency: false
 related_items:
-  - id: "human-verify-001"
-    relationship: "required_companion"
-    note: "Independent verification is the only reliable defense against flawless AI text."
-status: "active"
+  - id: human-verify-001
+    relationship: required_companion
+    note: Independent verification is the only reliable defense against flawless AI text.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://arxiv.org/abs/2305.12989"
-    title: "Spear Phishing With Large Language Models — Academic research"
-    type: "primary"
-    accessed: "2026-03-04"
+  - url: https://arxiv.org/abs/2305.06972
+    title: Spear Phishing With Large Language Models — Academic research
+    type: primary
+    accessed: '2026-03-04'
 resources: []
 legal_notes: []
 emotional_register: null
 tags:
-  - "behavioral"
-  - "ai_defense"
-created_at: "2026-02-25"
-created_by: "github:KashishOO7"
+  - behavioral
+  - ai_defense
+created_at: '2026-02-25'
+created_by: github:KashishOO7
 changelog:
-  - version: "1.1.0"
-    date: "2026-03-04"
-    changes: "Formalized Zero-Trust Evaluation model in platform notes."
-    author: "github:KashishOO7"
+  - version: 1.1.0
+    date: '2026-03-04'
+    changes: Formalized Zero-Trust Evaluation model in platform notes.
+    author: github:KashishOO7
+lookups:
+  - lookup-is-this-a-scam-001

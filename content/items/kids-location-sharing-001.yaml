@@ -1,139 +1,121 @@
-id: "kids-location-sharing-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-
-title: "Review which apps can see your child's location"
-
+id: kids-location-sharing-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Review which apps can see your child's location
+simple_description: Check which apps can see your child's location.
 description: |
   Many games, apps, and social platforms automatically share a device's location
   with other users or store it on remote servers. Children often don't realise this
   is happening. A regular review of which apps have location access — and what they
   do with it — is one of the highest-value privacy habits a guardian can build with
   a young person.
-
 threat_narrative: |
   An adult with harmful intent can use location data shared in a game or app to
   learn where a child lives, goes to school, or spends regular time. Even apps
   marketed specifically for children have exposed location data through poor design
   or undisclosed third-party sharing. Real-world predatory contact has been initiated
   through in-game location features. The risk is not hypothetical — it is documented.
-
-category: "physical_security"
-subcategory: "surveillance_awareness"
-
+category: physical_security
+subcategory: surveillance_awareness
 tracks:
-  - "kids_teen"
-
+  - kids_teen
 platforms:
-  - "android"
-  - "ios"
-
+  - android
+  - ios
 platform_notes:
-  android: |
-    Settings → Apps → [App name] → Permissions → Location.
-    Set to "Only while using" for navigation apps, "Deny" for games and social apps.
-    On Android 12+, you can grant approximate location (less precise) — prefer this
-    over precise location for any app that doesn't genuinely need it.
-    Check this for every app your child uses, not just obvious ones.
-  ios: |
-    Settings → Privacy & Security → Location Services.
-    Review every app. Set to "Never" for games and social apps.
-    Set to "While Using" only for apps that genuinely need it (navigation, weather).
-    Disable "Precise Location" toggle where available — approximate is safer.
-    Also check: Settings → [Your child's Apple ID] → Find My → Share My Location.
+  all: >-
+    Do this
 
-platform_notes_verified:
-  android: "2026-03"
-  ios: "2026-03"
+    Check which apps can see where your child is. Turn off the ones that do not need it.
 
+
+    What to change
+
+    Set games and social apps to never. Set the few that need it, like maps, to only while using.
+
+    If your phone offers approximate instead of precise, choose approximate.
+
+
+    Also check
+
+    Family and find-my-device features share location between accounts. They are easy to set up once
+    and forget.
+
+    Check who is on that list and whether it is still who you expect.
+
+
+    Test it
+
+    Open your phone's location settings and look for anything set to always. That is the list worth
+    going through.
 not_applicable_if: []
-
 sensitive: false
-
 difficulty:
   technical: 1
   disruption: 1
   reversibility: 1
-
 time_estimate:
-  setup: "30min"
-  ongoing: "low"
-
+  setup: 30min
+  ongoing: low
 maturity_level: 1
-
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
-
+  - opportunistic
+  - targeted_individual
 attack_vectors:
-  - "osint_passive"
-  - "malware"
-
+  - osint_passive
+  - malware
 assets_protected:
-  - "location"
-  - "relationships"
-
+  - location
+  - relationships
 controls_implemented: []
-
 score_weight: 6.5
-
 threat_model_multipliers:
-  opportunistic: 1.0
+  opportunistic: 1
   targeted_individual: 1.6
   intimate_partner: 1.4
-
 compensating_controls: []
-
 depends_on: []
-
 related_items:
-  - id: "kids-oversharing-001"
-    relationship: "related_concept"
-    note: "Location is one of the most sensitive things to overshare. Covers the broader habit."
-  - id: "womens-location-001"
-    relationship: "related_concept"
-    note: "Adult version of location privacy controls — same principles, different threat context."
-  - id: "data-permissions-001"
-    relationship: "related_concept"
-    note: "Broader app permissions review. Location sits within this."
-
-status: "active"
+  - id: kids-oversharing-001
+    relationship: related_concept
+    note: Location is one of the most sensitive things to overshare. Covers the broader habit.
+  - id: womens-location-001
+    relationship: related_concept
+    note: Adult version of location privacy controls — same principles, different threat context.
+  - id: data-permissions-001
+    relationship: related_concept
+    note: Broader app permissions review. Location sits within this.
+status: active
 superseded_by: null
-
-last_verified: "2026-03-01"
-
+last_verified: '2026-03-01'
 verified_by:
-  - "org:eff.org"
-
+  - org:eff.org
 sources:
-  - url: "https://www.eff.org/issues/privacy"
-    title: "EFF — Privacy Issues"
-    type: "primary"
-    accessed: "2026-03-01"
-
+  - url: https://www.eff.org/issues/privacy
+    title: EFF — Privacy Issues
+    type: primary
+    accessed: '2026-03-01'
 resources: []
-
 legal_notes:
-  - jurisdiction: "global"
+  - jurisdiction: global
     note: |
       Educational guidance only. Parental supervision and age-appropriate conversations
       about location sharing are recommended alongside technical controls. Some family
       safety apps provide guardian-managed location sharing as a safety tool — this item
       does not discourage those when used transparently and with the child's knowledge.
-
 emotional_register: null
-
 tags:
-  - "free"
-  - "no_account_needed"
-  - "guardian_action"
-  - "kids_safe"
-  - "high_impact_low_effort"
-
-created_at: "2026-03-04"
-created_by: "github:@KashishOO7"
+  - free
+  - no_account_needed
+  - guardian_action
+  - kids_safe
+  - high_impact_low_effort
+created_at: '2026-03-04'
+created_by: github:@KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-03-04"
-    changes: "Initial item creation."
-    author: "github:@KashishOO7"
+  - version: 1.0.0
+    date: '2026-03-04'
+    changes: Initial item creation.
+    author: github:@KashishOO7
+lookups:
+  - lookup-account-settings-001

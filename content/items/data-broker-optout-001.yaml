@@ -1,7 +1,8 @@
-id: "data-broker-optout-001"
-schema_version: "1.0.0"
-version: "2.1.0"
-title: "Remove yourself from data broker databases"
+id: data-broker-optout-001
+schema_version: 1.0.0
+version: 2.2.0
+title: Remove yourself from data broker databases
+simple_description: Ask the companies that sell your personal details to remove you.
 description: |
   Data brokers aggregate your name, address history, phone numbers, relatives, and 
   purchasing history into profiles sold to anyone willing to pay. Opting out significantly 
@@ -11,28 +12,43 @@ threat_narrative: |
   your current address, phone number, and daily patterns — often for free. In documented 
   cases, perpetrators have used these lookups to track individuals who had moved. 
   Removal is an ongoing process that raises the cost of finding you significantly.
-category: "data_management"
-subcategory: "data_deletion"
+category: data_management
+subcategory: data_deletion
 tracks:
-  - "general"
-  - "womens_safety"
-  - "journalist"
+  - general
+  - womens_safety
+  - journalist
 platforms:
-  - "web"
+  - web
 platform_notes:
-  web: |
-    TIER 1 — Manual & Free (Time intensive)
-    Use the EFF's Data Broker Opt-Out Guide or Michael Bazzell's IntelTechniques workbook.
-    • Search yourself on top sites: Spokeo, WhitePages, Intelius, BeenVerified, TruePeopleSearch.
-    • Submit manual opt-out requests. Never pay a fee to opt out, and never provide a real 
-      ID unless legally required (use a redacted copy).
+  all: >-
+    Do this
 
-    TIER 2 — Automated Paid Services (Recommended for efficiency)
-    If you lack the time, these services automate the legal requests and monitor for reappearance.
-    • EasyOptOuts: Highly rated, budget-friendly, effective for US residents.
-    • DeleteMe or Incogni: More expensive but cover a broader international spectrum.
-platform_notes_verified:
-  web: "2026-03-04"
+    Ask the companies that collect and sell personal details to take yours down.
+
+
+    How it works
+
+    Search your own name and town and see which people-search sites list you.
+
+    Each has a removal or opt-out page, usually linked in small text at the bottom.
+
+    Removal takes a form, and sometimes a wait.
+
+    Expect to repeat it, because entries come back when a site buys a fresh copy of the data.
+
+
+    Two rules
+
+    Never pay to be removed. It is free on any site that will do it at all.
+
+    Never hand over more than they already hold to prove who you are.
+
+
+    Test it
+
+    Search your name again in a month. What has come back tells you which sites are worth repeating
+    and which are not.
 not_applicable_if: []
 environment_notes:
   has_data_protection_rights: |
@@ -49,65 +65,68 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "2hr"
-  ongoing: "ongoing_low"
+  setup: 2hr
+  ongoing: low
 maturity_level: 2
 adversaries:
-  - "targeted_individual"
-  - "data_broker"
-  - "intimate_partner"
-  - "opportunistic"
+  - targeted_individual
+  - data_broker
+  - intimate_partner
+  - opportunistic
 attack_vectors:
-  - "data_broker_aggregation"
-  - "osint_passive"
+  - data_broker_aggregation
+  - osint_passive
 assets_protected:
-  - "location"
-  - "identity"
-  - "relationships"
+  - location
+  - identity
+  - relationships
 controls_implemented: []
-score_weight: 8.0
+score_weight: 8
 threat_model_multipliers:
-  targeted_individual: 2.0
-  data_broker: 2.0
-  intimate_partner: 2.0
+  targeted_individual: 2
+  data_broker: 2
+  intimate_partner: 2
   opportunistic: 1.2
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "osint-self-001"
-    relationship: "required_companion"
-    note: "You must run an OSINT audit to know what brokers hold your data."
-status: "active"
+  - id: osint-self-001
+    relationship: required_companion
+    note: You must run an OSINT audit to know what brokers hold your data.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:eff.org"
-  - "org:privacyguides.org"
+  - org:eff.org
+  - org:privacyguides.org
 sources:
-  - url: "https://privacyguides.org/en/data-broker-removals/"
-    title: "Data Broker Removals — Privacy Guides"
-    type: "primary"
-    accessed: "2026-03-04"
-  - url: "https://www.eff.org/deeplinks/2025/09/opt-out-october-daily-tips-protect-your-privacy-and-security"
-    title: "Opt Out October: Daily Tips to Protect Your Privacy — EFF"
-    type: "supporting"
-    accessed: "2026-03-05"
+  - url: https://privacyguides.org/en/data-broker-removals/
+    title: Data Broker Removals — Privacy Guides
+    type: primary
+    accessed: '2026-03-04'
+  - url: >-
+      https://www.eff.org/deeplinks/2025/09/opt-out-october-daily-tips-protect-your-privacy-and-security
+    title: 'Opt Out October: Daily Tips to Protect Your Privacy — EFF'
+    type: supporting
+    accessed: '2026-03-05'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Effectiveness varies wildly. US CCPA/CPRA and EU GDPR provide strong legal backing for erasure requests."
+  - jurisdiction: global
+    note: >-
+      Effectiveness varies wildly. US CCPA/CPRA and EU GDPR provide strong legal backing for erasure
+      requests.
 emotional_register: null
 tags:
-  - "privacy"
-  - "anti_doxxing"
-created_at: "2026-02-25"
-created_by: "github:@KashishOO7"
+  - privacy
+  - anti_doxxing
+created_at: '2026-02-25'
+created_by: github:@KashishOO7
 changelog:
-  - version: "2.1.0"
-    date: "2026-04-01"
-    changes: "Added environment_notes for has_data_protection_rights flag."
-    author: "github:@KashishOO7"
-  - version: "2.0.0"
-    date: "2026-03-04"
-    changes: "Added tiering for Manual vs Automated services. Added Privacy Guides sourcing."
-    author: "github:@KashishOO7"
+  - version: 2.1.0
+    date: '2026-04-01'
+    changes: Added environment_notes for has_data_protection_rights flag.
+    author: github:@KashishOO7
+  - version: 2.0.0
+    date: '2026-03-04'
+    changes: Added tiering for Manual vs Automated services. Added Privacy Guides sourcing.
+    author: github:@KashishOO7

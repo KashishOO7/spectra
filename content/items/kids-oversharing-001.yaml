@@ -1,35 +1,56 @@
-id: "kids-oversharing-001"
-schema_version: "1.0.0"
-version: "1.0.0"
-title: "Learn the 5 things that should never appear in public posts"
-description: "Five categories of personal information are consistently used by scammers, predators, and bullies when found in public posts: your school or workplace, your home neighbourhood, your daily routine or schedule, your phone number, and photos that contain location data. Treating these as always-private is a simple habit that dramatically reduces risk."
-threat_narrative: "A post like 'First day at [school name]!' with a location-tagged photo gives a stranger your school, your face, and your friend group — enough to approach you convincingly. Posts about routines ('gym every Monday 6pm') create predictability that can be exploited for physical or online targeting. Small, innocent-seeming details combine into a picture that's much more than the sum of its parts. Most people who have been targeted online say it started with information they shared publicly and assumed nobody would misuse."
-category: "human_vulnerability"
-subcategory: "information_oversharing"
+id: kids-oversharing-001
+schema_version: 1.0.0
+version: 1.1.0
+title: Learn the 5 things that should never appear in public posts
+simple_description: Keep your school, address and daily routine out of public posts.
+description: >-
+  Five categories of personal information are consistently used by scammers, predators, and bullies
+  when found in public posts: your school or workplace, your home neighbourhood, your daily routine
+  or schedule, your phone number, and photos that contain location data. Treating these as
+  always-private is a simple habit that dramatically reduces risk.
+threat_narrative: >-
+  A post like 'First day at [school name]!' with a location-tagged photo gives a stranger your
+  school, your face, and your friend group — enough to approach you convincingly. Posts about
+  routines ('gym every Monday 6pm') create predictability that can be exploited for physical or
+  online targeting. Small, innocent-seeming details combine into a picture that's much more than the
+  sum of its parts. Most people who have been targeted online say it started with information they
+  shared publicly and assumed nobody would misuse.
+category: human_vulnerability
+subcategory: information_oversharing
 tracks:
-  - "kids_teen"
+  - kids_teen
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: |
-    THE FIVE RULES — apply to public posts, stories, and profiles:
+  all: >-
+    Do this
 
-    1. School or workplace name — never post publicly. Mention it only in direct messages to people you already know.
+    Keep five things out of anything public.
 
-    2. Home neighbourhood or street — never post. If you tag locations, use the general city, not your area.
+    Their school, their street, their daily routine, their phone number, and photos in school
+    uniform.
 
-    3. Daily schedule or routine — vary how you describe plans. "going to a sports thing" is fine; "football practice every Tuesday at 6 at Riverside Park" is not.
 
-    4. Phone number — never post publicly. Share only in DMs to people you actually know and trust.
+    Why those five
 
-    5. Location-revealing photos — turn off location on your camera.
-       iPhone: Settings → Privacy & Security → Location Services → Camera → Never.
-       Android: Open Camera app → Settings → disable "Save Location" or "GPS tag."
+    Each one turns "a kid on the internet" into "that kid, there, at half past three". On their own
+    they look harmless.
 
-    Before posting anything: "Would I be OK if a stranger I don't like saw this?"
-    If not — don't post it publicly.
-platform_notes_verified:
-  all: "2026-03-04"
+    Together they are a map.
+
+
+    How to put it
+
+    Not "stop posting".
+
+    Say: anything that tells a stranger where to find you goes in messages to people you know, never
+    on your profile.
+
+
+    Test it
+
+    Look at their last ten public posts the way a stranger would. Could you work out which school?
+    If yes, start there.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -37,55 +58,55 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "ongoing_low"
+  setup: 5min
+  ongoing: low
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
+  - opportunistic
+  - targeted_individual
 attack_vectors:
-  - "osint_passive"
-  - "social_engineering"
+  - osint_passive
+  - social_engineering
 assets_protected:
-  - "location"
-  - "identity"
-  - "relationships"
+  - location
+  - identity
+  - relationships
 controls_implemented: []
-score_weight: 7.0
+score_weight: 7
 threat_model_multipliers:
   opportunistic: 1.1
   targeted_individual: 1.6
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "kids-privacy-social-001"
-    relationship: "required_companion"
-    note: "Private settings limit who sees content. Not oversharing is the deeper, always-on protection."
-status: "active"
+  - id: kids-privacy-social-001
+    relationship: required_companion
+    note: Private settings limit who sees content. Not oversharing is the deeper, always-on protection.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-08-26'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://ssd.eff.org/module/protecting-yourself-social-networks"
-    title: "Protecting Yourself on Social Networks — EFF SSD"
-    type: "primary"
-    accessed: "2026-03-04"
+  - url: https://ssd.eff.org/module/protecting-yourself-social-networks
+    title: Protecting Yourself on Social Networks — EFF SSD
+    type: primary
+    accessed: '2026-08-26'
 resources: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Educational purposes only."
-emotional_register: "social_proof"
+  - jurisdiction: global
+    note: Educational purposes only.
+emotional_register: social_proof
 tags:
-  - "free"
-  - "behavioral"
-  - "kids_appropriate"
-  - "high_impact"
-  - "no_tools_required"
-created_at: "2026-03-04"
-created_by: "github:KashishOO7"
+  - free
+  - behavioral
+  - kids_appropriate
+  - high_impact
+  - no_tools_required
+created_at: '2026-03-04'
+created_by: github:KashishOO7
 changelog:
-  - version: "1.0.0"
-    date: "2026-03-04"
-    changes: "Initial item."
-    author: "github:KashishOO7"
+  - version: 1.0.0
+    date: '2026-03-04'
+    changes: Initial item.
+    author: github:KashishOO7

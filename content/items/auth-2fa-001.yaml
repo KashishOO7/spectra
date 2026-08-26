@@ -1,40 +1,52 @@
-id: "auth-2fa-001"
-schema_version: "1.0.0"
-version: "2.0.0"
-title: "Enable two-factor authentication on all critical accounts"
+id: auth-2fa-001
+schema_version: 1.0.0
+version: 2.1.0
+title: Enable two-factor authentication on all critical accounts
+simple_description: Turn on two-step login for your email.
 description: |
-  Two-factor authentication requires a second proof of identity beyond your password — 
-  a time-based code, hardware key, or biometric. Even if your password is stolen, 
+  Two-factor authentication requires a second proof of identity beyond your password,
+  such as a time-based code, hardware key, or biometric. Even if your password is stolen,
   an attacker cannot access your account without the second factor. Never use SMS for 2FA.
 threat_narrative: |
   Billions of credentials are exposed in breaches every year. Without 2FA, a stolen 
   password is an open door. The majority of account takeovers in 2024 involved accounts 
   with no second factor. SMS 2FA is highly vulnerable to SIM-swapping, where attackers 
   steal your phone number to intercept codes.
-category: "account_security"
-subcategory: "authentication"
+category: account_security
+subcategory: authentication
 tracks:
-  - "general"
+  - general
 platforms:
-  - "all"
+  - all
 platform_notes:
-  general: |
-    TIER 1 — Standard: Authenticator Apps (TOTP)
-    Generates offline codes on your device. Immune to SIM-swapping.
-    • Aegis Authenticator (Android): Open source, encrypted local backups.
-    • Raivo OTP or Ente Auth (iOS): Open source, privacy-respecting.
-    
-    TIER 2 — Advanced: Hardware Security Keys (FIDO2/WebAuthn)
-    Physical USB/NFC keys. Immune to real-time phishing relays. Recommended for high-value accounts (Email, Banking, Password Manager).
-    • YubiKey (Yubico) or Nitrokey. 
-    • Always buy two (one main, one backup stored securely).
-  android: "Install Aegis Authenticator via F-Droid (preferred) or Play Store. Enable 2FA per-service under each app's Security settings."
-  ios: "Install Ente Auth or Raivo OTP from App Store. For Apple ID: Settings > [Your Name] > Password & Security > Two-Factor Authentication."
-  windows: "For Windows Hello / Microsoft accounts, hardware keys or the authenticator app are ideal. Avoid SMS recovery."
-  macos: "macOS Passwords app (Ventura+) supports TOTP natively. Hardware keys are plug-and-play for iCloud and web services."
-  linux: "Use KeePassXC for TOTP generation on desktop. Hardware keys (YubiKey) work well via libfido2."
-platform_notes_verified:
-  all: "2026-03-04"
+  all: >-
+    Do this
+
+    Turn on two-step login on your most important accounts. Email first, then anything with money in
+    it, then your password manager.
+
+
+    Which kind
+
+    A code from an app on your phone beats a code by text message.
+
+    Text messages can be moved to someone else's phone by someone who talks your network into it.
+
+    A small key you plug in or tap is stronger again, and worth it for your email.
+
+
+    Already using an authenticator app?
+
+    It works, keep using it.
+
+    When you get a chance, move to one that backs your codes up in a form only you can unlock.
+
+    That way a lost phone does not lock you out of everything.
+
+
+    Test it
+
+    Sign out of one of those accounts and sign back in. You should be asked for a code.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -42,27 +54,27 @@ difficulty:
   disruption: 2
   reversibility: 1
 time_estimate:
-  setup: "30min"
-  ongoing: "negligible"
+  setup: 30min
+  ongoing: negligible
 maturity_level: 1
 adversaries:
-  - "opportunistic"
-  - "targeted_individual"
-  - "criminal_org"
-  - "intimate_partner"
-  - "ai_automated"
+  - opportunistic
+  - targeted_individual
+  - criminal_org
+  - intimate_partner
+  - ai_automated
 attack_vectors:
-  - "credential_stuffing"
-  - "phishing"
-  - "sim_swap"
+  - credential_stuffing
+  - phishing
+  - sim_swap
 assets_protected:
-  - "credentials"
-  - "cloud_data"
-  - "communications"
-  - "financial"
-  - "identity"
+  - credentials
+  - cloud_data
+  - communications
+  - financial
+  - identity
 controls_implemented:
-  - "ctrl-auth-mfa"
+  - ctrl-auth-mfa
 score_weight: 9.5
 threat_model_multipliers:
   opportunistic: 1.2
@@ -75,34 +87,37 @@ threat_model_multipliers:
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "auth-backup-codes-001"
-    relationship: "required_companion"
-    note: "You must generate and save backup codes when setting up 2FA."
-status: "active"
+  - id: auth-backup-codes-001
+    relationship: required_companion
+    note: You must generate and save backup codes when setting up 2FA.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:privacyguides.org"
-  - "org:eff.org"
+  - org:privacyguides.org
+  - org:eff.org
 sources:
-  - url: "https://privacyguides.org/en/basics/multi-factor-authentication/"
-    title: "Multi-Factor Authentication — Privacy Guides"
-    type: "primary"
-    accessed: "2026-03-04"
-  - url: "https://ssd.eff.org/module/how-enable-two-factor-authentication"
-    title: "How to Enable Two-Factor Authentication — EFF Surveillance Self-Defense"
-    type: "supporting"
-    accessed: "2026-03-05"
-resources: []
+  - url: https://privacyguides.org/en/basics/multi-factor-authentication/
+    title: Multi-Factor Authentication — Privacy Guides
+    type: primary
+    accessed: '2026-03-04'
+  - url: https://ssd.eff.org/module/how-enable-two-factor-authentication
+    title: How to Enable Two-Factor Authentication — EFF Surveillance Self-Defense
+    type: supporting
+    accessed: '2026-03-05'
+resources:
+  - id: res-guide-mfa-001
+    context: lists current authenticator apps and security keys.
+    platform_specific: []
 legal_notes: []
 emotional_register: null
 tags:
-  - "foundation"
-  - "phishing_defense"
-created_at: "2026-02-25"
-created_by: "github:KashishOO7"
+  - foundation
+  - phishing_defense
+created_at: '2026-02-25'
+created_by: github:KashishOO7
 changelog:
-  - version: "2.0.0"
-    date: "2026-03-04"
-    changes: "Tiered recommendations (TOTP vs Hardware Keys). Added SIM-swapping warning."
-    author: "github:KashishOO7"
+  - version: 2.0.0
+    date: '2026-03-04'
+    changes: Tiered recommendations (TOTP vs Hardware Keys). Added SIM-swapping warning.
+    author: github:KashishOO7

@@ -1,7 +1,8 @@
-id: "data-browser-hygiene-001"
-schema_version: "1.0.0"
-version: "2.0.0"
-title: "Harden your browser and reduce tracking surface"
+id: data-browser-hygiene-001
+schema_version: 1.0.0
+version: 2.1.0
+title: Stop your browser being followed from site to site
+simple_description: Add a tracker blocker to your web browser.
 description: |
   Your browser is the primary lens through which you interact with the internet, and 
   default settings allow cross-site tracking, third-party cookies, and fingerprinting. 
@@ -12,29 +13,37 @@ threat_narrative: |
   build long-term profiles of your behavior, which are sold to data brokers and used in 
   highly targeted phishing attacks. Browser fingerprinting (collecting hardware/software 
   configurations) uniquely identifies you even without cookies.
-category: "data_management"
-subcategory: "data_minimization"
+category: data_management
+subcategory: data_minimization
 tracks:
-  - "general"
+  - general
 platforms:
-  - "web"
+  - web
 platform_notes:
-  web: |
-    TIER 1 — Standard Protection (Best for most users)
-    Switch to a privacy-respecting browser with a strong content blocker.
-    • Firefox + uBlock Origin: The gold standard. uBlock Origin on Firefox is not 
-      hamstrung by Chrome's Manifest V3 limitations. Enable "Strict" tracking protection.
-    • Brave Browser: Chromium-based alternative with excellent out-of-the-box tracker 
-      blocking. Good if you absolutely require Chrome extension compatibility.
+  all: >-
+    Do this
 
-    TIER 2 — Advanced Anti-Fingerprinting (High threat models)
-    For users needing to blend in and defeat advanced tracking scripts.
-    • Mullvad Browser: Built in collaboration with Tor, designed to make your fingerprint 
-      identical to all other Mullvad Browser users. Use with a trusted VPN.
-    • Tor Browser: Routes traffic through the Tor network. Maximum anonymity, but 
-      significantly slower and will break some websites.
-platform_notes_verified:
-  web: "2026-03-04"
+    Turn your browser's tracking protection up to its strictest setting, then add a content blocker.
+
+
+    Where to look
+
+    Settings, then Privacy. Browsers call it tracking protection, content blocking, or prevent
+    cross-site tracking.
+
+
+    If a site breaks
+
+    Turn protection down for that one site rather than switching it off everywhere.
+
+
+    Test it
+
+    Run Cover Your Tracks at coveryourtracks.eff.org.
+
+    It is free, needs no account, and is run by the Electronic Frontier Foundation.
+
+    It tells you whether trackers are being blocked and how easy your browser is to recognise.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -42,63 +51,65 @@ difficulty:
   disruption: 2
   reversibility: 1
 time_estimate:
-  setup: "15min"
-  ongoing: "negligible"
+  setup: 15min
+  ongoing: negligible
 maturity_level: 2
 adversaries:
-  - "opportunistic"
-  - "data_broker"
-  - "criminal_org"
-  - "ai_automated"
+  - opportunistic
+  - data_broker
+  - criminal_org
+  - ai_automated
 attack_vectors:
-  - "metadata_analysis"
-  - "malware"
+  - metadata_analysis
+  - malware
 assets_protected:
-  - "metadata"
-  - "behavioral_data"
-  - "identity"
+  - metadata
+  - behavioral_data
+  - identity
 controls_implemented: []
 score_weight: 8.5
 threat_model_multipliers:
   opportunistic: 1.2
-  data_broker: 2.0
+  data_broker: 2
   criminal_org: 1.3
   targeted_individual: 1.5
   ai_automated: 1.4
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "net-vpn-001"
-    relationship: "complementary"
-    note: "VPN protects network layer; browser hygiene protects application layer."
-status: "active"
+  - id: net-vpn-001
+    relationship: complementary
+    note: VPN protects network layer; browser hygiene protects application layer.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:privacyguides.org"
-  - "org:eff.org"
+  - org:privacyguides.org
+  - org:eff.org
 sources:
-  - url: "https://privacyguides.org/en/desktop-browsers/"
-    title: "Desktop Browsers — Privacy Guides"
-    type: "primary"
-    accessed: "2026-03-04"
-  - url: "https://ssd.eff.org/module/how-to-manage-your-digital-footprint"
-    title: "How to Manage Your Digital Footprint — EFF Surveillance Self-Defense"
-    type: "supporting"
-    accessed: "2026-03-06"
+  - url: https://privacyguides.org/en/desktop-browsers/
+    title: Desktop Browsers — Privacy Guides
+    type: primary
+    accessed: '2026-03-04'
+  - url: https://ssd.eff.org/module/how-to-manage-your-digital-footprint
+    title: How to Manage Your Digital Footprint — EFF Surveillance Self-Defense
+    type: supporting
+    accessed: '2026-03-06'
 resources:
-  - id: "res-tool-ublock-001"
-    context: "Install uBlock Origin if using Firefox or standard Chromium."
-    platform_specific: ["web"]
+  - id: res-guide-browser-extensions-001
+    context: lists current content blockers.
+    platform_specific: []
 legal_notes: []
 emotional_register: null
 tags:
-  - "privacy_preserving"
-  - "anti_tracking"
-created_at: "2026-02-25"
-created_by: "github:KashishOO7"
+  - privacy_preserving
+  - anti_tracking
+created_at: '2026-02-25'
+created_by: github:KashishOO7
 changelog:
-  - version: "2.0.0"
-    date: "2026-03-04"
-    changes: "Tiered browser recommendations. Prioritized Firefox+uBlock and Mullvad Browser."
-    author: "github:KashishOO7"
+  - version: 2.0.0
+    date: '2026-03-04'
+    changes: Tiered browser recommendations. Prioritized Firefox+uBlock and Mullvad Browser.
+    author: github:KashishOO7
+lookups:
+  - lookup-choosing-a-tool-001

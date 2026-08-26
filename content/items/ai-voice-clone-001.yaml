@@ -1,7 +1,8 @@
-id: "ai-voice-clone-001"
-schema_version: "1.0.0"
-version: "1.1.0"
-title: "Establish a family safe word to defeat AI voice cloning"
+id: ai-voice-clone-001
+schema_version: 1.0.0
+version: 1.2.0
+title: Establish a family safe word to defeat AI voice cloning
+simple_description: Agree on a secret word with your family to check a caller is real.
 description: |
   AI tools can convincingly clone a voice using just 30 seconds of audio scraped from 
   TikTok, YouTube, or voicemails. Establishing a pre-agreed secret word with your inner 
@@ -11,21 +12,40 @@ threat_narrative: |
   where attackers spoof a loved one's phone number and clone their voice to demand 
   immediate financial help. Without a cryptographic or shared-secret verification method, 
   these attacks bypass human intuition entirely.
-category: "ai_threats"
-subcategory: "voice_clone_defense"
+category: ai_threats
+subcategory: voice_clone_defense
 tracks:
-  - "general"
-  - "ai_focused"
+  - general
+  - ai_focused
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: |
-    1. Agree on a safe word IN PERSON or over an E2EE messenger (Signal) with your family.
-    2. Choose a word that is memorable but completely out of context for everyday conversation.
-    3. The Rule: If a loved one calls with a crisis or financial request, ask for the safe word. 
-       If they cannot provide it, hang up and call them back directly.
-platform_notes_verified:
-  all: "2026-03-04"
+  all: >-
+    Do this
+
+    Agree a word with your family that a caller has to say if they ring claiming to be in trouble.
+
+
+    Setting it up
+
+    Agree it in person, or in an encrypted chat. Not over an ordinary call, and not by text.
+
+    Pick something plain that would never come up by itself. Not a birthday, not a pet, nothing
+    anyone could look up.
+
+
+    When to use it
+
+    Any call where someone sounds like family and needs money or help right now. Ask for the word. A
+    real relative manages it.
+
+    A copied voice does not.
+
+
+    Worth knowing
+
+    A few seconds of speech from anywhere public is enough to copy a voice now. Sounding right
+    stopped being proof.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -33,54 +53,59 @@ difficulty:
   disruption: 1
   reversibility: 1
 time_estimate:
-  setup: "5min"
-  ongoing: "negligible"
+  setup: 5min
+  ongoing: negligible
 maturity_level: 2
 adversaries:
-  - "targeted_individual"
-  - "criminal_org"
-  - "ai_automated"
+  - targeted_individual
+  - criminal_org
+  - ai_automated
 attack_vectors:
-  - "voice_clone"
-  - "social_engineering"
-  - "deepfake"
+  - voice_clone
+  - social_engineering
+  - deepfake
 assets_protected:
-  - "financial"
-  - "identity"
-  - "relationships"
+  - financial
+  - identity
+  - relationships
 controls_implemented: []
 score_weight: 7.5
 threat_model_multipliers:
   targeted_individual: 1.6
   criminal_org: 1.5
-  ai_automated: 2.0
+  ai_automated: 2
   foreign_government: 1.8
 compensating_controls: []
 depends_on: []
 related_items:
-  - id: "human-urgency-001"
-    relationship: "complementary"
-    note: "Voice cloning attacks rely entirely on urgency to prevent you from checking the safe word."
-status: "active"
+  - id: human-urgency-001
+    relationship: complementary
+    note: Voice cloning attacks rely entirely on urgency to prevent you from checking the safe word.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://www.cnn.com/2024/02/04/asia/deepfake-cfo-scam-hong-kong-intl-hnk"
-    title: "Finance worker pays out $25 million after deepfake video call — CNN"
-    type: "primary"
-    accessed: "2026-03-05"
-resources: []
+  - url: https://www.cnn.com/2024/02/04/asia/deepfake-cfo-scam-hong-kong-intl-hnk
+    title: Finance worker pays out $25 million after deepfake video call — CNN
+    type: primary
+    accessed: '2026-03-05'
+resources:
+  - id: res-guide-messaging-001
+    context: lists current end-to-end encrypted messaging apps.
+    platform_specific: []
 legal_notes: []
 emotional_register: null
 tags:
-  - "behavioral"
-  - "family_safety"
-created_at: "2026-02-25"
-created_by: "github:KashishOO7"
+  - behavioral
+  - family_safety
+created_at: '2026-02-25'
+created_by: github:KashishOO7
 changelog:
-  - version: "1.1.0"
-    date: "2026-03-04"
-    changes: "Clarified in-person/E2EE transmission requirement for the safe word."
-    author: "github:KashishOO7"
+  - version: 1.1.0
+    date: '2026-03-04'
+    changes: Clarified in-person/E2EE transmission requirement for the safe word.
+    author: github:KashishOO7
+lookups:
+  - lookup-is-this-a-scam-001

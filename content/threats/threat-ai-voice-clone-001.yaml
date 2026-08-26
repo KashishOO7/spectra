@@ -18,18 +18,14 @@ prevalence: "occasional"
 likelihood_without_controls: "medium"
 
 real_world_examples:
-  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
-    title: "FTC Consumer Alert — Scammers Use AI to Clone Voices"
+  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-enhance-their-family-emergency-schemes"
+    title: "FTC — Scammers use AI to enhance their family emergency schemes"
     description: "FTC documented cases of AI voice cloning used to impersonate family members in urgent money transfer scams."
     type: "case_study"
-  - url: "https://www.wired.com/story/cloned-voice-scam-family-emergency/"
-    title: "Wired — AI Voice Cloning Scams Are Getting Harder to Detect"
-    description: "Reported incidents of voice clone attacks on individuals and organisations."
-    type: "journalism"
 
 prevalence_data:
-  - stat: "Voice cloning tools are now widely available for under $10/month with no technical skill required."
-    source: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
+  - stat: "A short audio clip of someone's voice, taken from anything they have posted publicly, is enough to produce a convincing clone."
+    source: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-enhance-their-family-emergency-schemes"
     date: "2023-03"
 
 mitigated_by:
@@ -67,8 +63,8 @@ verified_by:
   - "org:ftc.gov"
 
 sources:
-  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-clone-voices-loved-ones"
-    title: "FTC — Scammers Use AI to Clone Voices of Loved Ones"
+  - url: "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-enhance-their-family-emergency-schemes"
+    title: "FTC — Scammers use AI to enhance their family emergency schemes"
     type: "primary"
     accessed: "2026-03-06"
 

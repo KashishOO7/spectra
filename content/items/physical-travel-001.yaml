@@ -1,7 +1,8 @@
-id: "physical-travel-001"
-schema_version: "1.0.0"
-version: "2.0.0"
-title: "Prepare devices before crossing international borders"
+id: physical-travel-001
+schema_version: 1.0.0
+version: 2.1.0
+title: Prepare devices before crossing international borders
+simple_description: Clear your phone of anything private before you cross a border.
 description: |
   Border crossings are legally distinct zones in most countries — authorities can compel 
   device access or detain you with little or no suspicion required. Preparing a device 
@@ -11,25 +12,40 @@ threat_narrative: |
   multiple countries have upheld border device searches without warrants. Crossing with 
   an unencrypted device containing sensitive communications faces potential full data 
   extraction. Preparation before the border is the only effective defense.
-category: "physical_security"
-subcategory: "travel_security"
+category: physical_security
+subcategory: travel_security
 tracks:
-  - "general"
-  - "journalist"
+  - general
+  - journalist
 platforms:
-  - "all"
+  - all
 platform_notes:
-  all: |
-    THE BORDER PROTOCOL:
-    1. Back up your device at home. Leave highly sensitive data behind if not needed.
-    2. Power down the device entirely before reaching the border (this forces the encryption 
-       keys out of RAM and requires a PIN, not a fingerprint, to unlock).
-    3. Log out of sensitive cloud apps (Signal, password managers). 
-    4. Use a strong alphanumeric passphrase. Biometrics (FaceID/TouchID) can often be 
-       legally compelled; memorized passphrases are much harder to compel.
-    5. After crossing: Run a malware scan if the device left your sight.
-platform_notes_verified:
-  all: "2026-03-04"
+  all: >-
+    Do this
+
+    Get your phone ready before you travel, not at the desk.
+
+
+    Before you go
+
+    Back up at home, then take off anything you do not need with you.
+
+    Sign out of the accounts that matter, rather than trusting nobody will open them.
+
+
+    At the crossing
+
+    Power the device fully off before you arrive.
+
+    Started from cold it wants your code, not your face or your finger, and at a border that
+    difference matters.
+
+
+    Worth knowing
+
+    Rules differ by country, and in some places refusing has consequences.
+
+    Finding out what applies where you are going is part of getting ready.
 environment_notes:
   border_device_inspection: |
     Prepare a travel posture before departure: back up, then remove sensitive
@@ -47,57 +63,64 @@ difficulty:
   disruption: 3
   reversibility: 1
 time_estimate:
-  setup: "30min"
-  ongoing: "negligible"
+  setup: 30min
+  ongoing: negligible
 maturity_level: 2
 adversaries:
-  - "domestic_government"
-  - "foreign_government"
-  - "targeted_individual"
+  - domestic_government
+  - foreign_government
+  - targeted_individual
 attack_vectors:
-  - "physical_access"
+  - physical_access
 assets_protected:
-  - "local_data"
-  - "communications"
-  - "credentials"
+  - local_data
+  - communications
+  - credentials
 controls_implemented: []
 score_weight: 7.5
 threat_model_multipliers:
-  domestic_government: 2.0
-  foreign_government: 2.0
+  domestic_government: 2
+  foreign_government: 2
   targeted_individual: 1.4
-  intimate_partner: 1.0
+  intimate_partner: 1
 compensating_controls: []
 depends_on:
-  - id: "device-encrypt-001"
-    reason: "Encryption is a prerequisite for meaningful travel security."
+  - id: device-encrypt-001
+    reason: Encryption is a prerequisite for meaningful travel security.
     hard_dependency: true
 related_items:
-  - id: "device-screenlock-001"
-    relationship: "required_companion"
-    note: "Use PIN/Passphrase, not biometric, when traveling."
-status: "active"
+  - id: device-screenlock-001
+    relationship: required_companion
+    note: Use PIN/Passphrase, not biometric, when traveling.
+status: active
 superseded_by: null
-last_verified: "2026-03-04"
+last_verified: '2026-03-04'
 verified_by:
-  - "org:eff.org"
+  - org:eff.org
 sources:
-  - url: "https://www.eff.org/wp/digital-privacy-us-border-2017"
-    title: "Digital Privacy at the US Border — EFF"
-    type: "primary"
-    accessed: "2026-03-04"
-resources: []
+  - url: https://www.eff.org/wp/digital-privacy-us-border-2017
+    title: Digital Privacy at the US Border — EFF
+    type: primary
+    accessed: '2026-03-04'
+resources:
+  - id: res-guide-messaging-001
+    context: lists current end-to-end encrypted messaging apps.
+    platform_specific: []
 legal_notes:
-  - jurisdiction: "global"
-    note: "Border search laws vary significantly by country. Refusing to unlock a device may result in detention or device confiscation. This is educational, not legal advice."
+  - jurisdiction: global
+    note: >-
+      Border search laws vary significantly by country. Refusing to unlock a device may result in
+      detention or device confiscation. This is educational, not legal advice.
 emotional_register: null
 tags:
-  - "travel"
-  - "legal_defense"
-created_at: "2026-02-25"
-created_by: "github:@KashishOO7"
+  - travel
+  - legal_defense
+created_at: '2026-02-25'
+created_by: github:@KashishOO7
 changelog:
-  - version: "2.0.0"
-    date: "2026-03-04"
-    changes: "Updated with EFF's protocol for RAM clearing and biometric disabling. Removed non-taxonomy attack vector."
-    author: "github:@KashishOO7"
+  - version: 2.0.0
+    date: '2026-03-04'
+    changes: >-
+      Updated with EFF's protocol for RAM clearing and biometric disabling. Removed non-taxonomy
+      attack vector.
+    author: github:@KashishOO7

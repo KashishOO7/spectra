@@ -38,7 +38,7 @@ verified_by:
   - "org:nist.gov"
   - "org:eff.org"
 sources:
-  - url: "https://csrc.nist.gov/publications/detail/sp/800-63b/final"
+  - url: "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"
     title: "NIST SP 800-63B — Digital Identity Guidelines"
     type: "primary"
     accessed: "2025-01-01"
