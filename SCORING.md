@@ -8,8 +8,8 @@ Spectra is a **prioritisation engine**, not a calibrated risk calculator. Its jo
 
 > **Build status.** Sections 1 to 5 describe the engine as it is. M4a split the number and removed
 > time; M4d removed the events-feed multipliers and L1 archived the feed itself; M4b and M4c made
-> I5 a lint gate. I1, I2 and I4 are tests in `tests/engine.spec.ts` and carry no expected-failure
-> markers. Section 6 records what changed and what it cost.
+> I5 a lint gate. I1, I2 and I4 are covered by the maintainer's engine test suite and carry no
+> expected-failure markers. Section 6 records what changed and what it cost.
 
 ---
 
@@ -191,8 +191,8 @@ coverage = earned weight ÷ total applicable weight
   item's own `threat_narrative` names SIM-swapping, and its 9.5 rests on credential attacks being
   the dominant breach vector. The multipliers were a double count, so removing them corrects an
   inflation. No `base_weight` was changed. With the multiplier gone the page was the feed's only
-  consumer and duplicated the checklist it pointed at, so L1 moved the whole unit to
-  `archive/`, where its `ARCHIVE.md` carries the reasoning and the restore order.
+  consumer and duplicated the checklist it pointed at, so L1 removed the whole unit. The
+  maintainer keeps it as a restorable archive with its reasoning and restore order.
 - Skipped items are in the denominator (`total_applicable`), and the maturity band is capped at L3
   once more than 20% of available weight has been set aside, so the top bands cannot be reached by
   dismissing the list.
