@@ -4,14 +4,12 @@ import type {
   ContentGraph,
   UserProfile,
   ScoredItem,
-  CategoryScore,
   AssessmentResult,
-  Category,
   Harm,
   AdversaryType,
   Track
 } from '../types.js';
-import { HARMS, CATEGORY_LABELS } from '../audit/constants.js';
+import { HARMS } from '../audit/constants.js';
 import { harmsForItem } from '../audit/helpers.js';
 import { isHarmCovered } from './coverage.js';
 
@@ -126,7 +124,6 @@ export function scoreAssessment(
       is_skipped,
       is_snoozed,
       needs_reverification,
-      category_saturation: 0,
       compensating_factor
     });
   }
@@ -140,34 +137,6 @@ export function scoreAssessment(
     );
   unimplemented.forEach((item, idx) => { item.priority_rank = idx + 1; });
 
-  const categories = [...new Set(scoredItems.map(i => i.category))];
-  const categoryScores: CategoryScore[] = [];
-
-  for (const cat of categories) {
-    const catItems   = scoredItems.filter(i => i.category === cat);
-    const applicable = catItems.filter(i => !i.is_skipped);
-    const implemented = applicable.filter(i => i.is_implemented);
-
-    const maxScore    = applicable.reduce((sum, i) => sum + (fullWeights.get(i.id) ?? i.effective_score), 0);
-    const earnedScore = implemented.reduce((sum, i) => sum + i.effective_score, 0);
-
-    const saturation = maxScore > 0 ? earnedScore / maxScore : 0;
-    catItems.forEach(i => { i.category_saturation = saturation; });
-
-    const scorePct = maxScore > 0
-      ? Math.round(saturation * 100)
-      : (applicable.length === 0 && catItems.length > 0 ? null : 0);
-
-    categoryScores.push({
-      category:          cat,
-      label:             CATEGORY_LABELS[cat] ?? cat,
-      score:             scorePct,
-      max_score:         maxScore,
-      maturity_level:    scorePct === null ? 1 : getMaturityLevel(scorePct),
-      total_applicable:  applicable.length,
-      implemented_count: implemented.length
-    });
-  }
   const totalAvailable = scoredItems.reduce((sum, i) => sum + (fullWeights.get(i.id) ?? i.effective_score), 0);
   const totalEarned = scoredItems
     .filter(i => i.is_implemented && !i.is_skipped)
@@ -227,7 +196,7 @@ export function scoreAssessment(
     harms_covered:    coveredHarms.length,
     harms_total:      scopeHarms.length,
     covered_harms:    coveredHarms,
-    category_scores:  categoryScores.sort((a, b) => (b.score ?? -1) - (a.score ?? -1)),
+    picked_harms:     pickedHarms,
     total_applicable: scoredItems.length,
     total_implemented: scoredItems.filter(i => i.is_implemented && !i.is_skipped).length,
     total_skipped:    scoredItems.filter(i => i.is_skipped).length,
@@ -255,7 +224,7 @@ function emptyResult(): AssessmentResult {
     harms_covered:    0,
     harms_total:      (Object.keys(HARMS) as Harm[]).length,
     covered_harms:    [],
-    category_scores:  [],
+    picked_harms:     [],
     total_applicable: 0,
     total_implemented: 0,
     total_skipped:    0,

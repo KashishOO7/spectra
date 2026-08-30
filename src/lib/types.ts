@@ -112,12 +112,6 @@ export type EmotionalRegister =
   | 'loneliness'
   | null;
 
-export type AssetGroup =
-  | 'Your accounts'
-  | "Where you are and who you're with"
-  | 'What people can find about you'
-  | 'Your conversations'
-  | 'Your devices';
 export type Harm =
   | 'Someone gets into your accounts'
   | 'Someone takes your money'
@@ -381,25 +375,13 @@ export interface ScoredItem extends ChecklistItem {
   is_implemented: boolean;
   is_skipped: boolean;
   is_snoozed: boolean;
-  category_saturation: number;
   compensating_factor: number;
   needs_reverification?: boolean;
-}
-
-export interface CategoryScore {
-  category: Category;
-  label: string;
-  score: number | null;
-  max_score: number;
-  implemented_count: number;
-  total_applicable: number;
-  maturity_level: 1 | 2 | 3 | 4 | 5;
 }
 
 export interface AssessmentResult {
   overall_score: number;
   overall_maturity: 1 | 2 | 3 | 4 | 5;
-  category_scores: CategoryScore[];
   critical_gaps: ScoredItem[];
   quick_wins: ScoredItem[];
   next_items: ScoredItem[];
@@ -412,6 +394,7 @@ export interface AssessmentResult {
   harms_covered: number;
   harms_total: number;
   covered_harms: Harm[];
+   picked_harms: Harm[];
   total_snoozed: number;
   skipped_weight_ratio: number;
   band_capped_by_skips: boolean;

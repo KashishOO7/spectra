@@ -1,6 +1,6 @@
 import type {
   AdversaryType, Track, Platform, EnvironmentFlag,
-  Asset, AssetGroup, AttackVector, Harm
+  Asset, AttackVector, Harm
 } from '../types.js';
 
 export const ADVERSARY_OPTIONS: {
@@ -52,7 +52,6 @@ export const EMOTIONAL_REGISTER_LABELS: Record<string, string> = {
 };
 
 export const tierDot: Record<string, string>   = { common: 'bg-teal', elevated: 'bg-amber', high: 'bg-red' };
-export const tierLabel: Record<string, string> = { common: 'text-teal-light', elevated: 'text-amber-light', high: 'text-red-light' };
 
 export const maturityLabels       = ['', 'Essential', 'Baseline', 'Hardened', 'Advanced', 'Expert'];
 export const maturityColors       = ['', 'text-teal-light', 'text-teal-light', 'text-amber-light', 'text-amber-light', 'text-red-light'];
@@ -90,14 +89,6 @@ export const HARMS: Record<Harm, { assets: Asset[]; vectors: AttackVector[] }> =
   'Someone uses your device against you': { assets: ['devices', 'local_data', 'biometrics'], vectors: ['malware', 'supply_chain', 'physical_access', 'insider_access'] },
   'Someone pretends to be you':           { assets: [],                                      vectors: ['deepfake', 'voice_clone'] },
   'Someone already has your details':     { assets: ['reputation', 'behavioral_data'],       vectors: ['osint_passive', 'data_broker_aggregation', 'browser_fingerprinting'] }
-};
-
-export const ASSET_GROUPS: Record<AssetGroup, Asset[]> = {
-  'Your accounts':                     ['credentials', 'cloud_data', 'financial'],
-  "Where you are and who you're with": ['location', 'relationships'],
-  'What people can find about you':    ['reputation', 'behavioral_data'],
-  'Your conversations':                ['communications', 'metadata'],
-  'Your devices':                      ['devices', 'local_data', 'biometrics']
 };
 
 export const HARM_ADVERSARIES: Record<Harm, AdversaryType[]> = {

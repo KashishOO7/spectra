@@ -43,19 +43,22 @@ export interface HarmProgress {
   done: number;
   total: number;
   covered: boolean;
+  picked: boolean;
 }
 
 export function harmBreakdown(result: AssessmentResult | null | undefined): HarmProgress[] {
   const harms = Object.keys(HARMS) as Harm[];
-  if (!result) return harms.map(harm => ({ harm, done: 0, total: 0, covered: false }));
+  if (!result) return harms.map(harm => ({ harm, done: 0, total: 0, covered: false, picked: false }));
 
+  const picked = new Set(result.picked_harms);
   return harms.map(harm => {
     const mapped = result.all_items.filter(i => harmsForItem(i).includes(harm));
     return {
       harm,
       done: mapped.filter(i => i.is_implemented && !i.is_skipped).length,
       total: mapped.length,
-      covered: isHarmCovered(result.all_items, harm)
+      covered: isHarmCovered(result.all_items, harm),
+      picked: picked.has(harm)
     };
   });
 }

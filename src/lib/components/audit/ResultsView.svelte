@@ -6,6 +6,7 @@
   export let result: AssessmentResult | null;
   $: cov = coverageOf(result);
   $: harmRows = harmBreakdown(result);
+  $: anyPicked = harmRows.some(r => r.picked);
   export let profile: UserProfile | null;
   export let exportStatus: 'idle' | 'done' | 'error';
   export let onBack: () => void;
@@ -99,11 +100,25 @@
   </div>
 
   <div class="panel p-5 mb-5">
-    <p class="label-mono mb-4">By harm</p>
+        <p class="label-mono mb-1">By harm</p>
+    {#if anyPicked}
+      <p class="text-[13px] text-dim mb-4 leading-relaxed">
+        The dot marks what you picked, and the circle above counts only those.
+      </p>
+    {:else}
+      <div class="mb-4"></div>
+    {/if}
     <div class="space-y-3">
       {#each harmRows as row}
         <div class="flex items-center justify-between gap-4">
-          <span class="text-[13px] text-body leading-snug">{row.harm}</span>
+          <span class="flex items-start gap-2 min-w-0">
+            <span class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0
+                         {row.picked ? 'bg-amber-light' : 'bg-transparent'}"
+                  aria-hidden="true"></span>
+            <span class="text-[13px] leading-snug {row.picked ? 'text-bright' : 'text-body'}">
+              {row.harm}{#if row.picked}<span class="sr-only"> (you picked this)</span>{/if}
+            </span>
+          </span>
           <div class="flex items-center gap-3 flex-shrink-0">
             {#if row.covered}
               <span class="pill-amber text-xs">Covered</span>
