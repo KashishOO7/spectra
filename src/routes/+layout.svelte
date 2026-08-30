@@ -183,7 +183,7 @@
     {:else if mode === 'guardian'}
       <span class="text-[13px] text-teal-light">{modeLabels['guardian']}</span>
     {:else if pathname === '/resources'}
-      <span class="text-[13px] text-dim">Tools &amp; Resources</span>
+      <span class="text-[13px] text-dim">Guides</span>
     {:else if pathname === '/graph'}
       <span class="text-[13px] text-dim">Your map</span>
     {/if}

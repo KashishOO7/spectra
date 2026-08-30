@@ -27,28 +27,28 @@
 </script>
 
 <svelte:head>
-  <title>Tools &amp; Resources | Spectra</title>
+  <title>The guides our steps point at | Spectra</title>
   <meta name="description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
   <link rel="canonical" href="https://spectra.fpszero.com/resources" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="Tools &amp; Resources | Spectra" />
+  <meta property="og:title" content="The guides our steps point at | Spectra" />
   <meta property="og:description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
   <meta property="og:url" content="https://spectra.fpszero.com/resources" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Tools &amp; Resources | Spectra" />
+  <meta name="twitter:title" content="The guides our steps point at | Spectra" />
   <meta name="twitter:description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
 
-  <h1 class="font-display text-3xl font-bold text-white mb-3">Tools &amp; Resources</h1>
+  <h1 class="font-display text-3xl font-bold text-white mb-3">The guides our steps point at | Spectra</h1>
 
   <p class="text-body text-base leading-relaxed max-w-2xl mb-10">
-    We don't keep a tool catalogue and we don't name apps. These are the guides our steps point
-    at: people who track this properly and update it more often than we could.
+    We don't keep a tool catalogue and we don't name apps. These are maintained by people who
+    track this properly and update them more often than we could.
   </p>
 
   <section class="mb-12">

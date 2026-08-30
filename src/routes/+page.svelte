@@ -154,7 +154,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-red opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-[13px] text-red-light opacity-70">Immediate triage &mdash; no setup needed</span>
+            <span class="text-[13px] text-red-light opacity-70">Immediate triage, no setup needed</span>
           </div>
         </div>
         <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
@@ -171,14 +171,14 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-teal opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-[13px] text-teal-light opacity-70">Curated, privacy-rated, no dark patterns</span>
+            <span class="text-[13px] text-teal-light opacity-70">No apps named, no affiliate links</span>
           </div>
         </div>
         <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
-          Find the right tools
+          Where our steps send you
         </h2>
         <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
-          Every tool rated for privacy, cost and platform. Trade-offs listed.
+          The maintained guides our steps reference, kept current by people who track this full time.
         </p>
       </a>
 

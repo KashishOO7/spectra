@@ -736,7 +736,7 @@
 
   <p class="text-[13px] text-muted mt-6 text-center">
     This map is built from what you tapped. All data is stored locally in your browser.
-    <a href="/audit" class="text-dim hover:text-body underline transition-colors">Go to full audit →</a>
+    <a href="/audit" class="text-dim hover:text-body underline transition-colors">Go to your list →</a>
   </p>
 </div>
 
