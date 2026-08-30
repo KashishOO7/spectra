@@ -26,22 +26,16 @@
   </url>
 
   <url>
-    <loc>https://spectra.fpszero.com/references</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://spectra.fpszero.com/resources</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- <url>
-    <loc>https://spectra.fpszero.com/threats</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url> -->
+  <url>
+    <loc>https://spectra.fpszero.com/how-it-works</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 
   <url>
     <loc>https://spectra.fpszero.com/graph</loc>
