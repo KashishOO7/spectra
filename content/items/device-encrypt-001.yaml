@@ -49,17 +49,34 @@ platform_notes:
 
     Test it
 
-    Turn the device fully off, then on again.
+    Go back to the same setting and read what it says.
 
-    If it wants your PIN or password before it will start, not just at the lock screen, encryption
-    is doing its job.
+    Phones: the security screen should say encrypted.
+
+    Windows: Device encryption, or BitLocker, should say On for the drive Windows is installed on.
+
+    Mac: FileVault should say On.
+
+    Do not judge this by the start-up screen. On most computers encryption is on and starting up
+    looks exactly the same as it always did.
 environment_notes:
-  border_device_inspection: |
-    At border crossings, authorities may compel you to unlock your device.
-    Encryption protects data if the device is seized without your cooperation,
-    but cannot protect against lawful compelled decryption. Consider travelling
-    with a clean device and accessing sensitive data remotely, or enabling a
-    separate travel PIN distinct from your standard passphrase.
+  border_device_inspection: >-
+    What encryption covers here, and what it does not
+
+    Encryption protects what is on a device that is taken from you. It protects nothing on a device
+    you have been made to unlock.
+
+    In many countries officers at a crossing can require you to unlock, and what happens if you
+    refuse differs by country and by whether you are a citizen of it.
+
+
+    What actually helps
+
+    Travel with less on the device. That is the only protection here that does not depend on what
+    you are asked to do.
+
+    Power the device fully off before you arrive, so the first unlock has to be your code rather
+    than your face or your finger.
 not_applicable_if: []
 sensitive: false
 difficulty:

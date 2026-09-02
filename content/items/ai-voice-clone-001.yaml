@@ -28,18 +28,25 @@ platform_notes:
 
     Setting it up
 
-    Agree it in person, or in an encrypted chat. Not over an ordinary call, and not by text.
+    Agree it face to face if you can. If not, use a chat app that encrypts messages. Not over an
+    ordinary phone call, and not by text.
 
-    Pick something plain that would never come up by itself. Not a birthday, not a pet, nothing
-    anyone could look up.
+    Pick a word that is easy to say but would never come up in that conversation by itself, like a
+    fruit or a piece of furniture. Not a birthday, not a pet's name, nothing a stranger could look
+    up or guess from what your family posts.
 
 
     When to use it
 
-    Any call where someone sounds like family and needs money or help right now. Ask for the word. A
-    real relative manages it.
+    Any call where someone sounds like family and needs money or help right now.
 
-    A copied voice does not.
+    Ask them to say the word. Never say it first, and never ask "is it still such and such", because
+    that hands the word straight to whoever is on the line.
+
+    A real relative can tell you the word. A copied voice cannot.
+
+    If they cannot say it, that on its own does not prove they are fake, because a frightened person
+    forgets things. Hang up anyway and ring them back on the number you already have for them.
 
 
     Worth knowing
@@ -88,7 +95,7 @@ verified_by:
   - org:eff.org
 sources:
   - url: https://www.cnn.com/2024/02/04/asia/deepfake-cfo-scam-hong-kong-intl-hnk
-    title: Finance worker pays out $25 million after deepfake video call — CNN
+    title: Finance worker pays out $25 million after video call with deepfake 'chief financial officer' — CNN
     type: primary
     accessed: '2026-03-05'
 resources:

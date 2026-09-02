@@ -33,7 +33,16 @@ platform_notes:
 
     It does not make you anonymous, and it hands that view to the VPN company instead.
 
-    That is why which one you pick matters.
+
+    Picking one
+
+    Because the view moves rather than disappears, the choice is the whole decision. Use the checks
+    on this page, under how to judge a tool before you trust it, and weigh one of them heaviest:
+    whether someone independent has published an audit of what the company keeps. A company saying
+    it keeps no records is not the same as anyone having checked.
+
+    Be wary of free ones as a category. Running this costs real money, so where nobody is paying,
+    the traffic is usually what pays.
 
 
     While you are in there
@@ -43,19 +52,43 @@ platform_notes:
 
     Test it
 
-    Turn it on, then search for what is my IP. If the country shown is the one you picked rather
-    than your own, it is working.
+    Turn it on, then search the web for what is my IP and open any result. If the country it shows
+    is the one you picked rather than the one you are sitting in, it is working.
 environment_notes:
-  vpn_restricted: |
-    In your environment, only government-approved VPN providers may be permitted.
-    Using a non-approved VPN may be illegal or draw attention. Research your
-    jurisdiction's specific rules before subscribing. If VPNs are blocked,
-    Tor may be an alternative but carries its own visibility profile.
-  govt_monitors_traffic: |
-    A commercial VPN shifts trust from your ISP to the VPN provider — it does
-    not make you anonymous. Choose a provider with an independently audited
-    no-logs policy (Mullvad, Proton). Paying with cash or cryptocurrency
-    reduces the linkage between your identity and the subscription.
+  vpn_restricted: >-
+    Check the law before you subscribe
+
+    Where you live, only approved providers may be allowed, and using one that is not approved may
+    be against the law, or may simply get noticed.
+
+    Find out what applies to you before you sign up rather than after. This is one of the few steps
+    on your list that can carry a legal cost.
+
+
+    If they are blocked where you are
+
+    There are other ways to route around a block, but they are more noticeable rather than less,
+    and somewhere VPNs are controlled that visibility is the whole risk.
+
+    So weigh whether you need this step at all. The rest of your list protects you without it.
+  govt_monitors_traffic: >-
+    Where the trust goes
+
+    A VPN moves the view of your traffic from the company providing your internet to the VPN
+    company. It does not make you anonymous.
+
+    So where traffic is watched closely, the only question that matters is what the VPN company
+    keeps, and whether anyone outside it has checked.
+
+
+    What to look for
+
+    An audit by an outside firm, with the findings published. A company saying it keeps no records
+    is not the same as anyone having confirmed it.
+
+    A way to pay that is not tied to your name, if that matters where you are.
+
+    The guide on this page lists current providers and what each one says it keeps.
 not_applicable_if: []
 sensitive: false
 difficulty:

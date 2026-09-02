@@ -28,7 +28,8 @@ platform_notes:
 
     Before you go
 
-    Back up at home, then take off anything you do not need with you.
+    Back up at home first, then delete from the device anything you will not need on the trip. The
+    backup is what makes deleting it safe.
 
     Sign out of the accounts that matter, rather than trusting nobody will open them.
 
@@ -47,15 +48,29 @@ platform_notes:
 
     Finding out what applies where you are going is part of getting ready.
 environment_notes:
-  border_device_inspection: |
-    Prepare a travel posture before departure: back up, then remove sensitive
-    apps and accounts from devices crossing the border. Re-install after entry.
-    Border agents in many countries can demand device access without a warrant.
-    A device with nothing sensitive on it cannot expose what isn't there.
-  govt_monitors_traffic: |
-    Hotel and airport networks in high-surveillance environments may be
-    actively monitored. Use a VPN before connecting to any local network,
-    and assume any unencrypted traffic is logged.
+  border_device_inspection: >-
+    Do this before you leave
+
+    Back up at home, then take the sensitive apps and accounts off the devices travelling with you.
+    Put them back once you have arrived.
+
+    Officers in many countries can ask for access to a device without a warrant, and in some places
+    refusing carries a penalty.
+
+
+    Why this rather than something cleverer
+
+    A device that has nothing sensitive on it cannot be made to give anything up.
+
+    Every other approach still depends on what you are asked to do at the desk, and on whether
+    refusing is an option for you. This one does not.
+  govt_monitors_traffic: >-
+    Hotel and airport networks
+
+    Treat the network as watched, and assume anything not encrypted is being recorded.
+
+    Turn your VPN on before you join the network, not after. The first few seconds after connecting
+    are when your device quietly tries every account it has saved.
 not_applicable_if: []
 sensitive: false
 difficulty:

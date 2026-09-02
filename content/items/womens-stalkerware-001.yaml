@@ -42,7 +42,9 @@ platform_notes:
 
     What to look for
 
-    Apps you do not recognise, including in the full list that shows system apps.
+    Apps you do not recognise. Look at the full list, not the home screen, because anything meant
+    to hide will not have an icon there. On iPhone: Settings, then General, then iPhone Storage. On
+    Android: Settings, then Apps, then See all apps, and turn on show system apps in the menu.
 
     Anything holding accessibility permission that you did not grant.
 

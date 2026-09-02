@@ -29,7 +29,17 @@ platform_notes:
     Where to look
 
     Settings, then Privacy. Browsers call it tracking protection, content blocking, or prevent
-    cross-site tracking.
+    cross-site tracking. Choose the strictest setting offered.
+
+
+    Adding a content blocker
+
+    A content blocker is a small add-on you install into the browser itself, from the browser's own
+    add-ons or extensions page. On a computer that page sits under Settings. On a phone, only some
+    browsers allow add-ons at all.
+
+    The guide below lists current ones. Install one, not several. They do the same job, and stacking
+    them breaks more sites without blocking more.
 
 
     If a site breaks

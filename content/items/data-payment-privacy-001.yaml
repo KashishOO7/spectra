@@ -111,11 +111,22 @@ legal_notes:
       Educational purposes only. Financial privacy regulations vary significantly. Some
       jurisdictions require banks to allow opt-out of data sharing with affiliates.
 environment_notes:
-  has_data_protection_rights: |
-    If you have data protection rights (GDPR, CCPA, etc.), you can request
-    your payment providers disclose what transaction data they share and with
-    whom. File a Subject Access Request or data access request with each
-    provider. They must respond within the statutory period.
+  has_data_protection_rights: >-
+    You can ask what they hold and who else has it
+
+    Where you live, a payment or banking provider has to tell you what it keeps about your spending
+    and who it has passed that to, and it has to answer within a set time.
+
+
+    How to ask
+
+    Write to each provider separately and use the words subject access request, or data access
+    request. Those words are what makes it a legal request rather than a question.
+
+    Ask two things plainly: what do you hold about me, and who have you shared it with.
+
+    Where to send it is in the privacy section of their site or app, usually as a form or an
+    address for their data protection contact.
 emotional_register: null
 tags:
   - free

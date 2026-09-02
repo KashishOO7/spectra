@@ -31,10 +31,11 @@ platform_notes:
 
     Encryption on by default, for every chat, not something you switch on each time.
 
-    Code others can inspect.
+    Published code, so that people outside the company can check what the app really does. Its site
+    will say so, usually under open source.
 
-    And ask what it knows besides your messages, because who you spoke to and when is its own kind
-    of record.
+    What it keeps besides your messages. Who you talked to, when, and how often is its own kind of
+    record, and encrypting the messages does not hide it. Look for that in its privacy page.
 
     If giving a phone number is a problem for you, some apps do not ask for one.
 
@@ -47,20 +48,48 @@ platform_notes:
 
     Test it
 
-    Open a chat and find the safety or verification screen.
+    Open a chat and find the safety number, security code or verification screen. Any app doing
+    this properly has one.
 
-    If you can compare a short code with the other person, the encryption is real and nobody is
-    sitting in the middle.
+    Read out what it shows and have the other person read out theirs, in person or on a call.
+
+    If the two match, nobody is sitting in the middle. Matching is the test, not simply finding the
+    screen. If they do not match, stop using that chat for anything private until you know why.
 environment_notes:
-  encrypted_comms_restricted: |
-    Switching to Signal may be visible to your ISP or carrier even if message
-    content is protected. In environments where E2EE apps are monitored or
-    restricted, evaluate whether switching platforms visibly creates additional
-    risk before making the change.
-  govt_monitors_traffic: |
-    Your ISP can see which apps you use even if it cannot read message content.
-    Consider pairing Signal with a VPN to obscure the traffic pattern, and be
-    aware that app store downloads may be logged.
+  encrypted_comms_restricted: >-
+    What this changes for you
+
+    The company providing your internet, and your mobile network, can usually tell which app you
+    are using even when they cannot read a word you send.
+
+    So where these apps are restricted or watched, installing one can itself be the thing that gets
+    noticed.
+
+
+    Before you switch
+
+    Weigh whether being seen to use it costs you more than the protection is worth. That depends on
+    where you are, and you are the only person who can judge it.
+
+    If the answer is that it costs too much, there is still a safer first move: turn off the cloud
+    backup of your chats in the app you already use, and delete old conversations you no longer
+    need.
+  govt_monitors_traffic: >-
+    What is still visible
+
+    The company providing your internet can see which apps you use and when, even when the messages
+    themselves are unreadable to it. Who you talk to and how often is its own kind of record.
+
+    Downloading the app can be logged too.
+
+
+    What helps, and what it costs
+
+    Using the app inside a VPN hides which app it is from the network you are on. That moves the
+    view to the VPN company instead of removing it.
+
+    Neither hides anything from the person you are talking to, or from anyone holding an unlocked
+    phone at either end.
 not_applicable_if: []
 sensitive: false
 difficulty:

@@ -39,6 +39,9 @@ platform_notes:
 
     Do your apps too. App stores have their own auto-update switch, separate from the system one.
 
+    If your data allowance is limited, set both to update over wifi only. The setting sits next to
+    the auto-update switch.
+
 
     Test it
 

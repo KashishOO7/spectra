@@ -115,15 +115,11 @@ status: active
 superseded_by: null
 last_verified: '2026-03-01'
 verified_by:
-  - org:eff.org
+  - org:pen.org
 sources:
   - url: https://onlineharassmentfieldmanual.pen.org
     title: PEN America Online Harassment Field Manual
     type: primary
-    accessed: '2026-03-01'
-  - url: https://www.eff.org/issues/online-harassment
-    title: EFF — Online Harassment
-    type: supporting
     accessed: '2026-03-01'
 resources: []
 legal_notes:

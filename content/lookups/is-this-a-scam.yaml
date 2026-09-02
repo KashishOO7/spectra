@@ -1,13 +1,12 @@
-# Table C. The three questions, drawn from the corpus's own model.
 
 - id: lookup-is-this-a-scam-001
   schema_version: 1.0.0
   version: 1.0.0
   title: Three questions before you act on a message
   intro: >-
-    Bad spelling used to be the giveaway. It is not any more, because anything can write clean
-    English now. These three questions still work, because they are about the situation rather than
-    the wording.
+    Bad spelling used to be the giveaway. It is not any more, because AI writing tools mean a scam
+    message reads as well as a real one. These three questions still work, because they are about
+    the situation rather than the wording.
   status: active
   last_verified: '2026-08-26'
   verified_by: spectra-maintainer

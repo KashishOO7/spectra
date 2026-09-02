@@ -4,13 +4,16 @@ version: 1.2.0
 title: Check who a message is really from, however well written
 simple_description: Check the sender before you trust a message, even a well-written one.
 description: |
-  Traditional phishing had obvious tells: bad grammar, generic greetings, suspicious links. 
-  AI-generated phishing is grammatically perfect, highly personalized using OSINT, and 
-  indistinguishable from legitimate communication.
+  Phishing used to announce itself with bad grammar and a generic greeting. A language model
+  can write a fluent message and aim it at you personally, using what is already public about
+  you. In the study behind this step, messages written this way for more than 600 members of
+  one parliament were judged realistic and cost a fraction of a cent each to produce.
 threat_narrative: |
-  Attackers use Large Language Models (LLMs) to scrape your LinkedIn, public tweets, and 
-  company news to draft spear-phishing emails in seconds. Because the text is flawless, 
-  the old rule of "look for typos" is dangerously obsolete. 
+  Someone can take what you have posted in public, your job, your employer, what you did last
+  week, and have a model draft a message that fits. The study behind this step did exactly
+  that, at scale, and found that basic prompting got past the safeguards meant to stop it.
+  Looking for spelling mistakes no longer separates a real message from a fake one, so the
+  check has to be on who sent it rather than on how it reads.
 category: ai_threats
 subcategory: ai_phishing_detection
 tracks:
@@ -25,9 +28,22 @@ platform_notes:
     Check where a message came from before you act on it, even when it is well written.
 
 
+    How to see who really sent it
+
+    The name shown at the top of a message is typed in by whoever sent it, so it proves nothing on
+    its own.
+
+    Email: open the sender's details and read the whole address, especially the part after the @.
+    That part is the one that cannot be faked. If it is not the organisation's own web address, the
+    message is not from them. On a phone the address is hidden until you tap the sender's name.
+
+    Text or chat: a sender you do not already have saved shows as a number or a short name that
+    anyone can choose. Neither one tells you who it is.
+
+
     Why the old advice stopped working
 
-    Bad spelling used to be the giveaway. Anything can write clean English now, so how a message
+    Bad spelling used to be the giveaway. AI writing tools mean a scam message now reads as well as a real one, so how a message
     reads tells you almost nothing.
 
 
@@ -35,7 +51,8 @@ platform_notes:
 
     Next time a message says there is a problem with an account, do not use its link.
 
-    Type the address in yourself and sign in.
+    Open a new tab and reach the site the way you normally would, by your own saved bookmark or by
+    typing the company's own web address. Never the link in the message.
 
     If the real site shows no such problem, the message was not real.
 platform_notes_verified:
@@ -84,14 +101,14 @@ related_items:
     note: Independent verification is the only reliable defense against flawless AI text.
 status: active
 superseded_by: null
-last_verified: '2026-03-04'
+last_verified: '2026-09-02'
 verified_by:
-  - org:eff.org
+  - org:arxiv.org
 sources:
   - url: https://arxiv.org/abs/2305.06972
-    title: Spear Phishing With Large Language Models — Academic research
+    title: Spear Phishing With Large Language Models — Julian Hazell
     type: primary
-    accessed: '2026-03-04'
+    accessed: '2026-09-02'
 resources: []
 legal_notes: []
 emotional_register: null

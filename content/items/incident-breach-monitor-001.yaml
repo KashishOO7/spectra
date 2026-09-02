@@ -28,11 +28,14 @@ platform_notes:
 
     How
 
-    Put each address you use into Have I Been Pwned at haveibeenpwned. com.
+    Go to haveibeenpwned.com and put in each address you use. Searching is free, needs no account,
+    and tells you which known leaks already include you.
 
-    Searching is free and needs no account, and it can tell you when a new leak includes you.
+    Searching does not sign you up for anything. Being told about future leaks is a separate step:
+    use the notify option on the same site, give the address, and click the link in the mail it
+    sends you. Repeat it for each address, because one signup covers one address.
 
-    Many password managers run the same check for the accounts they hold, so look there too if you
+    Many password managers run the same check on the accounts they hold, so look there too if you
     use one.
 
 

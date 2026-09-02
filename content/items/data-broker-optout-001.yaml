@@ -51,14 +51,29 @@ platform_notes:
     and which are not.
 not_applicable_if: []
 environment_notes:
-  has_data_protection_rights: |
-    Your legal framework gives you enforceable deletion rights. When submitting
-    opt-out requests, explicitly cite your applicable law (GDPR Art. 17, CCPA
-    Sec. 1798.105, LGPD Art. 18, etc.). Brokers must comply within a statutory
-    period or face regulatory penalties. If a broker ignores your request, file
-    a complaint with your data protection authority. This legal backing makes
-    automated services less necessary for you, but they still save significant
-    time if you have profiles on dozens of sites.
+  has_data_protection_rights: >-
+    Removal is something you can require
+
+    Where you live, this is a right rather than a favour, and the law puts a deadline on the answer.
+
+
+    Say so in the request
+
+    Name the law and use the words right to erasure, or right to delete. In Europe that right is in
+    the GDPR. In California it is in the CCPA. Naming it turns a polite request into one they have
+    to answer.
+
+    Keep the date you sent it and a copy of what you sent. That is what a complaint later rests on.
+
+    If the deadline passes and nothing happens, your country has a data protection regulator you can
+    complain to, and complaining costs nothing.
+
+
+    This does not change the two rules above
+
+    You still never pay to be removed, and you still never hand over more than they already hold.
+
+    A paid removal service has no power here that your own letter does not already have.
 sensitive: false
 difficulty:
   technical: 1

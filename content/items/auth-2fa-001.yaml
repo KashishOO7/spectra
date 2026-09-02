@@ -25,12 +25,16 @@ platform_notes:
     Turn on two-step login on your most important accounts. Email first, then anything with money in
     it, then your password manager.
 
+    Setting it up offers you a list of backup codes. Save them while that screen is open. Most
+    accounts will not show you the same list again, and those codes are how you get back in if you
+    lose the phone.
+
 
     Which kind
 
-    A code from an app on your phone beats a code by text message.
+    Use an authenticator app for the codes, not text messages.
 
-    Text messages can be moved to someone else's phone by someone who talks your network into it.
+    A text code can be stolen without touching your phone: someone calls your mobile network, pretends to be you, and has your number moved to a SIM card they hold. An app on your phone cannot be moved that way.
 
     A small key you plug in or tap is stronger again, and worth it for your email.
 
@@ -39,9 +43,11 @@ platform_notes:
 
     It works, keep using it.
 
-    When you get a chance, move to one that backs your codes up in a form only you can unlock.
+    Check one thing in its settings: whether it can back your codes up, and whether that backup is
+    locked with a password only you know. Some apps keep no backup at all, so a lost phone takes
+    every code with it.
 
-    That way a lost phone does not lock you out of everything.
+    If yours cannot back up, saved backup codes are what covers you instead.
 
 
     Test it

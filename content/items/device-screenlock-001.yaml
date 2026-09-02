@@ -40,22 +40,42 @@ platform_notes:
     Security settings, then the passcode or screen lock option. Choose six digits or more, or a
     passphrase.
 
-    Find your phone's emergency shortcut, the one that turns off face and fingerprint until the code
-    is typed.
 
-    Practise it once so you can do it without looking.
+    The shortcut worth learning
+
+    Both kinds of phone can switch face and fingerprint off on the spot, so the next unlock has to
+    be the code. Learn yours now rather than when you need it.
+
+    iPhone: press and hold the side button together with either volume button until the slider
+    screen appears, then press Cancel.
+
+    Android: hold the power button and choose Lockdown from the menu. If Lockdown is not on that
+    menu, switch it on first under the lock screen settings.
+
+    Practise it once with the phone in your pocket, so you can do it without looking.
 
 
     Test it
 
-    Use the shortcut. If the phone then asks for the code rather than your face, you have found the
-    right one.
+    Use the shortcut, then try to unlock with your face or your finger. If the phone insists on the
+    code instead, you have the right one.
 environment_notes:
-  border_device_inspection: |
-    A strong PIN or passphrase is your last line of defence at a border
-    checkpoint. Biometric unlocks (fingerprint, face) can be legally compelled
-    in many jurisdictions without the same protections as a passcode. Disable
-    biometrics before crossing and re-enable afterwards.
+  border_device_inspection: >-
+    Why the code matters more here
+
+    A face or a finger can be used on you while someone else holds the phone. A code has to be
+    given by you.
+
+    The law in many countries treats those two differently, and the code is the one with more
+    protection behind it.
+
+
+    What to do
+
+    Switch face and fingerprint off before you reach the checkpoint, using the lockdown shortcut in
+    the steps above. Powering the phone fully off does the same thing.
+
+    Turn them back on afterwards if you want them.
 not_applicable_if: []
 sensitive: false
 difficulty:

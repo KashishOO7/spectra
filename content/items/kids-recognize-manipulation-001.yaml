@@ -6,15 +6,15 @@ simple_description: Tell your child that secrets, gifts and private chats are wa
 description: |
   Manipulation of children online follows recognisable patterns: requests for secrets,
   gift-giving, moving to private platforms, and gradual escalation of intimacy or requests.
-  Children who know these patterns can name them when they encounter them — and know
-  that telling a trusted adult is the right response, not a source of trouble.
+  Children who know these patterns can name them when they meet them, and know that
+  telling a trusted adult is the right response rather than a source of trouble.
 threat_narrative: |
-  Adults who target children online almost always begin with trust-building — games,
-  compliments, shared interests — before escalating to requests for photos, location,
-  or private communication. The "don't tell anyone" request is a nearly universal
-  signal. Children who haven't been explicitly taught these patterns often don't
-  recognise them until significant harm has occurred. Recognition and a clear,
-  rehearsed response to "tell a trusted adult" is the most effective known defence.
+  Adults who target children online usually start by building trust, with games, compliments
+  and steady attention, before escalating towards photos, location or private contact.
+  Secrecy is one of the levers they rely on. Conversations are often moved off the platform
+  where they started onto a private messaging app, where there is less chance of being seen.
+  A child who has never had these patterns named often does not recognise them while they
+  are happening, which is the reason for naming them in advance.
 category: human_vulnerability
 subcategory: social_engineering_defense
 tracks:
@@ -95,12 +95,17 @@ status: active
 superseded_by: null
 last_verified: '2026-03-01'
 verified_by:
-  - org:eff.org
+  - org:inhope.org
+  - org:weprotect.org
 sources:
-  - url: https://www.eff.org/issues/kids-privacy
-    title: EFF — Kids & Privacy
+  - url: https://inhope.org/articles/the-stages-of-grooming
+    title: The stages of grooming — INHOPE
     type: primary
-    accessed: '2026-03-01'
+    accessed: '2026-09-02'
+  - url: https://www.weprotect.org/thematic/online-grooming/
+    title: Online grooming — WeProtect Global Alliance
+    type: supporting
+    accessed: '2026-09-02'
 resources: []
 legal_notes:
   - jurisdiction: global

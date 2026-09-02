@@ -4,12 +4,12 @@ version: 2.1.0
 title: Back up somewhere the provider cannot read your files
 simple_description: Back up your files to a service that cannot read them.
 description: |
-  Cloud backups are only as private as whoever holds the encryption key — usually
-  the provider. Zero-knowledge cloud storage means your files are encrypted on your
-  device before upload, so the provider stores ciphertext they cannot read even if
-  compelled to. The easiest path is switching to a provider that does this by default.
-  If you're locked into Google Drive or Dropbox, Cryptomator adds client-side
-  encryption on top.
+  A cloud backup is only as private as whoever holds the key, which is normally the
+  provider. Zero-knowledge storage encrypts your files on your device before they go up,
+  so the provider holds only text it cannot read, even if it is compelled to hand it over.
+  The simplest path is a provider that works this way by default. If you are staying with
+  one that does not, a separate encryption layer goes between you and the folder, scrambling
+  each file before it syncs.
 threat_narrative: |
   Every major cloud provider has received government data requests and complied.
   When your provider holds the encryption key, a breach, an insider threat, or a
@@ -37,7 +37,9 @@ platform_notes:
     If you want to keep the storage you already pay for, encrypt the files yourself before they go
     up.
 
-    Tools for that sit between you and the folder.
+    A tool that does this gives you a folder that looks ordinary on your own machine and is
+    unreadable to everyone else. You save into that folder, and the scrambled copy is what gets
+    uploaded. The guide below lists current ones.
 
 
     Also
@@ -48,8 +50,11 @@ platform_notes:
 
     Test it
 
-    Ask what happens if you forget the password. If the provider can get your files back for you,
-    they could read them all along.
+    Look up what the provider does if you forget your password. Search its help pages for forgotten
+    password or password reset.
+
+    If it can restore your files for you, it could read them all along. If it says the files are
+    lost for good, nobody there holds a key to them.
 not_applicable_if: []
 sensitive: false
 difficulty:
@@ -106,14 +111,6 @@ sources:
     title: Cloud Storage — Privacy Guides
     type: primary
     accessed: '2026-03-01'
-  - url: https://cryptomator.org/
-    title: Cryptomator — Open Source Cloud Encryption
-    type: supporting
-    accessed: '2026-03-05'
-  - url: https://filen.io/
-    title: Filen — Zero-Knowledge Encrypted Cloud Storage
-    type: supporting
-    accessed: '2026-03-05'
 resources:
   - id: res-guide-cloud-001
     context: lists storage that cannot read your files, and tools that encrypt before upload.

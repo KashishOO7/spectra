@@ -1,8 +1,8 @@
 id: net-dns-001
 schema_version: 1.0.0
 version: 2.1.0
-title: Stop your internet provider seeing every site you visit
-simple_description: Switch on private DNS, which hides the sites you visit from your provider.
+title: Stop your internet provider collecting a list of the sites you look up
+simple_description: Switch on private DNS so your internet provider sees less of where you go.
 description: |
   Every website you visit generates a DNS query — the lookup that translates
   a domain name into an IP address. By default these queries travel unencrypted
@@ -24,7 +24,20 @@ platform_notes:
   all: >-
     Do this
 
-    Switch on private DNS, so the company providing your internet stops seeing every site you open.
+    Switch on private DNS, so the company providing your internet stops collecting a list of every
+    site name your device looks up.
+
+
+    What it does, and what it does not
+
+    Every time you open a site, your device first asks for that site's name. Without this setting
+    that question is sent in the open, and your internet provider can keep the list.
+
+    Switching it on encrypts the question.
+
+    It does not make you invisible. Your provider can still see the addresses your device connects
+    to, so it can often still work out where you went. This closes one easy source of that list,
+    not all of them.
 
 
     Where to look
@@ -49,11 +62,22 @@ platform_notes:
     Once saved, the setting should show the provider name or say it is connected. If it goes back to
     automatic, it did not take.
 environment_notes:
-  govt_monitors_traffic: |
-    DNS-over-HTTPS alone does not hide that you are using an encrypted DNS
-    resolver — your ISP can still observe the traffic pattern. In environments
-    with deep packet inspection, combine encrypted DNS with a VPN so DNS
-    queries are tunnelled inside the VPN connection and not separately visible.
+  govt_monitors_traffic: >-
+    What this setting does not hide
+
+    It scrambles the question your device asks. It does not hide that you are asking it in a
+    scrambled way, and someone watching the line closely can still see that much.
+
+    Where traffic is inspected in that kind of detail, being one of the few people doing this can
+    itself stand out.
+
+
+    What helps
+
+    Using it inside a VPN puts those questions in the same tunnel as everything else, so they stop
+    being separately visible.
+
+    That moves the view to the VPN company rather than removing it.
 not_applicable_if:
   - condition: item_implemented:net-vpn-001
     reason: >-
@@ -107,10 +131,6 @@ sources:
   - url: https://privacyguides.org/en/dns/
     title: Encrypted DNS Resolvers — Privacy Guides
     type: primary
-    accessed: '2026-03-01'
-  - url: https://www.quad9.net/privacy/policy/
-    title: Quad9 Privacy Policy
-    type: supporting
     accessed: '2026-03-01'
 resources:
   - id: res-guide-dns-001

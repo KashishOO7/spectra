@@ -47,10 +47,15 @@ platform_notes:
 
     Test it
 
-    Your phone keeps a recent access list, showing which apps used your camera, mic or location and
+    Your phone keeps a list of which apps recently used your camera, microphone or location, and
     when.
 
-    Open it after a day and see who has been busy.
+    iPhone: Settings, then Privacy and Security, then App Privacy Report. Switch it on, because it
+    only starts recording once you do.
+
+    Android: Settings, then Privacy, then Privacy Dashboard.
+
+    Come back to it after a day and see who has been busy.
 not_applicable_if: []
 sensitive: false
 difficulty:
