@@ -1,6 +1,8 @@
 name: Spectra Internal Audit
 
 on:
+  # Disabled: this weekly run opened a new audit-report issue every Monday without closing
+  # the previous one. The same checks now run locally via `npm run maintain`.
   # schedule:
   #   - cron: '0 9 * * 1'
   workflow_dispatch:

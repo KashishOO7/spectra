@@ -4,7 +4,8 @@
 /src/lib/types.ts                   @KashishOO7
 /src/lib/engine/scoring.ts          @KashishOO7
 
-# Score weight changes require maintainer
+# Score weight and threat multiplier changes: covered by the /content/items/ rule below, and
+# blocked before a push by scripts/check-protected.ts.
 
 # Content quality — all item PRs need review
 /content/items/                     @KashishOO7

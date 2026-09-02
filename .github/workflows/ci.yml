@@ -73,14 +73,18 @@ jobs:
           BASE_URL: https://spectra.fpszero.com
 
       - name: Upload build artifact
+        if: github.repository == 'KashishOO7/spectra'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./build
 
+  # Deploy and the post-deploy check run only for this repository, which is the one with a Pages
+  # site. A fork or a mirror running this same file stops here.
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: build
+    if: github.repository == 'KashishOO7/spectra'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -93,7 +97,7 @@ jobs:
     name: Post-Deploy Health Check
     runs-on: ubuntu-latest
     needs: deploy
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.repository == 'KashishOO7/spectra'
     steps:
       - name: Wait for deployment to propagate
         run: sleep 30

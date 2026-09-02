@@ -78,9 +78,11 @@ Worked examples, with the reasoning behind the stored number:
 - `womens-stalkerware-001` is **9.0**. Maximum impact (physical safety) sets a high base, then the
   `intimate_partner` multiplier elevates it further.
 
-`score_weight` and `threat_model_multipliers` are CODEOWNERS-protected, so the priority order cannot
-be quietly skewed. Tightening every weight to the rubric and recording a per-item `weight_rationale`
-is ongoing calibration work, not yet complete.
+`score_weight` and `threat_model_multipliers` cannot be changed quietly. Every value is recorded in
+`scripts/protected-baseline.json` and `scripts/check-protected.ts` fails the build when one moves,
+with no flag to argue past it, so a recalibration has to be a deliberate, visible act rather than a
+side effect. Item files are also owner-reviewed on GitHub. Tightening every weight to the rubric and
+recording a per-item `weight_rationale` is ongoing calibration work, not yet complete.
 
 ### 2.2 `threat_multiplier`
 
@@ -144,7 +146,7 @@ Ageing is **not** measured in elapsed time. With one maintainer every item event
 age threshold, and the product would end up claiming its content had rotted because a file was not
 touched. An item is worth re-reading when the guidance actually changed: the profile records the
 item's `version` at the moment it was marked done, and the item is flagged when that version moves.
-`last_verified` stays in the YAML as contributor metadata and renders on this page, nowhere else.
+`last_verified` stays in the YAML as maintenance metadata and renders on this page, nowhere else.
 
 ---
 
