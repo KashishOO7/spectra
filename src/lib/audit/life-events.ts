@@ -1,4 +1,6 @@
+
 import type { AdversaryType, Track } from '../types.js';
+
 export interface LifeEvent {
   id: string;
   icon: string;

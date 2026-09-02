@@ -65,14 +65,13 @@
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-fade-up">
 
   <button type="button" on:click={onBack}
-    class="flex items-center gap-2 text-[13px] text-dim hover:text-body transition-colors mb-8">
+    class="flex items-center gap-2 text-sm text-dim hover:text-body transition-colors mb-8">
     ← Back to audit
   </button>
 
   {#if result}
   <div class="flex flex-col sm:flex-row items-center gap-8 mb-10 panel p-6 border-border/60">
     <div class="flex-shrink-0">
-     
       <svg width="140" height="140" viewBox="0 0 92 92" role="img"
            aria-label={coverageLine(cov)}>
         <circle cx="46" cy="46" r="42" fill="none" class="stroke-border" stroke-width="6"/>
@@ -93,16 +92,15 @@
         {maturityDescriptions[result.overall_maturity]}
       </p>
       <div class="flex items-center gap-4 mt-3 flex-wrap justify-center sm:justify-start">
-        <span class="text-[13px] text-dim">{result.total_implemented} of {result.total_applicable} items complete</span>
-  
+        <span class="text-sm text-dim">{result.total_implemented} of {result.total_applicable} items complete</span>
       </div>
     </div>
   </div>
 
   <div class="panel p-5 mb-5">
-        <p class="label-mono mb-1">By harm</p>
+    <p class="label-mono mb-1">By harm</p>
     {#if anyPicked}
-      <p class="text-[13px] text-dim mb-4 leading-relaxed">
+      <p class="text-sm text-dim mb-4 leading-relaxed">
         The dot marks what you picked, and the circle above counts only those.
       </p>
     {:else}
@@ -115,7 +113,7 @@
             <span class="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0
                          {row.picked ? 'bg-amber-light' : 'bg-transparent'}"
                   aria-hidden="true"></span>
-            <span class="text-[13px] leading-snug {row.picked ? 'text-bright' : 'text-body'}">
+            <span class="text-sm leading-snug {row.picked ? 'text-bright' : 'text-body'}">
               {row.harm}{#if row.picked}<span class="sr-only"> (you picked this)</span>{/if}
             </span>
           </span>
@@ -130,7 +128,7 @@
         </div>
       {/each}
     </div>
-    <p class="text-[13px] text-dim mt-4 leading-relaxed">{COVERED_MEANS}</p>
+    <p class="text-sm text-dim mt-4 leading-relaxed">{COVERED_MEANS}</p>
   </div>
 
   <div class="grid sm:grid-cols-2 gap-4 mb-6">
@@ -142,7 +140,7 @@
           <button type="button" on:click={() => onScrollToItem(item.id, item.category)}
             class="w-full text-left flex items-start gap-2 group">
             <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-red flex-shrink-0"></span>
-            <span class="text-[13px] text-body group-hover:text-white transition-colors leading-relaxed">{item.title}</span>
+            <span class="text-sm text-body group-hover:text-white transition-colors leading-relaxed">{item.title}</span>
           </button>
         {/each}
       </div>
@@ -157,7 +155,7 @@
             class="w-full text-left flex items-start gap-2 group">
             <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber flex-shrink-0"></span>
             <div>
-              <span class="text-[13px] text-body group-hover:text-white transition-colors">{item.title}</span>
+              <span class="text-sm text-body group-hover:text-white transition-colors">{item.title}</span>
               <span class="ml-2 text-xs font-mono text-muted">⏱ {item.time_estimate?.setup}</span>
             </div>
           </button>
@@ -206,7 +204,7 @@
   <div class="panel p-5 mt-5">
     <div class="flex items-center justify-between mb-4">
       <p class="label-mono">Your security journey</p>
-      <span class="text-[13px] text-dim">
+      <span class="text-sm text-dim">
         {result.total_implemented} item{result.total_implemented !== 1 ? 's' : ''} completed
       </span>
     </div>
@@ -214,7 +212,7 @@
     {#if sparklineSvg}
     <div class="mb-5">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-[13px] text-dim">Score progression</span>
+        <span class="text-sm text-dim">Score progression</span>
       </div>
       <svg viewBox="0 0 {sparklineSvg.W} {sparklineSvg.H}" class="w-full h-10 text-teal" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -238,7 +236,7 @@
         {/each}
       </svg>
       {#if sparklineSvg.boundaryX !== null}
-        <p class="text-[13px] text-muted mt-1.5">
+        <p class="text-sm text-muted mt-1.5">
           Dashed line: scoring changed. Values on each side were produced by a different scale.
         </p>
       {/if}
@@ -254,7 +252,7 @@
                         ev.type === 'life_event' ? 'bg-teal-light' : 'bg-dim'}"></div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <p class="text-[13px] text-body leading-snug">
+              <p class="text-sm text-body leading-snug">
                 {#if ev.type === 'implemented'}✓ {ev.item_title ?? 'Item completed'}
                 {:else if ev.type === 'quiz_completed'}◉ Completed social engineering assessment
                 {:else if ev.type === 'life_event'}◆ {ev.life_event_label}
@@ -275,7 +273,7 @@
     </div>
 
     {#if (profile?.timeline?.length ?? 0) > 40}
-      <p class="text-[13px] text-muted mt-2">Showing 40 of {profile?.timeline?.length} events</p>
+      <p class="text-sm text-muted mt-2">Showing 40 of {profile?.timeline?.length} events</p>
     {/if}
   </div>
   {/if}

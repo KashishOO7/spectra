@@ -5,7 +5,7 @@
   } from '$lib/audit/constants.js';
   import { platformDisplay } from '$lib/audit/helpers.js';
 
-  export let onboardStep: number;           
+  export let onboardStep: number;            
   export let isReconfiguring: boolean;
   export let onboardAdversaries: AdversaryType[];
   export let onboardTracks: Track[];
@@ -25,7 +25,7 @@
     {#if isReconfiguring}
       <button type="button"
         on:click={onCancel}
-        class="text-[13px] text-dim hover:text-body transition-colors flex-shrink-0">
+        class="text-sm text-dim hover:text-body transition-colors flex-shrink-0">
         ← Cancel
       </button>
     {/if}
@@ -43,14 +43,14 @@
       Who are you protecting yourself from?
     </h1>
     <p class="text-body text-sm mb-6 leading-relaxed">
-      Be honest — there are no wrong answers. Spectra uses this to weight your checklist
+      Be honest. There are no wrong answers. Spectra uses this to weight your checklist
       toward the threats that actually apply to your life.
     </p>
 
     <div class="flex items-center gap-4 mb-4">
-      <span class="label-mono">Exposure level:</span>
+      <span class="label-mono">How common:</span>
       {#each [['common','bg-teal','text-teal-light','Common'],['elevated','bg-amber','text-amber-light','Elevated'],['high','bg-red','text-red-light','High risk']] as [k,dot,text,label]}
-        <span class="flex items-center gap-1.5 text-[13px] {text}">
+        <span class="flex items-center gap-1.5 text-sm {text}">
           <span class="w-2 h-2 rounded-full {dot} inline-block"></span>{label}
         </span>
       {/each}
@@ -86,8 +86,8 @@
     </div>
 
     <div class="flex items-center justify-between">
-      <p class="text-[13px] text-muted">
-        {#if onboardAdversaries.length > 0}{onboardAdversaries.length} selected — your checklist will be weighted accordingly{/if}
+      <p class="text-sm text-muted">
+        {#if onboardAdversaries.length > 0}{onboardAdversaries.length} selected. Your list will be ordered around them{/if}
       </p>
       <button type="button"
         on:click={() => onboardStep = 2}
@@ -101,7 +101,7 @@
   <div class="animate-fade-up">
     <h1 class="font-display text-2xl font-bold text-white mb-2">Which devices do you use?</h1>
     <p class="text-body text-sm mb-8 leading-relaxed">
-      We'll show you implementation steps for your specific operating system. Skip this if you're unsure — you can filter later.
+      Skip this if you are unsure. You can change it later.
     </p>
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-8">
       {#each PLATFORM_OPTIONS as opt}
@@ -131,8 +131,8 @@
   <div class="animate-fade-up">
     <h1 class="font-display text-2xl font-bold text-white mb-2">Anything else that applies?</h1>
     <p class="text-body text-sm mb-6 leading-relaxed">
-      These unlock additional checklist items specific to your situation.
-      All optional — the general baseline always applies to everyone.
+      These add steps written for your situation. All optional, and the steps
+      everyone needs are on your list either way.
     </p>
 
     <div class="panel border border-teal/20 p-3.5 mb-3 flex items-center gap-3">
@@ -142,7 +142,7 @@
       </svg>
       <div>
         <p class="font-sans font-medium text-sm text-bright">General baseline</p>
-        <p class="text-xs text-dim mt-0.5">Core security controls — always included for everyone.</p>
+        <p class="text-xs text-dim mt-0.5">The steps everyone needs. Always included.</p>
       </div>
     </div>
 

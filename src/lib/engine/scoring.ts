@@ -18,7 +18,6 @@ function seWeight(item: ChecklistItem, profile: UserProfile): number {
   const quiz = profile.se_quiz;
   if (!quiz?.susceptibilities) return 1.0;
   const score = quiz.susceptibilities[item.emotional_register as string] ?? 50;
-  // Range: 0.8 (low susceptibility) → 1.4 (high susceptibility)
   return 0.8 + (score / 100) * 0.6;
 }
 
@@ -36,8 +35,11 @@ function getMaturityLevel(score: number): 1 | 2 | 3 | 4 | 5 {
   }
   return 5;
 }
+
 const SKIP_BAND_CEILING = 0.2;
 const SKIP_BAND_CAP: 1 | 2 | 3 | 4 | 5 = 3;
+
+
 export function activeTracksFor(profile: Pick<UserProfile, 'tracks'>): Track[] {
   const stored = profile.tracks ?? [];
   return stored.includes('general') ? stored : ['general' as Track, ...stored];
@@ -49,6 +51,7 @@ export function itemMatchesTracks(
 ): boolean {
   return item.tracks?.some(t => activeTracks.includes(t)) ?? true;
 }
+
 export function itemsForHarms(
   items: ChecklistItem[],
   harms: Harm[] | undefined,
@@ -69,8 +72,8 @@ export function scoreAssessment(
   const activeAdversaries = profile.adversaries ?? [];
   const activeTracks      = activeTracksFor(profile);
   const now               = Date.now();
-  if (!graph.items || typeof graph.items.values !== 'function') {
 
+  if (!graph.items || typeof graph.items.values !== 'function') {
     return emptyResult();
   }
   const allItems = [...graph.items.values()].filter(i => i.status === 'active');
@@ -79,7 +82,6 @@ export function scoreAssessment(
   const fullWeights = new Map<string, number>();
 
   for (const item of allItems) {
-    // Track filter
     if (!itemMatchesTracks(item, activeTracks)) continue;
 
     let threat_multiplier = 1.0;
@@ -89,8 +91,10 @@ export function scoreAssessment(
       );
       threat_multiplier = Math.max(...mults);
     }
+
     const human_multiplier = seWeight(item, profile);
     threat_multiplier *= human_multiplier;
+
 
     let compensating_factor = 0;
     if (item.compensating_controls?.length) {
@@ -106,10 +110,12 @@ export function scoreAssessment(
     const full_weight = base_weight * threat_multiplier * (1 - compensating_factor);
     const effective_score = full_weight;
     fullWeights.set(item.id, full_weight);
+
     const raw_skipped     = !!(profile.skipped?.[item.id]);
     const is_skipped      = raw_skipped;
     const is_implemented  = !raw_skipped && !!(profile.implemented?.[item.id]);
     const is_snoozed     = !!(profile.snoozed?.[item.id]);
+
     const doneAtVersion = profile.implemented_versions?.[item.id];
     const needs_reverification =
       is_implemented && !!doneAtVersion && doneAtVersion !== item.version;
@@ -119,7 +125,7 @@ export function scoreAssessment(
       effective_score,
       relevance_score,
       is_applicable:     true,
-      priority_rank:     0,  
+      priority_rank:     0,   
       is_implemented,
       is_skipped,
       is_snoozed,
@@ -151,11 +157,11 @@ export function scoreAssessment(
   const bandCappedBySkips = skippedWeightRatio > SKIP_BAND_CEILING && uncappedBand > SKIP_BAND_CAP;
   const overallBand = bandCappedBySkips ? SKIP_BAND_CAP : uncappedBand;
 
-  // Output sets
   const criticalGaps = scoredItems
     .filter(i => !i.is_implemented && !i.is_skipped && i.maturity_level <= 2)
     .sort((a, b) => b.effective_score - a.effective_score)
     .slice(0, 8);
+
   const QUICK_SETUP = new Set(['5min', '10min']);
   const critical_ids = new Set(criticalGaps.map(i => i.id));
 
@@ -184,6 +190,7 @@ export function scoreAssessment(
   const humanVulnerabilityScore = humanItems.length > 0
     ? Math.round((humanImplemented / humanItems.length) * 100)
     : null;
+
   const allHarms = Object.keys(HARMS) as Harm[];
   const pickedHarms = [...new Set((profile.harms ?? []).filter(h => allHarms.includes(h)))];
   const scopeHarms = pickedHarms.length > 0 ? pickedHarms : allHarms;

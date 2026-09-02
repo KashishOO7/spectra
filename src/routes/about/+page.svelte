@@ -1,4 +1,12 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
+  let disclaimerDetails: HTMLDetailsElement;
+
+  onMount(() => {
+    if (location.hash === '#disclaimer' && disclaimerDetails) disclaimerDetails.open = true;
+  });
+
   const sections = [
     { id: 'what', label: 'What is Spectra' },
     { id: 'disclaimer', label: 'Disclaimer' },
@@ -39,40 +47,54 @@
     <section id="what">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">What is Spectra?</h2>
       <p class="text-body leading-relaxed mb-3">
-        Spectra is an open-source personal security self-audit framework built from first principles.
-        It covers device security, account hygiene, physical safety, human vulnerability to social engineering,
-        and AI-specific threats, in one place, ordered by what you say you are worried about.
+        Spectra works out which security steps matter most for you, and puts them in order.
       </p>
       <p class="text-body leading-relaxed mb-3">
-        Most security checklists fail in two ways: they're generic (same advice for everyone) and they ignore
-        the human layer (social engineering is responsible for most successful attacks, yet almost no personal
-        security framework addresses it). Spectra addresses both.
+        You tap what you are worried about. You get a short list, most useful first, covering your
+        accounts, your devices, where you physically are, the ways people get talked into things,
+        and what changes now that anyone can copy a voice. Tick off what you do. Nothing you enter
+        leaves your browser: no account, no server, nothing recorded anywhere else.
+      </p>
+      <p class="text-body leading-relaxed mb-3">
+        Most security advice is one list handed to everyone, and it usually stops at the technical
+        layer. Being talked into it is where a lot of real harm starts, so here it is a category of
+        its own rather than a footnote.
       </p>
       <p class="text-body leading-relaxed">
-        This is a community project. All content is curated from existing public resources, synthesized,
-        and structured into a coherent framework. Sources are cited. Trade-offs are disclosed. Nothing
-        is recommended because of a commercial relationship.
+        Nobody pays to appear in Spectra. It names no product you have to go and get, because a
+        recommendation that suits us is worth nothing to you. Claims are sourced, and where a source
+        would not hold up we tell you what to check yourself instead.
       </p>
     </section>
 
     <section id="disclaimer">
       <div class="border border-amber/30 rounded-lg p-5 bg-amber-dim/10">
-        <h2 class="font-display text-xl font-semibold text-amber-light mb-4">⚠ Disclaimer</h2>
-        <div class="space-y-3 text-body text-sm leading-relaxed">
-          <p><strong class="text-bright">Educational purposes only.</strong> Spectra is not legal advice, professional security advice, medical advice, or any other form of professional advice. The framework is educational content aggregated and synthesized from publicly available sources.</p>
-          <p><strong class="text-bright">No guarantees.</strong> Following the recommendations in this framework does not guarantee security against any specific threat. Security is probabilistic, not absolute. The authors make no representations about the effectiveness of any control for any specific individual's circumstances.</p>
-          <p><strong class="text-bright">Jurisdiction varies.</strong> Security practices, encryption tools, and privacy technologies may be regulated differently in your jurisdiction. Information in this framework may not be appropriate for your location. Consult a qualified legal professional in your jurisdiction before implementing controls with potential legal implications.</p>
-          <p><strong class="text-bright">No liability.</strong> The authors and contributors of Spectra assume no liability for outcomes resulting from use of or reliance on this framework. Use is entirely at your own risk.</p>
-          <p><strong class="text-bright">Not a substitute for professional help.</strong> If you are experiencing an active security incident, targeted harassment, domestic abuse with a technology component, or believe you are under surveillance, please contact appropriate professional services — law enforcement, a qualified security professional, or an organization specializing in your situation.</p>
+        <h2 class="font-display text-xl font-semibold text-amber-light mb-3">⚠ Disclaimer</h2>
+        <p class="text-body leading-relaxed mb-3">
+          Spectra is educational information, not professional advice, and following it guarantees
+          nothing. If something is happening to you right now, contact people who can act: the
+          police, a security professional, or an organisation that works on your situation.
+        </p>
+        <details bind:this={disclaimerDetails}>
+          <summary class="cursor-pointer text-sm text-amber-light hover:opacity-80 py-1">
+            Read the full disclaimer
+          </summary>
+          <div class="space-y-3 text-body text-sm leading-relaxed mt-3">
+          <p><strong class="text-bright">Educational purposes only.</strong> Spectra is not legal advice, professional security advice, medical advice, or any other form of professional advice. Spectra is educational content aggregated and synthesized from publicly available sources.</p>
+          <p><strong class="text-bright">No guarantees.</strong> Following the steps in Spectra does not guarantee security against any specific threat. Security is probabilistic, not absolute. The authors make no representations about the effectiveness of any control for any specific individual's circumstances.</p>
+          <p><strong class="text-bright">Jurisdiction varies.</strong> Security practices, encryption tools, and privacy technologies may be regulated differently in your jurisdiction. Information here may not be appropriate for your location. Consult a qualified legal professional in your jurisdiction before implementing controls with potential legal implications.</p>
+          <p><strong class="text-bright">No liability.</strong> The authors and contributors of Spectra assume no liability for outcomes resulting from use of or reliance on Spectra. Use is entirely at your own risk.</p>
+          <p><strong class="text-bright">Not a substitute for professional help.</strong> If you are experiencing an active security incident, targeted harassment, domestic abuse with a technology component, or believe you are under surveillance, please contact appropriate professional services: law enforcement, a qualified security professional, or an organisation specialising in your situation.</p>
           <p><strong class="text-bright">Content is curated, not created.</strong> Spectra aggregates and links to existing public resources. We are not the authors of linked content and cannot guarantee its continued accuracy. External resources should be verified independently.</p>
-        </div>
+          </div>
+        </details>
       </div>
     </section>
 
     <section id="privacy">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">Privacy Policy</h2>
       <p class="text-body leading-relaxed mb-3">
-        A privacy framework that violated your privacy would be indefensible. Here is exactly what Spectra does and does not collect:
+        A privacy tool that violated your privacy would be indefensible. Here is exactly what Spectra does and does not collect:
       </p>
       <div class="space-y-4">
         {#each [
@@ -104,9 +126,9 @@
         informs how items are sequenced and motivated.
       </p>
       <p class="text-body leading-relaxed mb-5">
-        OPSEC doctrine references: NIST SP 800-53, CIS Controls, EFF's Surveillance Self-Defense, and
-        Privacy Guides provide the technical foundation. Community references include Michael Bazzell's
-        OSINT work for footprint reduction methodology.
+        Security practice references: NIST SP 800-53, CIS Controls, EFF's Surveillance Self-Defense,
+        and Privacy Guides provide the technical foundation. Community references include Michael
+        Bazzell's work on reducing what can be found out about a person.
       </p>
       <div class="flex flex-col sm:flex-row gap-3">
         <a href="/how-it-works" class="btn-ghost">
@@ -123,12 +145,12 @@
     <section id="fpszero">
       <h2 class="font-display text-xl font-semibold text-bright mb-4">About FPS Zero</h2>
       <p class="text-body leading-relaxed mb-3">
-        FPS Zero stands for First Principle Synthesis — building knowledge tools by reasoning from
+        FPS Zero stands for First Principle Synthesis. Building knowledge tools by reasoning from
         fundamentals rather than received wisdom. Spectra is one such tool.
       </p>
       <p class="text-body leading-relaxed">
         This is a personal project. Not a company. Not venture-backed. Not affiliated with any
-        security vendor. Built because this framework needed to exist.
+        security vendor. Built because it needed to exist.
       </p>
     </section>
 

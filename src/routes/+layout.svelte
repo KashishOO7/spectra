@@ -4,6 +4,7 @@
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import SetupPanel from '$lib/components/SetupPanel.svelte';
+  import SharedSetupBar from '$lib/components/SharedSetupBar.svelte';
 
   let setupOpen = false;
   let setupButton: HTMLButtonElement;
@@ -42,9 +43,12 @@
   $: isSubContext =
     pathname === '/resources' ||
     pathname === '/graph' ||
+    pathname === '/playbook' ||
     (pathname.startsWith('/audit') && !!mode);
 
   $: isPlainAudit = pathname.startsWith('/audit') && !mode;
+
+  $: isPlaybook = pathname.startsWith('/playbook');
 
   const modeLabels: Record<string, string> = {
     incident: 'Something happened',
@@ -53,14 +57,16 @@
 
   let menuOpen = false;
   $: if (pathname) menuOpen = false;
+
   $: links = [
     { href: '/audit',    label: 'Your list',          active: pathname.startsWith('/audit') },
+    { href: '/tour',     label: 'Tour',               active: pathname.startsWith('/tour') },
     { href: '/incident', label: 'Something happened', active: pathname.startsWith('/incident') },
     { href: '/about',    label: 'About',              active: pathname === '/about' }
   ];
 </script>
 
-<nav class="w-full border-b border-border bg-void/90 backdrop-blur-md sticky top-0 z-50">
+<nav class="no-print w-full border-b border-border bg-void/90 backdrop-blur-md sticky top-0 z-50">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 
     <a href="/" class="flex items-center gap-3 group">
@@ -71,7 +77,7 @@
               stroke-linecap="round" stroke-dasharray="1 4.4" opacity="0.85"/>
       </svg>
       <span class="font-display text-bright font-semibold tracking-tight group-hover:text-white transition-colors duration-200">Spectra</span>
-      <span class="label-mono opacity-40 hidden sm:inline text-[10px]">by fpszero</span>
+      <span class="label-mono opacity-70 hidden sm:inline text-[11px]">by fpszero</span>
     </a>
 
     <div class="flex items-center gap-1">
@@ -163,10 +169,10 @@
 {/if}
 
 {#if isSubContext}
-<div class="w-full border-b border-border/40 bg-void/60 backdrop-blur-sm">
+<div class="no-print w-full border-b border-border/40 bg-void/60 backdrop-blur-sm">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-3">
     <a href="/"
-       class="flex items-center gap-1.5 text-[13px] text-dim hover:text-bright
+       class="flex items-center gap-1.5 text-sm text-dim hover:text-bright
               transition-colors duration-200 group">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
            stroke-width="1.5" stroke-linecap="round"
@@ -179,23 +185,25 @@
     <span class="text-border font-mono">·</span>
 
     {#if mode === 'incident'}
-      <span class="text-[13px] text-red-light">{modeLabels['incident']}</span>
+      <span class="text-sm text-red-light">{modeLabels['incident']}</span>
     {:else if mode === 'guardian'}
-      <span class="text-[13px] text-teal-light">{modeLabels['guardian']}</span>
+      <span class="text-sm text-teal-light">{modeLabels['guardian']}</span>
     {:else if pathname === '/resources'}
-      <span class="text-[13px] text-dim">Guides</span>
+      <span class="text-sm text-dim">Guides</span>
     {:else if pathname === '/graph'}
-      <span class="text-[13px] text-dim">Your map</span>
+      <span class="text-sm text-dim">Your map</span>
+    {:else if pathname === '/playbook'}
+      <span class="text-sm text-dim">Print</span>
     {/if}
   </div>
 </div>
 {/if}
 
 {#if isPlainAudit}
-<div class="w-full border-b border-border/20 bg-transparent">
+<div class="no-print w-full border-b border-border/20 bg-transparent">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 h-8 flex items-center gap-2">
     <a href="/"
-       class="flex items-center gap-1.5 text-[13px] text-muted hover:text-dim
+       class="flex items-center gap-1.5 text-sm text-muted hover:text-dim
               transition-colors duration-200 group">
       <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor"
            stroke-width="1.5" stroke-linecap="round"
@@ -205,18 +213,22 @@
       Home
     </a>
     <span class="text-border font-mono text-xs">·</span>
-    <span class="text-[13px] text-muted">Your list</span>
+    <span class="text-sm text-muted">Your list</span>
   </div>
 </div>
+{/if}
+
+{#if !isPlaybook}
+  <SharedSetupBar />
 {/if}
 
 <main class="min-h-[calc(100vh-8rem)]">
   <slot />
 </main>
 
-<footer class="border-t border-border mt-16">
+<footer class="no-print border-t border-border mt-16">
   <div class="w-full bg-surface/60 border-b border-border/50 px-4 py-3 sm:py-2">
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-0 text-[13px] sm:text-[13px] text-muted text-center">
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-0 text-sm sm:text-sm text-muted text-center">
       <span>Educational purposes only. Not legal or professional security advice.
         <a href="/about#disclaimer" class="underline underline-offset-2 hover:text-dim transition-colors ml-1">Full disclaimer</a>
       </span>
@@ -237,11 +249,9 @@
       </svg>
       <span class="text-xs text-dim font-mono">Spectra v1.0.0 · AGPL-3.0 · CC BY-SA 4.0 (content)</span>
     </div>
-    <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-[13px] text-muted">
+    <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted">
       <a href="/about#disclaimer" class="hover:text-body transition-colors duration-200 py-1 min-h-[24px] inline-flex items-center">Disclaimer</a>
       <a href="/about#privacy" class="hover:text-body transition-colors duration-200 py-1 min-h-[24px] inline-flex items-center">Privacy</a>
-      <a href="https://github.com/KashishOO7/spectra" target="_blank" rel="noopener noreferrer"
-         class="hover:text-body transition-colors duration-200 py-1 min-h-[24px] inline-flex items-center">Contribute</a>
     </div>
   </div>
 </footer>

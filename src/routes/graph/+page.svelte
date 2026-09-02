@@ -29,6 +29,7 @@
     userTracks = activeTracksFor(profile ?? { tracks: [] });
     profileLoaded = true;
   });
+
   const ORIENTATION =
     'Left to right: who might try, the steps that help, and what those steps protect. ' +
     'Tap anything to see what to do.';
@@ -43,6 +44,7 @@
   let panY = 0;
   let isPanning = false;
   let panOrigin = { x: 0, y: 0, px: 0, py: 0 };
+
   const clampZoom = (z: number) => Math.min(maxZoom, Math.max(0.25, z));
 
   function handleSvgWheel(e: WheelEvent) {
@@ -136,6 +138,7 @@
     if (e.shiftKey && (!inside || active === first)) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && (!inside || active === last)) { e.preventDefault(); first.focus(); }
   }
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       if (selectedItem) { selectedItem = null; return; }
@@ -231,6 +234,7 @@
     }
     return assets;
   })();
+
   const SVG_W = 960;
   const COL_ADV = 100;
   const COL_ITEM = 480;
@@ -239,7 +243,7 @@
   const ITEM_W = 260;
   const ITEM_H = 34;
   const ROW_PITCH = 44;
-  const CHAR_W = 5.42;         
+  const CHAR_W = 5.42;          
   const LABEL_LINES = 2;
   const LABEL_CHARS = Math.floor((ITEM_W - 31) / CHAR_W);
 
@@ -270,6 +274,7 @@
 
   $: rowCount = Math.max(baseItems.length, advList.length, assetList.length, 2);
   $: SVG_H = Math.max(600, rowCount * ROW_PITCH + 120);
+
   let canvasW = 0;
   let canvasH = 0;
   let remeasure: (() => void) | null = null;
@@ -290,13 +295,6 @@
     };
   }
 
-  /**
-   * Measured, not assumed: the observer does NOT fire when this element changes size because its
-   * own classes changed, which is exactly what the full-screen switch does: 840×1276 inline to
-   * 850×586 in the overlay, no callback. Only the window listener corrected it, and a reader who
-   * never resizes their window never fires that. So the mode switch measures for itself once the
-   * DOM has settled. Reading clientWidth forces layout, so the value is true when it is read.
-   */
   function remeasureAfterLayout() {
     void tick().then(() => {
       remeasure?.();
@@ -308,7 +306,6 @@
     ? Math.min(SVG_H, SVG_W * canvasH / canvasW)
     : SVG_H;
 
-  /** What one drawing unit is worth in CSS pixels before the reader zooms. */
   $: fitScale = canvasW > 0 ? canvasW / SVG_W : 1;
   $: maxZoom = Math.max(3, 2 / fitScale);
 
@@ -440,13 +437,13 @@
     <div class="flex items-center gap-3 flex-wrap">
       <button type="button"
         on:click={openFullScreen}
-        class="text-[13px] px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors">
+        class="text-sm px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors">
         Full screen
       </button>
       {#if selectedAdversary}
         <button type="button"
           on:click={() => selectedAdversary = null}
-          class="text-[13px] text-dim hover:text-body transition-colors">
+          class="text-sm text-dim hover:text-body transition-colors">
           Clear filter ×
         </button>
       {/if}
@@ -463,7 +460,7 @@
       </div>
       <button type="button"
         on:click={resetView}
-        class="text-[13px] px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors"
+        class="text-sm px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors"
         title="Reset pan and zoom">
         Reset view
       </button>
@@ -478,7 +475,7 @@
       <p class="text-sm text-body">
         <span class="text-bright font-medium">{ADVERSARY_LABELS[selectedAdversary] ?? selectedAdversary}</span>
       </p>
-      <p class="text-[13px] text-dim mt-1">
+      <p class="text-sm text-dim mt-1">
         Here because you tapped: {selectedAdversaryHarms.join(', ')}.
       </p>
     </div>
@@ -488,24 +485,25 @@
   <div class="grid grid-cols-3 gap-3 mb-6">
     <div class="panel p-3 text-center">
       <p class="font-display text-xl font-bold text-teal-light">{implementedCount}</p>
-      <p class="text-[13px] text-dim">steps done</p>
+      <p class="text-sm text-dim">steps done</p>
     </div>
     <div class="panel p-3 text-center">
       <p class="font-display text-xl font-bold text-red-light">{gapCount}</p>
-      <p class="text-[13px] text-dim">still to do</p>
+      <p class="text-sm text-dim">still to do</p>
     </div>
     <div class="panel p-3 text-center">
       <p class="font-display text-xl font-bold {coveragePct >= 80 ? 'text-teal-light' : coveragePct >= 50 ? 'text-amber-light' : 'text-red-light'}">{coveragePct}%</p>
-      <p class="text-[13px] text-dim">of your map covered</p>
+      <p class="text-sm text-dim">of your map covered</p>
     </div>
   </div>
   {/if}
-  <div class="flex flex-wrap gap-x-4 gap-y-2 mb-2 text-[13px]">
+
+  <div class="flex flex-wrap gap-x-4 gap-y-2 mb-2 text-sm">
     <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-teal inline-block"></span>Done</span>
     <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-red inline-block"></span>Still to do</span>
     <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-border inline-block"></span>Skipped, or not in your setup</span>
   </div>
-  <div class="flex flex-wrap gap-x-4 mb-4 text-[13px] text-muted">
+  <div class="flex flex-wrap gap-x-4 mb-4 text-sm text-muted">
     <span>Click a name in the left column to filter</span>
     <span>Scroll to zoom · Drag to pan</span>
   </div>
@@ -541,7 +539,7 @@
     {#if fullScreen}
       <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4
                   px-4 py-3 border-b border-border flex-shrink-0">
-        <p class="text-[13px] text-dim sm:max-w-2xl">{ORIENTATION}</p>
+        <p class="text-sm text-dim sm:max-w-2xl">{ORIENTATION}</p>
         <div class="flex items-center justify-end gap-2 flex-shrink-0 order-first sm:order-last">
           <div class="flex items-center border border-border rounded overflow-hidden">
             <button type="button"
@@ -555,11 +553,11 @@
               title="Zoom out">−</button>
           </div>
           <button type="button" on:click={resetView}
-            class="text-[13px] px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
+            class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
             Reset view
           </button>
           <button type="button" on:click={closeFullScreen}
-            class="text-[13px] px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
+            class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
             Exit full screen
           </button>
         </div>
@@ -715,9 +713,6 @@
     </div>
   </div>
 
-  {#if !fullScreen}
-    <p class="text-[13px] text-muted mt-2">Your map is always shown dark.</p>
-  {/if}
   {/if}
 
   {#if profileLoaded && userAdversaries.length > 0 && !fullScreen}
@@ -726,7 +721,7 @@
     {#each userAdversaries as adv}
       <button type="button"
         on:click={() => toggleAdversary(adv)}
-        class="text-[13px] px-2.5 py-1 rounded border transition-colors
+        class="text-sm px-2.5 py-1 rounded border transition-colors
                {selectedAdversary === adv ? 'border-amber/60 text-amber-light bg-amber-dim/20' : 'border-border text-dim hover:text-body'}">
         {ADVERSARY_LABELS[adv] ?? adv}
       </button>
@@ -734,7 +729,7 @@
   </div>
   {/if}
 
-  <p class="text-[13px] text-muted mt-6 text-center">
+  <p class="text-sm text-muted mt-6 text-center">
     This map is built from what you tapped. All data is stored locally in your browser.
     <a href="/audit" class="text-dim hover:text-body underline transition-colors">Go to your list →</a>
   </p>
@@ -772,21 +767,21 @@
       {#if implemented[selectedItemFull.id]}
         <div class="flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-teal flex-shrink-0"></span>
-          <span class="text-[13px] text-teal-light">Implemented</span>
+          <span class="text-sm text-teal-light">Implemented</span>
         </div>
       {:else if skipped[selectedItemFull.id]}
         <div class="flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-border flex-shrink-0"></span>
-          <span class="text-[13px] text-dim">Skipped</span>
+          <span class="text-sm text-dim">Skipped</span>
         </div>
       {:else}
         <div class="flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-amber flex-shrink-0"></span>
-          <span class="text-[13px] text-amber-light">Not yet done</span>
+          <span class="text-sm text-amber-light">Not yet done</span>
         </div>
       {/if}
 
-      <div class="text-[13px] font-mono text-muted">
+      <div class="text-sm font-mono text-muted">
         {#if selectedItemFull.maturity_level === 1}Essential · {/if}{selectedItemFull.time_estimate?.setup ?? '—'} setup
       </div>
 

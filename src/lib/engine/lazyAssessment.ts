@@ -1,3 +1,4 @@
+
 import type { AssessmentResult } from '../types.js';
 
 let inFlight: Promise<AssessmentResult | null> | null = null;
@@ -19,6 +20,7 @@ export async function assessFromAnywhere(): Promise<AssessmentResult | null> {
 
       const data = loaded.data as { graph?: unknown };
       if (!data?.graph) return null;
+
       const profile = (await store.loadProfile()) ?? store.createDefaultProfile();
 
       return scoring.scoreAssessment(content.deserializeGraph(data.graph), profile);

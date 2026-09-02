@@ -1,4 +1,5 @@
 <script lang="ts">
+
   const sections = [
     { id: 'split',      label: 'Three jobs' },
     { id: 'priority',   label: 'Priority' },
@@ -268,7 +269,7 @@
           <div class="panel p-4 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
             <span class="font-mono text-sm text-amber-light shrink-0 sm:w-24">{j.job} · {j.name}</span>
             <span class="text-sm text-body sm:flex-1">{j.question}</span>
-            <span class="text-[13px] text-dim sm:w-64 sm:text-right">{j.seen}</span>
+            <span class="text-sm text-dim sm:w-64 sm:text-right">{j.seen}</span>
           </div>
         {/each}
       </div>
@@ -311,7 +312,7 @@
       </div>
 
       <p class="text-xs tracking-wide text-dim mb-2">Prevalence (1 to 5), how common the attack is</p>
-      <p class="text-[13px] text-dim mb-2">anchored to Verizon DBIR · FBI IC3 · Have I Been Pwned</p>
+      <p class="text-sm text-dim mb-2">anchored to Verizon DBIR · FBI IC3 · Have I Been Pwned</p>
       <div class="space-y-1.5 mb-6">
         {#each prevalenceScale as row}
           <div class="flex gap-3 items-baseline">
@@ -413,7 +414,7 @@
         re-reading when the guidance actually changed: the profile records the item’s version
         at the moment it was marked done, and the item is flagged when that version moves.
         <code class="font-mono text-xs text-dim">last_verified</code> stays in the source as
-        contributor metadata and renders on this page, nowhere else.
+        maintenance metadata and renders on this page, nowhere else.
       </p>
     </section>
 
@@ -531,7 +532,7 @@
                   </div>
                   <p class="text-sm text-body leading-relaxed mb-2">{r.what}</p>
                   <p class="text-sm text-dim leading-relaxed">
-                    <span class="text-teal-light text-[13px]">how Spectra uses it</span>: {r.use}
+                    <span class="text-teal-light text-sm">how Spectra uses it</span>: {r.use}
                   </p>
                 </a>
               {/each}

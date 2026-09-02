@@ -22,7 +22,7 @@
         <h1 class="font-display text-2xl font-bold text-white">Something happened</h1>
       </div>
       <p class="text-body text-sm">
-        What happened? Select the closest match — you'll get immediate steps for right now.
+        What happened? Pick the closest match and you will get the steps for right now.
       </p>
     </div>
 
@@ -55,7 +55,7 @@
     </div>
 
     <button type="button" on:click={onToChecklist} class="btn-ghost text-sm">
-      Skip triage — go to full audit
+      Skip this and go to your full list
     </button>
 
   {:else}
@@ -64,7 +64,7 @@
 
     <button type="button"
       on:click={() => incidentScenario = null}
-      class="flex items-center gap-2 text-[13px] text-dim hover:text-body transition-colors mb-8">
+      class="flex items-center gap-2 text-sm text-dim hover:text-body transition-colors mb-8">
       ← Back to scenarios
     </button>
 
@@ -92,13 +92,13 @@
         <div class="flex items-center gap-1 rounded-lg border border-border bg-surface p-0.5">
           <button type="button"
             on:click={() => isSimpleMode = true}
-            class="px-3 py-1 text-[13px] rounded-md transition-colors duration-150
+            class="px-3 py-1 text-sm rounded-md transition-colors duration-150
                    {isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
             Plain English
           </button>
           <button type="button"
             on:click={() => isSimpleMode = false}
-            class="px-3 py-1 text-[13px] rounded-md transition-colors duration-150
+            class="px-3 py-1 text-sm rounded-md transition-colors duration-150
                    {!isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
             Technical
           </button>
@@ -119,7 +119,7 @@
 
     {#if pb.relatedItemIds.length > 0}
     <div class="panel p-5 mb-6">
-      <p class="text-xs tracking-wide text-dim mb-3">Once you're stable — do these too</p>
+      <p class="text-xs tracking-wide text-dim mb-3">Once you are safe, do these too</p>
       <div class="space-y-2">
         {#each pb.relatedItemIds as id}
           {@const item = graph.items.get(id)}
@@ -147,9 +147,9 @@
                 </span>
               </div>
               {#if isImplemented(id)}
-                <span class="text-[13px] text-teal-light flex-shrink-0">Done ✓</span>
+                <span class="text-sm text-teal-light flex-shrink-0">Done ✓</span>
               {:else}
-                <span class="text-[13px] text-dim group-hover:text-amber-light flex-shrink-0 transition-colors">
+                <span class="text-sm text-dim group-hover:text-amber-light flex-shrink-0 transition-colors">
                   Open →
                 </span>
               {/if}

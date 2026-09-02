@@ -1,3 +1,4 @@
+
 export type Category =
   | 'device_security'
   | 'account_security'
@@ -112,6 +113,7 @@ export type EmotionalRegister =
   | 'loneliness'
   | null;
 
+
 export type Harm =
   | 'Someone gets into your accounts'
   | 'Someone takes your money'
@@ -121,6 +123,8 @@ export type Harm =
   | 'Someone uses your device against you'
   | 'Someone pretends to be you'
   | 'Someone already has your details';
+
+
 
 export interface Source {
   url: string;
@@ -148,7 +152,7 @@ export interface RelatedItem {
 }
 
 export interface NotApplicableCondition {
-  condition: string;
+  condition: string; 
   reason: string;
 }
 
@@ -157,6 +161,7 @@ export interface ResourceReference {
   context: string;
   platform_specific: string[];
 }
+
 export interface LookupRow {
   look_for: string;
   also_called?: string;
@@ -290,6 +295,7 @@ export interface Resource {
   changelog?: ChangelogEntry[];
 }
 
+
 export interface ContentGraph {
   items: Map<string, ChecklistItem>;
   resources: Map<string, Resource>;
@@ -301,6 +307,7 @@ export interface ContentGraph {
   itemsByTrack: Map<Track, string[]>;
   itemsByMaturity: Map<number, string[]>;
 }
+
 
 export interface TimelineEvent {
   id: string;
@@ -327,12 +334,14 @@ export interface TimelineEvent {
   formula?: 1 | 2;
 }
 
+
 export interface SEQuizResult {
   completed_at: string;
   answers: Record<string, number>;          
   susceptibilities: Record<string, number>;  
   top_register: string;
 }
+
 
 export interface LifeEventDef {
   id: string;
@@ -342,6 +351,7 @@ export interface LifeEventDef {
   track_delta: Track[];
   sensitive?: boolean;
 }
+
 
 export interface UserProfile {
   id: string;
@@ -366,6 +376,7 @@ export interface UserProfile {
   easy_mode?: boolean;             
   environment_flags?: EnvironmentFlag[];
 }
+
 
 export interface ScoredItem extends ChecklistItem {
   effective_score: number;
@@ -394,7 +405,7 @@ export interface AssessmentResult {
   harms_covered: number;
   harms_total: number;
   covered_harms: Harm[];
-   picked_harms: Harm[];
+  picked_harms: Harm[];
   total_snoozed: number;
   skipped_weight_ratio: number;
   band_capped_by_skips: boolean;

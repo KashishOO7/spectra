@@ -35,7 +35,7 @@ function openDB(): Promise<IDBDatabase> {
 
 async function closeDB(): Promise<void> {
   if (!dbHandle) return;
-  try { (await dbHandle).close(); } catch { /* already closed */ }
+  try { (await dbHandle).close(); } catch {  }
   dbHandle = null;
 }
 
@@ -110,9 +110,11 @@ export async function loadProfile(): Promise<UserProfile | null> {
   profile.adversaries = computeAdversaries(profile);
   return profile;
 }
+
 async function loadOrCreateProfile(): Promise<UserProfile> {
   return (await loadProfile()) ?? createDefaultProfile();
 }
+
 function stripComputed(profile: UserProfile): Omit<UserProfile, 'adversaries'> {
   const { adversaries: _computed, ...rest } = profile;
   return rest;
@@ -174,13 +176,14 @@ export async function saveNote(itemId: string, note: string): Promise<void> {
   profile.notes[itemId] = note;
   await saveProfile(profile);
 }
+
 export async function addTimelineEvent(event: Omit<TimelineEvent, 'timestamp' | 'id'> & { timestamp?: string, id?: string }): Promise<void> {
   const profile = await loadOrCreateProfile();
   if (!profile.timeline) profile.timeline = [];
   
   const fullEvent = {
     ...event,
-    id: event.id || crypto.randomUUID(),
+    id: event.id || crypto.randomUUID(), 
     timestamp: event.timestamp || new Date().toISOString()
   } as TimelineEvent;
 
@@ -234,6 +237,7 @@ export async function revertLifeEvent(
   stillNeeded: { adversaries: AdversaryType[]; tracks: Track[] }
 ): Promise<void> {
   const profile = await loadOrCreateProfile();
+
   profile.adversariesManual = (profile.adversariesManual ?? []).filter(
     a => !adversaryDelta.includes(a) || stillNeeded.adversaries.includes(a)
   );
@@ -292,7 +296,7 @@ export async function clearAllData(): Promise<void> {
     const ours = Object.keys(localStorage).filter(k => k.toLowerCase().startsWith('spectra'));
     for (const key of ours) localStorage.removeItem(key);
     sessionStorage.clear();
-  } catch { /* private mode or blocked storage — nothing was stored to begin with */ }
+  } catch {  }
 
   await closeDB();
 
@@ -325,7 +329,6 @@ export async function importProfile(jsonStr: string): Promise<void> {
     throw new Error('Invalid profile data');
   }
   const profile = data as UserProfile;
-
   if (!Array.isArray(profile.tracks) || !profile.tracks.includes('general')) {
     profile.tracks = ['general', ...(profile.tracks ?? []).filter(t => t !== 'general')];
   }

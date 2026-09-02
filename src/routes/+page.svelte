@@ -31,10 +31,12 @@
     starting = true;
     try {
       const stored = await loadProfile();
+
       if (selected.length === 0 && !stored?.harms?.length) {
         await goto('/audit');
         return;
       }
+
       if (selected.length === 0) {
         delete stored!.harms;
         await saveProfile(stored!);
@@ -82,11 +84,12 @@
         What are you worried might happen?
       </h1>
 
-      <p class="text-body text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed font-light">
+      <p class="text-body text-lg max-w-xl mx-auto mb-9 leading-relaxed">
         Tap anything below. You get a short list of what to do. Plain steps, no signup, and
         nothing leaves this browser.
       </p>
     </div>
+
     <ul class="relative mb-9 space-y-2">
       {#each harms as harm}
         {@const isOn = selected.includes(harm)}
@@ -121,17 +124,17 @@
         Show me what to do
       </a>
 
-      <p class="text-[13px] text-dim mb-4">
+      <p class="text-sm text-dim mb-4">
         No account. Nothing you tapped left this browser.
       </p>
 
-      <p class="text-[13px] mb-3">
+      <p class="text-sm mb-3">
         <a href="/audit" class="text-dim hover:text-body transition-colors">
           Not sure? Skip this and see the basics &rarr;
         </a>
       </p>
 
-      <p class="text-[13px] flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <p class="text-sm flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
         <a href="/how-it-works"
            class="text-dim hover:text-body transition-colors py-1 min-h-[24px] inline-flex items-center">
           How Spectra works
@@ -154,7 +157,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-red opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-[13px] text-red-light opacity-70">Immediate triage, no setup needed</span>
+            <span class="text-sm text-red-light opacity-70">Immediate triage, no setup needed</span>
           </div>
         </div>
         <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
@@ -171,7 +174,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-teal opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-[13px] text-teal-light opacity-70">No apps named, no affiliate links</span>
+            <span class="text-sm text-teal-light opacity-70">No apps named, no affiliate links</span>
           </div>
         </div>
         <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
@@ -188,7 +191,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full bg-muted opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-[13px] text-body opacity-70">Kids, teens, family members</span>
+            <span class="text-sm text-body opacity-70">Kids, teens, family members</span>
           </div>
         </div>
         <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">

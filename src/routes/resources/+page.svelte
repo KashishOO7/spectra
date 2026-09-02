@@ -3,6 +3,7 @@
   import type { Resource, ChecklistItem } from '$lib/types.js';
 
   export let data: PageData;
+
   $: resources = Object.values(data.graph?.resources ?? {}) as Resource[];
   $: items = Object.values(data.graph?.items ?? {}) as ChecklistItem[];
 
@@ -44,7 +45,7 @@
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
 
-  <h1 class="font-display text-3xl font-bold text-white mb-3">The guides our steps point at | Spectra</h1>
+  <h1 class="font-display text-3xl font-bold text-white mb-3">The guides our steps point at</h1>
 
   <p class="text-body text-base leading-relaxed max-w-2xl mb-10">
     We don't keep a tool catalogue and we don't name apps. These are maintained by people who
@@ -67,7 +68,7 @@
           </p>
           <p class="text-sm text-body leading-relaxed mb-1">{guide.description}</p>
           {#if steps.length}
-            <p class="text-[13px] text-dim leading-relaxed">
+            <p class="text-sm text-dim leading-relaxed">
               {steps.length === 1 ? 'Used by this step:' : 'Used by these steps:'}
               {#each steps as step, i}<span class="text-muted">{step.title}</span>{#if i < steps.length - 1}<span class="text-muted">; </span>{/if}{/each}
             </p>
@@ -95,7 +96,7 @@
     </p>
   </section>
 
-  <p class="text-[13px] text-muted mt-12">
+  <p class="text-sm text-muted mt-12">
     Nothing here is a paid placement, an affiliate link, or a commercial relationship.
     <a href="/methodology#references" class="underline hover:text-dim transition-colors">Where our sources come from</a>
   </p>

@@ -26,6 +26,7 @@
   $: chronological = [...events].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   $: reversed = [...chronological].reverse();
 
+
   $: crossedMilestones = (() => {
     const result: Array<{ milestone: Milestone; event: TimelineEvent }> = [];
     let prevScore = 0;
@@ -201,6 +202,7 @@
         </div>
       </div>
 
+
       {#if crossedMilestones.length > 0}
         <div class="panel p-5 mb-8">
           <p class="label-mono mb-4">Milestones</p>
@@ -234,17 +236,16 @@
                     <div class="flex-1 min-w-0">
                       <p class="text-xs font-sans leading-snug">{eventLabel(ev)}</p>
                       {#if ev.note && ev.type !== 'life_event'}
-                        <p class="text-[13px] text-muted mt-0.5 truncate">{ev.note}</p>
+                        <p class="text-sm text-muted mt-0.5 truncate">{ev.note}</p>
                       {/if}
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
                       <span class="text-xs font-mono text-muted">{formatTime(ev.timestamp)}</span>
-                      
                       {#if confirmingDelete === ev.id}
                         <button type="button" on:click={() => removeEvent(ev.id)}
-                          class="text-[13px] text-red-light hover:opacity-80 transition-opacity">Delete</button>
+                          class="text-sm text-red-light hover:opacity-80 transition-opacity">Delete</button>
                         <button type="button" on:click={() => confirmingDelete = null}
-                          class="text-[13px] text-muted hover:text-body transition-colors">Keep</button>
+                          class="text-sm text-muted hover:text-body transition-colors">Keep</button>
                       {:else}
                         <button type="button" on:click={() => confirmingDelete = ev.id}
                           class="text-xs text-muted hover:text-red-light transition-colors"
@@ -259,7 +260,7 @@
         </div>
       </div>
 
-      <p class="text-[13px] text-muted text-center mt-6 leading-relaxed">
+      <p class="text-sm text-muted text-center mt-6 leading-relaxed">
         All timeline data is stored locally in your browser. Nothing is sent anywhere.
         <a href="/audit" class="text-amber-light hover:underline ml-1">Export a backup →</a>
       </p>

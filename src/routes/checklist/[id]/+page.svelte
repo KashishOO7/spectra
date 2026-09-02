@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types.js';
   import type { Platform } from '$lib/types.js';
-  import { categoryLabel, platformDisplay, safeHref } from '$lib/audit/helpers.js';
+  import { categoryLabel, platformDisplay, safeHref, noteBlocks } from '$lib/audit/helpers.js';
 
   export let data: PageData;
 
@@ -31,7 +31,7 @@
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-fade-up">
 
-  <a href="/audit" class="flex items-center gap-2 text-[13px] text-dim hover:text-body transition-colors mb-8">
+  <a href="/audit" class="flex items-center gap-2 text-sm text-dim hover:text-body transition-colors mb-8">
     ← Back to your audit
   </a>
 
@@ -66,8 +66,17 @@
             {i + 1}
           </span>
           <div class="min-w-0">
-            <p class="text-[13px] text-amber-light mb-1">{platformDisplay(platform)}</p>
-            <p class="text-sm text-body leading-relaxed">{note}</p>
+            <p class="text-sm text-amber-light mb-2">{platformDisplay(platform)}</p>
+            {#each noteBlocks(note) as block}
+              <div class="mb-3 last:mb-0">
+                {#if block.heading}
+                  <p class="text-[15px] text-bright font-medium mb-1">{block.heading}</p>
+                {/if}
+                {#each block.lines as line}
+                  <p class="text-[15px] text-body leading-relaxed">{line}</p>
+                {/each}
+              </div>
+            {/each}
           </div>
         </li>
       {/each}
@@ -83,7 +92,7 @@
         <a href="/checklist/{dep.id}"
            class="block p-3 rounded-lg border border-border hover:border-amber/30 transition-colors">
           <span class="text-sm text-body">{dep.title}</span>
-          {#if dep.reason}<span class="block text-[13px] text-dim mt-0.5">{dep.reason}</span>{/if}
+          {#if dep.reason}<span class="block text-sm text-dim mt-0.5">{dep.reason}</span>{/if}
         </a>
       {/each}
     </div>
@@ -94,16 +103,16 @@
     <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">More detail</summary>
     <div class="mt-4 space-y-4">
       <div>
-        <p class="text-[13px] text-muted mb-1">Full title</p>
+        <p class="text-sm text-muted mb-1">Full title</p>
         <p class="text-sm text-body leading-relaxed">{item.title}</p>
       </div>
       <div>
-        <p class="text-[13px] text-muted mb-1">Description</p>
+        <p class="text-sm text-muted mb-1">Description</p>
         <p class="text-sm text-body leading-relaxed">{item.description}</p>
       </div>
       {#if item.platforms?.length}
       <div>
-        <p class="text-[13px] text-muted mb-1">Applies to</p>
+        <p class="text-sm text-muted mb-1">Applies to</p>
         <div class="flex flex-wrap gap-1.5">
           {#each item.platforms as p}<span class="pill-dim text-xs">{platformDisplay(p)}</span>{/each}
         </div>
@@ -111,7 +120,7 @@
       {/if}
       {#if item.legal_notes?.length}
       <div>
-        <p class="text-[13px] text-muted mb-1">Legal context</p>
+        <p class="text-sm text-muted mb-1">Legal context</p>
         {#each item.legal_notes as note}
           <p class="text-sm text-body leading-relaxed">
             <span class="text-dim">{note.jurisdiction}:</span> {note.note}
@@ -130,7 +139,7 @@
         <a href="/checklist/{rel.id}"
            class="block p-3 rounded-lg border border-border hover:border-amber/30 transition-colors">
           <span class="text-sm text-body">{rel.title}</span>
-          {#if rel.note}<span class="block text-[13px] text-dim mt-0.5">{rel.note}</span>{/if}
+          {#if rel.note}<span class="block text-sm text-dim mt-0.5">{rel.note}</span>{/if}
         </a>
       {/each}
     </div>
@@ -144,7 +153,7 @@
       {#each item.sources as source}
         <li>
           <a href={safeHref(source.url)} target="_blank" rel="noopener noreferrer"
-             class="text-[13px] text-dim hover:text-amber-light transition-colors">
+             class="text-sm text-dim hover:text-amber-light transition-colors">
             {source.title}
             <span class="text-muted">· {source.type.replace(/_/g, ' ')}</span>
           </a>

@@ -1,3 +1,4 @@
+
 export interface SEQuestion {
   id: string;
   register: string;

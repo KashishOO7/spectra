@@ -8,7 +8,7 @@
   } from '$lib/audit/constants.js';
   import {
     truncSentences, diffLabel, difficultyDots, categoryLabel, platformDisplay,
-    getActiveEnvNotes, safeHref, platformTabLabel
+    getActiveEnvNotes, safeHref, platformTabLabel, noteBlocks
   } from '$lib/audit/helpers.js';
   import { coverageOf, coverageLine, COVERED_MEANS } from '$lib/engine/coverage.js';
 
@@ -20,8 +20,11 @@
   export let categories: string[];
   export let displayItems: ScoredItem[];
   export let orderedItems: ScoredItem[];
+
   export let selectedCategory: string;
   export let searchQuery: string;
+  export let searchRefused = false;
+  export let routedOutsideList: Array<{ id: string; title: string; blurb: string }> = [];
   export let activePlatform: Platform | 'all';
   export let itemPlatformTab: string;
   export let noteValues: Record<string, string>;
@@ -47,10 +50,13 @@
   export let toggleEasyMode: () => Promise<void>;
   export let startReconfigure: () => void;
   export let prefilledHarms: Harm[] = [];
+
   $: prefilledNames = prefilledHarms
     .map(h => h.charAt(0).toLowerCase() + h.slice(1))
     .join(', ');
   export let onViewIncident: () => void;
+
+
   $: actionItem = orderedItems.find(
     i => !i.is_implemented && !isSkipped(i.id) && !getBlockedReason(i)
   ) ?? null;
@@ -65,20 +71,16 @@
     (item.resources ?? [])
       .map(ref => ({ ref, tool: graph.resources.get(ref.id) }))
       .filter((r): r is { ref: typeof r.ref; tool: Resource } => !!r.tool);
-  const noteBlocks = (note: string) =>
-    note.split(/\n\s*\n/).map(block => {
-      const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-      const isHeading = lines.length > 1 && lines[0].length < 60 && !/[.:!]$/.test(lines[0]);
-      return { heading: isHeading ? lines[0] : null, lines: isHeading ? lines.slice(1) : lines };
-    }).filter(b => b.lines.length > 0);
 
   const lookupsFor = (item: ChecklistItem): Lookup[] =>
     (item.lookups ?? [])
       .map(id => graph.lookups?.get(id))
       .filter((l): l is Lookup => !!l);
+
   export let queueOpen = false;
   let whyOpen = false;
   let skippedOpen = false;
+
   let howOpen = false;
   $: actionPlatformTabs = actionItem ? getRelevantPlatformTabs(actionItem) : [];
   let lastActionId: string | null = null;
@@ -95,6 +97,8 @@
     out.push(actionItem.score_weight >= 8
       ? 'It is one of the strongest protections on this list.'
       : 'It is one of the basics that helps almost everyone.');
+
+
     const picked = (profile?.adversariesManual ?? []).find(
       a => (actionItem.adversaries ?? []).includes(a)
     );
@@ -102,6 +106,8 @@
       const label = ADVERSARY_OPTIONS.find(o => o.value === picked)?.label ?? picked;
       out.push(`You picked ${label} in your profile.`);
     }
+
+
     return out;
   })();
 </script>
@@ -115,7 +121,7 @@
       <p class="font-display font-semibold text-teal-light mb-1">Family setup</p>
       <p class="text-sm text-body">
         Showing children &amp; teens and women's safety items alongside the general baseline.
-        This is a view only — your own checklist is unchanged, and leaving this mode restores it.
+        This is a view only. Your own list is unchanged, and leaving this restores it.
       </p>
     </div>
   </div>
@@ -131,12 +137,13 @@
       </div>
     </div>
     <button type="button" on:click={onViewIncident}
-      class="text-[13px] text-red-light border border-red/30 rounded px-2 py-1
+      class="text-sm text-red-light border border-red/30 rounded px-2 py-1
              hover:bg-red-dim/20 transition-colors flex-shrink-0">
       ← Playbooks
     </button>
   </div>
   {/if}
+
 
   {#if result?.reverify_items?.length && mode !== 'incident'}
   <div class="mb-6 border border-amber/40 bg-amber-dim/10 rounded-lg p-4 flex items-start gap-3 animate-fade-up">
@@ -154,7 +161,7 @@
           </button>
         {/each}
         {#if result.reverify_items.length > 3}
-          <span class="text-[13px] text-amber-light self-center">+{result.reverify_items.length - 3} more</span>
+          <span class="text-sm text-amber-light self-center">+{result.reverify_items.length - 3} more</span>
         {/if}
       </div>
     </div>
@@ -170,7 +177,7 @@
         await scrollToItem(target.id, target.category);
       }}
       class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border
-             bg-surface text-[13px] text-body hover:text-bright hover:border-muted
+             bg-surface text-sm text-body hover:text-bright hover:border-muted
              transition-colors group">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
            stroke-width="1.5" stroke-linecap="round"
@@ -180,10 +187,10 @@
       Back to: <span class="text-amber-light truncate max-w-xs">{navHistory[navHistory.length - 1].title}</span>
     </button>
     {#if navHistory.length > 1}
-      <span class="text-[13px] text-muted">{navHistory.length - 1} more in history</span>
+      <span class="text-sm text-muted">{navHistory.length - 1} more in history</span>
     {/if}
     <button type="button" on:click={() => { navHistory = []; }}
-      class="text-[13px] text-muted hover:text-body transition-colors">
+      class="text-sm text-muted hover:text-body transition-colors">
       Clear ✕
     </button>
   </div>
@@ -198,7 +205,7 @@
         {coverageLine(coverageOf(result))}
       </p>
       <p class="text-sm text-dim mt-1">{COVERED_MEANS}</p>
-      <p class="text-[13px] text-muted mt-1.5">
+      <p class="text-sm text-muted mt-1.5">
         {result?.total_implemented ?? 0} of {result?.total_applicable ?? 0} things done{#if result?.total_skipped}&nbsp;· {result.total_skipped} skipped{/if} · all data stored locally
       </p>
     </div>
@@ -206,19 +213,22 @@
     {#if mode === 'normal'}
     <nav class="flex flex-wrap items-center gap-2" aria-label="Other views of your list">
       <a href="/graph"
-         class="text-[13px] px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
+         class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
                 border-border text-dim hover:text-body hover:border-muted transition-colors">Your map</a>
       <a href="/timeline"
-         class="text-[13px] px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
+         class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
                 border-border text-dim hover:text-body hover:border-muted transition-colors">Timeline</a>
+      <a href="/playbook"
+         class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
+                border-border text-dim hover:text-body hover:border-muted transition-colors">Print</a>
     </nav>
     {/if}
   </div>
 
+
   {#if prefilledHarms.length > 0}
   <div class="panel px-4 py-2.5 mb-4 flex items-center justify-between gap-3 flex-wrap">
-
-    <p class="text-[13px] text-dim">
+    <p class="text-sm text-dim">
       {#if prefilledHarms.length <= 2}
         Ordered for: <span class="text-body">{prefilledNames}</span>.
       {:else}
@@ -226,7 +236,7 @@
       {/if}
     </p>
     <button type="button" on:click={startReconfigure}
-      class="text-[13px] text-amber-light hover:opacity-80 transition-opacity flex-shrink-0">
+      class="text-sm text-amber-light hover:opacity-80 transition-opacity flex-shrink-0">
       Change this
     </button>
   </div>
@@ -237,15 +247,16 @@
     <div class="flex items-start justify-between gap-4 mb-4">
       <span class="pill-amber">Start here</span>
       {#if actionItem.time_estimate?.setup}
-        <span class="text-[13px] font-mono text-muted flex-shrink-0">{actionItem.time_estimate.setup}</span>
+        <span class="text-sm font-mono text-muted flex-shrink-0">{actionItem.time_estimate.setup}</span>
       {/if}
     </div>
 
-    <p class="font-sans text-xl font-medium text-white leading-snug mb-4">
+    <h2 class="font-sans text-xl font-medium text-white leading-snug mb-4">
       {actionItem.simple_description ?? actionItem.title}
-    </p>
+    </h2>
+
     <button type="button" on:click={() => toggleDetails(actionItem.id)}
-      class="text-[13px] text-muted hover:text-body transition-colors mb-5 py-1 min-h-[24px]">
+      class="text-sm text-muted hover:text-body transition-colors mb-5 py-1 min-h-[24px]">
       {detailItems.has(actionItem.id) ? 'Hide detail' : 'More detail'}
     </button>
     {#if detailItems.has(actionItem.id)}
@@ -274,14 +285,13 @@
             {:else}
               {#each actionPlatformTabs as pt}
                 <button type="button" on:click={() => itemPlatformTab = pt}
-                  class="px-2 py-0.5 rounded text-[13px] transition-colors
+                  class="px-2 py-0.5 rounded text-sm transition-colors
                          {itemPlatformTab === pt ? 'bg-teal/80 text-void font-semibold' : 'border border-border text-dim hover:text-body'}">
                   {platformTabLabel(pt)}
                 </button>
               {/each}
             {/if}
           </div>
-          
           {#if actionItem.platform_notes?.[itemPlatformTab || actionPlatformTabs[0]]}
             <div class="space-y-3">
               {#each noteBlocks(actionItem.platform_notes[itemPlatformTab || actionPlatformTabs[0]]) as block}
@@ -309,7 +319,7 @@
                 <li class="text-sm">
                   <span class="text-bright font-medium">{row.look_for}</span>
                   {#if row.also_called}
-                    <span class="text-muted text-[13px]"> · {row.also_called}</span>
+                    <span class="text-muted text-sm"> · {row.also_called}</span>
                   {/if}
                   <span class="text-dim block leading-snug">{row.why}</span>
                 </li>
@@ -318,15 +328,16 @@
             {#if lookup.notes?.length}
               <ul class="mt-3 space-y-1">
                 {#each lookup.notes as note}
-                  <li class="text-[13px] text-dim leading-relaxed">{note}</li>
+                  <li class="text-sm text-dim leading-relaxed">{note}</li>
                 {/each}
               </ul>
             {/if}
             {#if lookup.verify_yourself}
-              <p class="text-[13px] text-teal-light mt-3 leading-relaxed">{lookup.verify_yourself}</p>
+              <p class="text-sm text-teal-light mt-3 leading-relaxed">{lookup.verify_yourself}</p>
             {/if}
           </div>
         {/each}
+
         {#if resourcesFor(actionItem).length > 0}
         <div class="mt-4">
           <p class="label-section mb-2">Where to find one</p>
@@ -344,7 +355,7 @@
       </div>
     {/if}
 
-    <div class="flex flex-wrap items-center gap-2 mt-4 text-[13px]">
+    <div class="flex flex-wrap items-center gap-2 mt-4 text-sm">
       <button type="button" on:click={() => whyOpen = !whyOpen}
         class="px-3 py-1.5 min-h-[32px] inline-flex items-center rounded-full border border-border
                text-dim hover:text-body hover:border-muted transition-colors">Why this one?</button>
@@ -367,7 +378,7 @@
           <p class="label-section mb-2">Sources</p>
           <ul class="space-y-1.5 mb-3">
             {#each actionItem.sources as source}
-              <li class="text-[13px]">
+              <li class="text-sm">
                 <a href={safeHref(source.url)} target="_blank" rel="noopener noreferrer"
                    class="text-body hover:text-amber-light transition-colors underline underline-offset-2">{source.title}</a>
                 <span class="ml-2 text-xs font-mono text-muted">{source.type}</span>
@@ -379,6 +390,22 @@
     {/if}
   </div>
   {/if}
+
+  <div class="panel p-4 mb-3">
+    <label for="ask-spectra" class="block text-sm text-body mb-2">
+      Worried about something in particular?
+    </label>
+    <input id="ask-spectra"
+      bind:value={searchQuery}
+      on:input={() => { if (searchQuery.trim()) queueOpen = true; }}
+      placeholder="Say it in your own words…"
+      class="w-full px-3 py-2.5 bg-surface border border-border rounded-lg text-sm text-body
+             placeholder-muted focus:outline-none focus:border-dim transition-colors"/>
+    <p class="text-sm text-muted mt-2 leading-relaxed">
+      Plain sentences work. If nothing here covers it, you will be told that rather than handed
+      the closest thing.
+    </p>
+  </div>
 
   <button type="button" on:click={() => queueOpen = !queueOpen}
     class="w-full panel px-5 py-4 flex items-center justify-between gap-3
@@ -395,28 +422,23 @@
   <div class="panel p-2.5 mb-4 flex items-center gap-2 flex-wrap">
     <span class="label-mono flex-shrink-0 px-1">Platform:</span>
     <button type="button" on:click={() => activePlatform = 'all'}
-      class="px-3 py-1 rounded text-[13px] transition-colors
+      class="px-3 py-1 rounded text-sm transition-colors
              {activePlatform === 'all' ? 'bg-amber text-void font-semibold' : 'text-dim hover:text-body'}">
       All
     </button>
     {#each PLATFORM_OPTIONS as opt}
       <button type="button" on:click={() => activePlatform = opt.value}
-        class="px-3 py-1 rounded text-[13px] transition-colors
+        class="px-3 py-1 rounded text-sm transition-colors
                {activePlatform === opt.value ? 'bg-amber text-void font-semibold' : 'text-dim hover:text-body'}">
         {opt.label}
       </button>
     {/each}
-    <span class="text-[13px] text-muted ml-auto hidden sm:block">Sets default tab for implementation steps</span>
   </div>
 
 
 
 
   <div class="flex flex-col sm:flex-row gap-2.5 mb-3">
-    <input bind:value={searchQuery}
-      placeholder="Search items…"
-      class="flex-1 px-3 py-2 bg-surface border border-border rounded-lg text-sm text-body
-             placeholder-muted focus:outline-none focus:border-dim transition-colors"/>
     <select bind:value={selectedCategory}
       class="px-3 py-2 bg-surface border border-border rounded-lg text-sm text-body
              focus:outline-none focus:border-dim transition-colors">
@@ -429,14 +451,14 @@
 
   <div class="flex items-center gap-2 mb-3">
     <button type="button" on:click={toggleEasyMode}
-      class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[13px] transition-colors
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm transition-colors
              {easyMode ? 'border-teal/40 text-teal-light bg-teal-dim/10' : 'border-amber/40 text-amber-light bg-amber-dim/10'}">
       {easyMode ? '◉ Easy mode' : '◈ Technical mode'}
     </button>
-    <span class="text-[13px] text-muted hidden sm:inline">{easyMode ? 'Simplified — switch for full detail' : 'Full technical detail'}</span>
+    <span class="text-sm text-muted hidden sm:inline">{easyMode ? 'Simplified. Switch for full detail' : 'Full technical detail'}</span>
   </div>
 
-  <p class="text-[13px] text-muted mb-3">
+  <p class="text-sm text-muted mb-3">
     {queueItems.length} item{queueItems.length !== 1 ? 's' : ''}
     {selectedCategory !== 'all' ? ` in ${categoryLabel(selectedCategory)}` : ''}
     {searchQuery ? ` matching "${searchQuery}"` : ''}
@@ -509,13 +531,13 @@
             </div>
 
             {#if blockedReason && !impl}
-              <p class="text-[13px] text-dim mb-2 leading-relaxed">⊘ {blockedReason}</p>
+              <p class="text-sm text-dim mb-2 leading-relaxed">⊘ {blockedReason}</p>
             {/if}
+
             <p class="text-sm text-dim leading-relaxed mb-3">{easyMode ? (item.simple_description ?? truncSentences(item.description, 1)) : item.description}</p>
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
               <span class="text-xs font-mono text-muted">⏱ {item.time_estimate?.setup ?? '?'}</span>
-              
               {#if item.maturity_level === 1}
                 <span class="pill-amber text-xs">Essential</span>
               {/if}
@@ -525,10 +547,10 @@
                   {#if platformsExpanded}
                     {#each hiddenPlatforms as platform}<span class="pill-dim text-xs">{platformDisplay(platform)}</span>{/each}
                     <button type="button" on:click|stopPropagation={() => togglePlatformExpand(item.id)}
-                      class="text-[13px] text-dim hover:text-body transition-colors">less</button>
+                      class="text-sm text-dim hover:text-body transition-colors">less</button>
                   {:else}
                     <button type="button" on:click|stopPropagation={() => togglePlatformExpand(item.id)}
-                      class="text-[13px] text-amber-light hover:opacity-80 transition-opacity">
+                      class="text-sm text-amber-light hover:opacity-80 transition-opacity">
                       +{hiddenPlatforms.length} more
                     </button>
                   {/if}
@@ -542,21 +564,20 @@
                     Confirm updated steps
                   </button>
                 {/if}
-              
                 {#if !impl}
                   <button type="button" on:click|stopPropagation={() => toggleSnooze(item.id)}
-                    class="text-[13px] transition-colors
+                    class="text-sm transition-colors
                            {snoozed ? 'text-amber-light hover:text-amber' : 'text-muted hover:text-dim'}">
                     {snoozed ? 'Bring back' : 'Not now'}
                   </button>
                 {/if}
                 <button type="button" on:click|stopPropagation={() => toggleSkip(item.id)}
-                  class="text-[13px] transition-colors
+                  class="text-sm transition-colors
                          {skipped ? 'text-amber-light hover:text-amber' : 'text-muted hover:text-dim'}">
                   {skipped ? 'Undo' : "Doesn't apply"}
                 </button>
                 <button type="button" on:click={() => toggleExpand(item.id)}
-                  class="text-[13px] transition-colors
+                  class="text-sm transition-colors
                          {expanded ? 'text-amber-light' : 'text-dim hover:text-body'}">
                   {expanded ? '↑ Less' : '↓ How to do this'}
                 </button>
@@ -567,6 +588,7 @@
 
         {#if expanded}
         <div class="border-t border-border px-4 pt-4 pb-5 space-y-5">
+
           <div>
             <p class="label-mono mb-2">Why this matters</p>
             <p class="text-sm text-body leading-relaxed pl-3 border-l border-amber/30">{item.threat_narrative}</p>
@@ -581,7 +603,7 @@
                 <p class="text-sm text-amber-light">
                   {EMOTIONAL_REGISTER_LABELS[item.emotional_register] ?? item.emotional_register}
                 </p>
-                <p class="text-[13px] text-dim mt-0.5">
+                <p class="text-sm text-dim mt-0.5">
                   Attackers exploit this state to bypass rational decision-making.
                 </p>
               </div>
@@ -598,7 +620,7 @@
               {:else}
                 {#each platTabs as pt}
                   <button type="button" on:click={() => itemPlatformTab = pt}
-                    class="px-2 py-0.5 rounded text-[13px] transition-colors
+                    class="px-2 py-0.5 rounded text-sm transition-colors
                            {itemPlatformTab === pt ? 'bg-teal/80 text-void font-semibold' : 'border border-border text-dim hover:text-body'}">
                     {platformTabLabel(pt)}
                   </button>
@@ -629,9 +651,16 @@
               <p class="label-mono mb-2">Based on your environment</p>
               <div class="space-y-2">
                 {#each activeEnvNotes as [, note]}
-                  <div class="bg-void/60 border border-amber/30 rounded-lg p-3">
-                    <p class="text-sm text-body leading-relaxed whitespace-pre-line">{note}</p>
-                  </div>
+                  {#each noteBlocks(note) as block}
+                    <div class="bg-void/60 border border-amber/30 rounded-lg p-3">
+                      {#if block.heading}
+                        <p class="label-section mb-1.5">{block.heading}</p>
+                      {/if}
+                      {#each block.lines as line}
+                        <p class="text-sm text-body leading-relaxed">{line}</p>
+                      {/each}
+                    </div>
+                  {/each}
                 {/each}
               </div>
             </div>
@@ -639,8 +668,8 @@
           {/if}
 
           <button type="button" on:click={() => toggleDetails(item.id)}
-            class="text-[13px] text-amber-light hover:opacity-80 transition-opacity">
-            {detailItems.has(item.id) ? '− Hide extra details' : '+ Show extra details — effort, what it protects against, related items, sources'}
+            class="text-sm text-amber-light hover:opacity-80 transition-opacity">
+            {detailItems.has(item.id) ? '− Hide extra details' : '+ Show extra details: effort, what it protects against, related items, sources'}
           </button>
 
           {#if detailItems.has(item.id)}
@@ -666,7 +695,7 @@
             <div class="flex flex-wrap gap-2">
               {#each item.adversaries as adv}
                 {@const userHas = profile?.adversaries?.includes(adv)}
-                <span class="text-[13px] px-2 py-0.5 rounded border
+                <span class="text-sm px-2 py-0.5 rounded border
                              {userHas ? 'border-amber/50 text-amber-light bg-amber-dim/20' : 'border-border text-dim'}">
                   {ADVERSARY_OPTIONS.find(o => o.value === adv)?.label ?? adv}
                   {#if userHas}<span class="text-amber ml-1">✓</span>{/if}
@@ -684,11 +713,11 @@
                 {@const relItem = graph.items.get(rel.id)}
                 {#if relItem}
                 <div class="flex items-center gap-2">
-                  <span class="text-[13px] text-muted bg-void border border-border px-1.5 py-0.5 rounded flex-shrink-0">
+                  <span class="text-sm text-muted bg-void border border-border px-1.5 py-0.5 rounded flex-shrink-0">
                     {rel.relationship.replace(/_/g, ' ')}
                   </span>
                   <button type="button" on:click={() => scrollToItem(rel.id, relItem.category, item.id)}
-                    class="text-[13px] text-amber-light hover:opacity-80 transition-opacity text-left">
+                    class="text-sm text-amber-light hover:opacity-80 transition-opacity text-left">
                     {relItem.title}
                   </button>
                 </div>
@@ -704,7 +733,7 @@
             <div class="flex flex-wrap gap-3">
               {#each item.sources as source}
                 <a href={safeHref(source.url)} target="_blank" rel="noopener noreferrer"
-                   class="text-[13px] text-dim hover:text-body transition-colors underline underline-offset-2">
+                   class="text-sm text-dim hover:text-body transition-colors underline underline-offset-2">
                   {source.title} ↗
                 </a>
               {/each}
@@ -718,10 +747,10 @@
           <div>
             <div class="flex items-center gap-2 mb-2">
               <p class="label-mono">Legal context</p>
-              {#if item.sensitive}<span class="text-[13px] text-amber-light">Safety-critical</span>{/if}
+              {#if item.sensitive}<span class="text-sm text-amber-light">Safety-critical</span>{/if}
             </div>
             {#each item.legal_notes as ln}
-              <div class="rounded-lg p-3 text-[13px] leading-relaxed
+              <div class="rounded-lg p-3 text-sm leading-relaxed
                           {item.sensitive ? 'bg-void/60 border border-amber/30 text-body' : 'bg-void/40 border border-border text-dim'}">
                 {#if ln.jurisdiction !== 'global'}<span class="text-muted mr-1">[{ln.jurisdiction}]</span>{/if}
                 <span class="whitespace-pre-line">{ln.note}</span>
@@ -739,9 +768,10 @@
                      placeholder-muted focus:outline-none focus:border-dim transition-colors
                      resize-none leading-relaxed"></textarea>
             {#if noteValues[item.id]?.trim()}
-              <p class="text-[13px] text-muted mt-1">Saved automatically.</p>
+              <p class="text-sm text-muted mt-1">Saved automatically.</p>
             {/if}
           </div>
+
           {#each lookupsFor(item) as lookup}
             <div class="border border-border rounded-lg p-3.5 bg-void/40">
               <p class="font-sans font-medium text-sm text-bright mb-1.5">{lookup.title}</p>
@@ -751,7 +781,7 @@
                   <li class="text-sm">
                     <span class="text-bright font-medium">{row.look_for}</span>
                     {#if row.also_called}
-                      <span class="text-muted text-[13px]"> · {row.also_called}</span>
+                      <span class="text-muted text-sm"> · {row.also_called}</span>
                     {/if}
                     <span class="text-dim block leading-snug">{row.why}</span>
                   </li>
@@ -760,12 +790,12 @@
               {#if lookup.notes?.length}
                 <ul class="mt-3 space-y-1">
                   {#each lookup.notes as note}
-                    <li class="text-[13px] text-dim leading-relaxed">{note}</li>
+                    <li class="text-sm text-dim leading-relaxed">{note}</li>
                   {/each}
                 </ul>
               {/if}
               {#if lookup.verify_yourself}
-                <p class="text-[13px] text-teal-light mt-3 leading-relaxed">{lookup.verify_yourself}</p>
+                <p class="text-sm text-teal-light mt-3 leading-relaxed">{lookup.verify_yourself}</p>
               {/if}
             </div>
           {/each}
@@ -787,7 +817,6 @@
 
           <div class="flex items-center justify-between pt-1 flex-wrap gap-2">
             <div class="flex flex-col gap-1">
-              
               {#if item.changelog?.length}
                 <p class="text-xs font-mono text-muted">
                   v{item.changelog[0].version} · {item.changelog[0].date}
@@ -796,11 +825,6 @@
               {/if}
             </div>
             <div class="flex items-center gap-3">
-              <a href="https://github.com/KashishOO7/spectra/issues/new?title=Item+{encodeURIComponent(item.id + ' v' + item.version + ' needs review')}&body=Item+ID:+{item.id}%0AVersion:+{item.version}%0A%0ADescribe+the+issue:"
-                 target="_blank" rel="noopener noreferrer"
-                 class="text-[13px] text-muted hover:text-amber-light transition-colors">
-                Flag issue ↗
-              </a>
               <button type="button" on:click={() => toggleItem(item.id, impl)}
                 disabled={!!blockedReason && !impl}
                 class="{impl ? 'btn-ghost' : 'btn-primary'} text-xs py-1.5 px-3
@@ -821,19 +845,45 @@
         {#if (result?.total_applicable ?? 0) === 0}
           <p class="text-body text-sm mb-1">Your profile has no topics selected, so there is nothing to show.</p>
           <button type="button" on:click={startReconfigure}
-            class="text-[13px] text-amber-light mt-2 hover:opacity-80">Choose what to cover</button>
+            class="text-sm text-amber-light mt-2 hover:opacity-80">Choose what to cover</button>
+        {:else if searchRefused}
+          <p class="text-body text-sm mb-1">Spectra does not cover that.</p>
+          <p class="text-dim text-sm max-w-md mx-auto leading-relaxed">
+            It is a short list of things worth doing, not an answer to everything. Try saying it
+            another way, or clear the box to see the whole list.
+          </p>
+          <button type="button" on:click={() => { selectedCategory = 'all'; searchQuery = ''; }}
+            class="text-sm text-amber-light mt-3 hover:opacity-80">Clear filters</button>
+        {:else if routedOutsideList.length}
+          <p class="text-body text-sm mb-1">
+            Spectra covers this, but it is not in your list with your current setup.
+          </p>
+          <ul class="mt-3 space-y-2 text-left max-w-md mx-auto">
+            {#each routedOutsideList as found (found.id)}
+              <li>
+                <a href="/checklist/{found.id}"
+                   class="text-sm text-amber-light hover:opacity-80 underline underline-offset-2">
+                  {found.blurb || found.title}
+                </a>
+              </li>
+            {/each}
+          </ul>
         {:else if selectedCategory !== 'all' || searchQuery}
           <p class="text-dim text-sm">No items match your filters.</p>
           <button type="button" on:click={() => { selectedCategory = 'all'; searchQuery = ''; }}
-            class="text-[13px] text-amber-light mt-2 hover:opacity-80">Clear filters</button>
+            class="text-sm text-amber-light mt-2 hover:opacity-80">Clear filters</button>
         {:else if skippedCount > 0}
           <p class="text-body text-sm">Nothing left in the queue. {skippedCount} item{skippedCount !== 1 ? 's are' : ' is'} set aside below.</p>
         {:else}
-          <p class="text-body text-sm">Nothing left in the queue — you have worked through everything here.</p>
+          <p class="text-body text-sm">Nothing left on your list. You have worked through everything here.</p>
         {/if}
       </div>
     {/if}
   </div>
+
+
+</div>
+  {/if}
 
   {#if skippedCount > 0}
   <div class="mt-4">
@@ -852,20 +902,17 @@
           <div class="panel border border-border/40 px-4 py-2.5 flex items-center justify-between gap-3">
             <span class="text-sm text-dim min-w-0 truncate">{item.simple_description ?? item.title}</span>
             <button type="button" on:click={() => toggleSkip(item.id)}
-              class="text-[13px] text-amber-light hover:opacity-80 transition-opacity flex-shrink-0">
+              class="text-sm text-amber-light hover:opacity-80 transition-opacity flex-shrink-0">
               Put back
             </button>
           </div>
         {/each}
         {#if skippedItems.length === 0}
-          <p class="text-[13px] text-muted px-1">All {skippedCount} are hidden by your current filters.</p>
+          <p class="text-sm text-muted px-1">All {skippedCount} are hidden by your current filters.</p>
         {/if}
       </div>
     {/if}
   </div>
-  {/if}
-
-</div>
   {/if}
 
 </div>

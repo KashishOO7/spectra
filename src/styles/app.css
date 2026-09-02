@@ -199,7 +199,7 @@
   }
 
   .score-ring {
-    stroke-dasharray: 264;
+    stroke-dasharray: 264; 
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: center;
@@ -248,4 +248,71 @@
     overflow: hidden;
     cursor: default;
   }
+}
+
+@media print {
+  @page { margin: 16mm; }
+
+  .no-print { display: none !important; }
+
+  html, body {
+    background: #ffffff !important;
+    min-height: 0 !important;
+  }
+
+  main { min-height: 0 !important; }
+
+  .playbook-sheet,
+  .playbook-sheet * {
+    color: #14110c !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: #c9c2b6 !important;
+  }
+
+  .playbook-step {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .playbook-line {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .playbook-sheet p {
+    orphans: 2;
+    widows: 2;
+  }
+
+  .playbook-tick {
+    border-color: #14110c !important;
+  }
+}
+
+.playbook-tick {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.15rem;
+  border: 1.5px solid rgb(var(--c-text-dim));
+  border-radius: 3px;
+  position: relative;
+}
+
+.playbook-tick--done::after {
+  content: '';
+  position: absolute;
+  left: 0.3rem;
+  top: 0.06rem;
+  width: 0.26rem;
+  height: 0.55rem;
+  border: solid currentColor;
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+}
+
+.playbook-group {
+  break-after: avoid;
+  page-break-after: avoid;
 }

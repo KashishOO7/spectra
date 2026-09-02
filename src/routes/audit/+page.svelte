@@ -12,6 +12,7 @@
     backfillImplementedVersions
   } from '$lib/engine/store.js';
   import { scoreAssessment } from '$lib/engine/scoring.js';
+  import { buildIndex, route } from '$lib/engine/router.js';
   import { deserializeGraph } from '$lib/content/deserialize.js';
   import { assessment, profileVersion } from '$lib/engine/session.js';
   import { SE_QUIZ_QUESTIONS } from '$lib/audit/quiz.js';
@@ -35,7 +36,7 @@
   let selectedCategory: string = 'all';
   let searchQuery = '';
   let expandedItems = new Set<string>();
-  let detailItems = new Set<string>(); 
+  let detailItems = new Set<string>();   
   function toggleDetails(id: string) {
     if (detailItems.has(id)) detailItems.delete(id); else detailItems.add(id);
     detailItems = detailItems;
@@ -65,7 +66,7 @@
     }
   }
 
-  let quizStep = 0;
+  let quizStep = 0; 
   let quizAnswers: Record<string, number> = {};
 
   let prefilledHarms: Harm[] = [];
@@ -83,6 +84,7 @@
   });
 
   let navHistory: Array<{ id: string; title: string; category: string }> = [];
+
 
   function toggleAdversary(v: AdversaryType) {
     onboardAdversaries = onboardAdversaries.includes(v)
@@ -128,14 +130,29 @@
     return [...result.all_items];
   })();
 
-  $: displayItems = orderedItems.filter((item: ScoredItem) => {
-    if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      if (!item.title.toLowerCase().includes(q) && !item.description.toLowerCase().includes(q)) return false;
-    }
-    return true;
-  });
+  $: routerIndex = graph ? buildIndex(graph) : null;
+  $: routed = searchQuery.trim().length > 1 && routerIndex
+    ? route(searchQuery, routerIndex, { maxItems: 5 })
+    : null;
+
+  $: searchRefused = !!routed && !routed.covered;
+
+  $: routedOutsideList = routed?.covered
+    ? routed.items.filter(hit => !orderedItems.some(o => o.id === hit.id))
+    : [];
+
+  $: displayItems = (() => {
+    let list = orderedItems.filter((item: ScoredItem) =>
+      selectedCategory === 'all' || item.category === selectedCategory);
+
+    if (!routed) return list;
+    if (!routed.covered) return [];
+
+    const rank = new Map(routed.items.map((hit, i) => [hit.id, i]));
+    return list
+      .filter(item => rank.has(item.id))
+      .sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+  })();
 
   onMount(async () => {
     const urlMode = $page.url.searchParams.get('mode');
@@ -155,6 +172,8 @@
     profile = (await loadProfile()) ?? profile;
 
     if (from === 'harms') prefilledHarms = [...(profile.harms ?? [])];
+
+
     const savedPlatforms = (profile.platforms ?? []).filter(p => p !== 'all') as Platform[];
     if (savedPlatforms.length > 0) activePlatform = savedPlatforms[0];
 
@@ -183,6 +202,7 @@
       await scrollToItem(urlHighlight);
     }
   });
+
   const GUARDIAN_TRACKS: Track[] = ['kids_teen', 'womens_safety'];
 
   function recalculate() {
@@ -201,6 +221,7 @@
       if (block) return;
     }
     const scoreBefore = result?.overall_score;
+
     await markImplemented(itemId, !current, item?.version);
     profile = await loadProfile();
     recalculate();
@@ -218,6 +239,7 @@
       });
     }
   }
+
 
   async function submitSEQuiz() {
     const susceptibilities: Record<string, number> = {};
@@ -243,6 +265,7 @@
     profile = await loadProfile();
     recalculate();
   }
+
   async function toggleSnooze(itemId: string) {
     await markSnoozed(itemId, !profile?.snoozed?.[itemId]);
     profile = await loadProfile();
@@ -252,6 +275,7 @@
   function isSnoozed(id: string): boolean {
     return !!(profile?.snoozed?.[id]);
   }
+
   async function reverifyItem(itemId: string) {
     const item = graph.items.get(itemId);
     if (!item) return;
@@ -368,6 +392,7 @@
       itemPlatformTab = tabs[0];
     }
   }
+
   let queueOpen = false;
 
   let expandedPlatforms = new Set<string>();
@@ -377,7 +402,6 @@
     expandedPlatforms = expandedPlatforms;
   }
 
-  // Data panel 
   async function handleExport() {
     try {
       const json = await exportProfile();
@@ -406,6 +430,7 @@
     if (view !== 'incident') view = 'checklist';
     recalculate();
   }
+
 </script>
 
 <svelte:head>
@@ -485,7 +510,9 @@
   {getBlockedReason} {getRelevantPlatformTabs} {reverifyItem} {handleNoteBlur} {scrollToItem}
   {toggleItem} {toggleSkip} {toggleSnooze} {toggleExpand} {toggleDetails} {togglePlatformExpand} {orderedItems}
   {toggleEasyMode} {startReconfigure} {prefilledHarms}
+  {searchRefused} {routedOutsideList}
   bind:selectedCategory bind:searchQuery bind:activePlatform bind:itemPlatformTab
   bind:noteValues bind:navHistory bind:queueOpen
   onViewIncident={() => view = 'incident'} />
 {/if}
+

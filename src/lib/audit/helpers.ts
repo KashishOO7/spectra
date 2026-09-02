@@ -1,3 +1,4 @@
+
 import type {
   Platform, EnvironmentFlag, ChecklistItem, Harm
 } from '../types.js';
@@ -24,6 +25,7 @@ export function platformDisplay(p: Platform): string {
   };
   return map[p] ?? p;
 }
+
 export function platformTabLabel(key: string): string {
   const known = platformDisplay(key as Platform);
   if (known !== key) return known;
@@ -38,6 +40,14 @@ export function getActiveEnvNotes(
   return Object.entries(envNotes).filter(([flag]) => flags.includes(flag as EnvironmentFlag)) as [string, string][];
 }
 
+export function noteBlocks(note: string): Array<{ heading: string | null; lines: string[] }> {
+  return note.split(/\n\s*\n/).map(block => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const isHeading = lines.length > 1 && lines[0].length < 60 && !/[.:!]$/.test(lines[0]);
+    return { heading: isHeading ? lines[0] : null, lines: isHeading ? lines.slice(1) : lines };
+  }).filter(b => b.lines.length > 0);
+}
+
 export function safeHref(url: string | null | undefined): string {
   if (!url) return '#';
   try {
@@ -48,6 +58,7 @@ export function safeHref(url: string | null | undefined): string {
   }
 }
 
+
 export function harmsForItem(item: ChecklistItem): Harm[] {
   const assets = item.assets_protected ?? [];
   const vectors = item.attack_vectors ?? [];
@@ -56,6 +67,7 @@ export function harmsForItem(item: ChecklistItem): Harm[] {
     return m.assets.some(a => assets.includes(a)) || m.vectors.some(v => vectors.includes(v));
   });
 }
+
 export function itemsByHarm(items: ChecklistItem[]): Record<Harm, ChecklistItem[]> {
   const harms = Object.keys(HARMS) as Harm[];
   const out = Object.fromEntries(harms.map(h => [h, [] as ChecklistItem[]])) as Record<Harm, ChecklistItem[]>;
@@ -65,3 +77,4 @@ export function itemsByHarm(items: ChecklistItem[]): Record<Harm, ChecklistItem[
   }
   return out;
 }
+

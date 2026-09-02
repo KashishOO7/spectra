@@ -1,4 +1,5 @@
 <script lang="ts">
+
   const steps = [
     {
       n: '1',
@@ -72,10 +73,11 @@
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-12">
 
   <h1 class="font-display text-3xl font-bold text-white mb-4">How Spectra works</h1>
-  <p class="text-body text-lg leading-relaxed mb-2 font-light">
+  <p class="text-body text-lg leading-relaxed mb-2">
     Spectra is a checklist that puts itself in order for you.
   </p>
   <p class="text-dim text-sm mb-10">About a minute to read.</p>
+
   <ol class="space-y-3 mb-12">
     {#each steps as step}
       <li class="panel p-5 flex gap-4 items-start">

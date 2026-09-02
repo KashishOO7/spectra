@@ -16,6 +16,7 @@ function readYamlDir<T>(subdir: string): T[] {
       const raw = readFileSync(join(dir, f), 'utf-8');
     
       const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
       const parts = normalized.split(/^---\s*$/m).filter((s: string) => s.trim().length > 0);
 
       for (const part of parts) {
