@@ -1,6 +1,4 @@
 #!/usr/bin/env tsx
-// Spectra content health report
-//   npm run maintain
 
 import { readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
@@ -12,9 +10,9 @@ const CONTENT_DIR = join(ROOT, 'content');
 const R = '\x1b[31m'; const G = '\x1b[32m'; const Y = '\x1b[33m';
 const B = '\x1b[34m'; const D = '\x1b[2m'; const X = '\x1b[0m'; const BOLD = '\x1b[1m';
 
-const AMBER_DAYS = 180;     // ~6 months
-const RED_DAYS = 365;       // ~12 months
-const CRITICAL_DAYS = 548;  // ~18 months
+const AMBER_DAYS = 180;     
+const RED_DAYS = 365;       
+const CRITICAL_DAYS = 548;  
 
 const TRACKING_PARAMS = [
   'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
@@ -120,7 +118,6 @@ function main() {
     else if (age >= AMBER_DAYS) add(item.id, file, 'amber', 'staleness', `last_verified ${lv} (${age} days ago).`);
   }
 
-  // Cross-references
   const REF_FIELDS = [
     'compensating_controls', 'depends_on', 'related_items', 'resources', 'controls_implemented',
     'superseded_by', 'implemented_by', 'mitigated_by', 'mitigates_threats', 'alternatives',

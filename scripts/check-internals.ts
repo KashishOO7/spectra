@@ -16,6 +16,10 @@ const ALLOWED_EXPRESSIONS: Record<string, RegExp[]> = {
   'src/lib/components/audit/QuizView.svelte': [/\bscore\b/]
 };
 
+const ALLOWED_HTML: Record<string, RegExp[]> = {
+  'src/lib/components/SetupPanel.svelte': [/^shareQr$/]
+};
+
 const INTERNAL_PATTERNS: Array<{ re: RegExp; what: string }> = [
   { re: /score/i, what: 'a raw or overall score' },
   { re: /multiplier/i,                  what: 'a multiplier' },
@@ -43,18 +47,44 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
+function walkRouteModules(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) walkRouteModules(full, out);
+    else if (entry.endsWith('.ts') && !entry.endsWith('.d.ts')) out.push(full);
+  }
+  return out;
+}
+
+function tsStrings(source: string): Array<{ text: string; index: number }> {
+  const blank = (s: string, re: RegExp) => s.replace(re, m => m.replace(/[^\n]/g, ' '));
+  const cleaned = blank(blank(source, /\/\*[\s\S]*?\*\//g), /(^|[^:])\/\/[^\n]*/gm);
+  const out: Array<{ text: string; index: number }> = [];
+  for (const m of cleaned.matchAll(/'([^'\\\n]*)'|"([^"\\\n]*)"|`([^`\\]*)`/g)) {
+    const text = m[1] ?? m[2] ?? m[3] ?? '';
+    if (text.trim()) out.push({ text, index: m.index ?? 0 });
+  }
+  return out;
+}
+
 function markupOf(source: string): { text: string; offset: number } {
   const end = source.lastIndexOf('</script>');
   const offset = end === -1 ? 0 : end + '</script>'.length;
   return { text: source.slice(offset), offset };
 }
 
-function outputExpressions(markup: string): Array<{ expr: string; index: number }> {
-  const found: Array<{ expr: string; index: number }> = [];
+function outputExpressions(markup: string): Array<{ expr: string; index: number; html: boolean }> {
+  const found: Array<{ expr: string; index: number; html: boolean }> = [];
   for (let i = 0; i < markup.length; i++) {
     if (markup[i] !== '{') continue;
     const next = markup[i + 1];
-    if (next === '#' || next === ':' || next === '/' || next === '@' || next === '!') continue;
+    if (next === '#' || next === ':' || next === '/' || next === '!') continue;
+    let html = false;
+    if (next === '@') {
+      const directive = /^\{@([a-z]+)/.exec(markup.slice(i, i + 12));
+      if (!directive || directive[1] !== 'html') continue;
+      html = true;
+    }
     let depth = 1;
     let j = i + 1;
     while (j < markup.length && depth > 0) {
@@ -62,7 +92,8 @@ function outputExpressions(markup: string): Array<{ expr: string; index: number 
       else if (markup[j] === '}') depth--;
       j++;
     }
-    found.push({ expr: markup.slice(i + 1, j - 1), index: i });
+    const raw = markup.slice(i + 1, j - 1);
+    found.push({ expr: html ? raw.replace(/^@html\s*/, '') : raw, index: i, html });
     i = j - 1;
   }
   return found;
@@ -89,7 +120,16 @@ for (const full of files) {
   const markup = stripComments(text);
   const allowances = ALLOWED_EXPRESSIONS[rel] ?? [];
 
-  for (const { expr, index } of outputExpressions(markup)) {
+  for (const { expr, index, html } of outputExpressions(markup)) {
+    if (html && !(ALLOWED_HTML[rel] ?? []).some(a => a.test(expr.trim()))) {
+      findings.push({
+        file: rel,
+        line: lineOf(source, offset + index),
+        what: 'an unlisted {@html} sink, the one place markup reaches the page unescaped',
+        snippet: `{@html ${expr.replace(/\s+/g, ' ').trim().slice(0, 60)}}`
+      });
+      continue;
+    }
     if (allowances.some(a => a.test(expr.trim()))) continue;
     for (const { re, what } of INTERNAL_PATTERNS) {
       if (re.test(expr)) {
@@ -117,9 +157,27 @@ for (const full of files) {
   }
 }
 
+const routeModules = walkRouteModules(join(ROOT, 'src/routes'));
+for (const full of routeModules) {
+  const rel = relative(ROOT, full).replace(/\\/g, '/');
+  const source = readFileSync(full, 'utf8');
+  for (const { text, index } of tsStrings(source)) {
+    for (const { re, what } of INTERNAL_LITERALS) {
+      if (!re.test(text)) continue;
+      findings.push({
+        file: rel,
+        line: lineOf(source, index),
+        what: `${what}, in a string this route module hands to a page`,
+        snippet: text.trim().slice(0, 60)
+      });
+      break;
+    }
+  }
+}
+
 console.log('');
 if (findings.length === 0) {
-  console.log(`${G}${BOLD}✓ I5 holds.${X} ${D}${files.length} components checked; no engine internal renders outside ${[...ALLOWED_FILES].join(', ')}.${X}\n`);
+  console.log(`${G}${BOLD}✓ I5 holds.${X} ${D}${files.length} components and ${routeModules.length} route modules checked; no engine internal renders outside ${[...ALLOWED_FILES].join(', ')}, and every {@html} is listed.${X}\n`);
   process.exit(0);
 }
 

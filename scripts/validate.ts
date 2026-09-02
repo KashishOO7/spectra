@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-// Validates YAML content against engine schemas. (Run: npm run validate)
 
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
@@ -13,6 +12,7 @@ const CONTENT_DIR = join(ROOT, 'content');
 const R = '\x1b[31m'; const G = '\x1b[32m'; const Y = '\x1b[33m';
 const B = '\x1b[34m'; const D = '\x1b[2m';  const X = '\x1b[0m';
 const BOLD = '\x1b[1m';
+
 
 function readYamlFile(path: string): unknown[] {
   let raw: string;
@@ -59,7 +59,6 @@ function readAllItems(subdir: string): Array<{ file: string; item: any }> {
   try {
     files = readdirSync(dir).filter(f => /\.ya?ml$/.test(f));
   } catch {
-  
     return result;
   }
 
@@ -160,7 +159,6 @@ const TRACKING_PARAMS = [
   'fbclid', 'gclid', 'ref=', 'referral',
 ];
 
-// Load all content
 console.log('\nRunning schema validation...');
 
 const allChecklistItems = readAllItems('items');
@@ -176,7 +174,7 @@ const allContent = [
   ...allControls,
 ];
 
-const allIds = new Map<string, string>();
+const allIds = new Map<string, string>(); 
 
 for (const { file, item } of allContent) {
   if (!item || typeof item !== 'object') {
@@ -214,18 +212,15 @@ console.log(`${B}Validating ${allChecklistItems.length} checklist items…${X}`)
 for (const { file, item } of allChecklistItems) {
   const id = item.id ?? '(no id)';
 
-  // Required fields
   for (const field of CHECKLIST_REQUIRED) {
     if (item[field] === undefined) {
       fail('REQUIRED_FIELDS', file, `Missing required field '${field}'`, id);
     }
   }
 
-  // Category
   if (item.category && !VALID_CATEGORIES.has(item.category)) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid category '${item.category}'`, id);
   }
-
 
   if (item.subcategory !== undefined && typeof item.subcategory !== 'string') {
     fail('VALID_TAXONOMY_VALUES', file, `subcategory must be a string`, id);
@@ -286,7 +281,6 @@ for (const { file, item } of allChecklistItems) {
     fail('VALID_TAXONOMY_VALUES', file, `Invalid maturity_level '${item.maturity_level}' — must be 1–5`, id);
   }
 
-  // Score weight range
   if (item.score_weight !== undefined) {
     if (typeof item.score_weight !== 'number' || item.score_weight < 0 || item.score_weight > 10) {
       fail('SCORE_WEIGHT_RANGE', file, `score_weight ${item.score_weight} must be a number 0–10`, id);
@@ -325,7 +319,6 @@ for (const { file, item } of allChecklistItems) {
     }
   }
 
-  // Tracking URLs
   for (const source of (item.sources ?? [])) {
     if (source?.url && TRACKING_PARAMS.some(p => source.url.includes(p))) {
       fail('NO_TRACKING_URLS', file, `Source URL contains tracking parameter: ${source.url}`, id);
@@ -440,7 +433,6 @@ for (const { file, item } of allChecklistItems) {
     ...(item.depends_on ?? []).map((d: any) => d?.id),
     ...(item.related_items ?? []).map((r: any) => r?.id),
     ...(item.resources ?? []).map((r: any) => r?.id),
-
     ...(item.controls_implemented ?? []).filter((c: unknown) => typeof c === 'string'),
     item.superseded_by,
   ].filter((r): r is string => typeof r === 'string');
@@ -503,6 +495,7 @@ for (const { file, item } of allChecklistItems) {
       `(${CONSTANTS_FILE}). Nothing on the front page can reach it.`, id);
   }
 }
+
 
 const PLACEHOLDER_PATTERNS: Array<{ re: RegExp; what: string }> = [
   { re: /\bMAINTAINER\b/,        what: 'a maintainer note' },
@@ -570,11 +563,11 @@ for (const name of COPY_FILES) {
   const withoutComments = source
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/(^|[^:])\/\/.*$/gm, '$1');
-
   withoutComments.split(/\r?\n/).forEach((line, i) => {
     if (line.trim()) checkRenderedString(rel, `line ${i + 1}`, line);
   });
 }
+
 
 const CO = /\b(Google|Meta|Facebook|Instagram|WhatsApp|Threads|Apple|iCloud|Siri|Alexa|Microsoft|Cortana|Edge|Amazon|LinkedIn|TikTok|Snapchat|Reddit|Discord|Steam|PlayStation|Xbox|Nintendo|Samsung|Twilio|Goldman Sachs|Gemini|Copilot|YouTube|Android|Chrome)\b/;
 const CONDUCT_VERB = /\b(collects?|collected|sells?|sold|shares?|shared|sharing|harvest\w*|monetis\w*|monetiz\w*|tracks?|tracked|tracking|trains?|trained|training|profiles?|profiling|retains?|retained|stores?|stored|reads?|listens?|records?|recorded|scans?|scanned|builds? a|feeds?)\b/i;
@@ -673,8 +666,8 @@ for (const id of lookupIds) {
   }
 }
 
-const SPOKEN_ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'content'];
 
+const SPOKEN_ATTRS = ['aria-label', 'title', 'alt', 'placeholder', 'content'];
 
 function renderedStrings(source: string): Array<{ line: number; text: string }> {
   const out: Array<{ line: number; text: string }> = [];
@@ -693,6 +686,7 @@ function renderedStrings(source: string): Array<{ line: number; text: string }> 
     }
     return block.replace(/[^\n]/g, ' ');
   });
+
   for (const attr of SPOKEN_ATTRS) {
     const re = new RegExp(`\\b${attr}\\s*=\\s*"([^"]*)"`, 'g');
     for (const m of src.matchAll(re)) {
@@ -720,7 +714,12 @@ const JARGON_NAMES: Array<{ re: RegExp; use: string }> = [
 
 const JARGON_WORDS: Array<{ re: RegExp; use: string }> = [
   { re: /\bthreat model/i,      use: 'your setup' },
-  { re: /\badversar(y|ies)\b/i, use: '"who might try", or name the one' }
+  { re: /\badversar(y|ies)\b/i, use: '"who might try", or name the one' },
+  { re: /\bposture\b/i,         use: 'name the thing: your setup, or what you have done so far' },
+  { re: /\bexposure\b/i,        use: '"what someone could find out about you"' },
+  { re: /\bOSINT\b/i,           use: 'looking someone up from what is already public' },
+  { re: /\bdork(s|ing)?\b/i,    use: 'a search that turns up what people did not mean to publish' },
+  { re: /\bvectors?\b/i,        use: 'how it happens' }
 ];
 
 const JARGON_LABELS: Record<string, string> = {
@@ -739,14 +738,38 @@ function svelteFilesUnder(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
+function tsFilesUnder(dir: string, acc: string[] = []): string[] {
+  for (const entry of readdirSync(join(ROOT, dir))) {
+    const rel = `${dir}/${entry}`;
+    if (statSync(join(ROOT, rel)).isDirectory()) tsFilesUnder(rel, acc);
+    else if (entry.endsWith('.ts')) acc.push(rel);
+  }
+  return acc;
+}
+
+function tsStrings(source: string): Array<{ line: number; text: string }> {
+  const out: Array<{ line: number; text: string }> = [];
+  const lineOf = (idx: number) => source.slice(0, idx).split(/\r?\n/).length;
+  const blank = (s: string, re: RegExp) => s.replace(re, m => m.replace(/[^\n]/g, ' '));
+  const cleaned = blank(blank(source, /\/\*[\s\S]*?\*\//g), /(^|[^:])\/\/[^\n]*/gm);
+  for (const m of cleaned.matchAll(/'([^'\\\n]*)'|"([^"\\\n]*)"|`([^`\\]*)`/g)) {
+    const text = m[1] ?? m[2] ?? m[3] ?? '';
+    if (text.trim()) out.push({ line: lineOf(m.index ?? 0), text });
+  }
+  return out;
+}
+
 console.log(`${B}Checking that no product jargon reaches a reader…${X}`);
 
 const JARGON_EXEMPT = new Set(['src/routes/methodology/+page.svelte']);
 const jargonScope = [...svelteFilesUnder('src/routes'), ...svelteFilesUnder('src/lib/components')]
   .filter(f => !JARGON_EXEMPT.has(f));
+const jargonTsScope = tsFilesUnder('src/lib/audit');
 
-for (const rel of jargonScope) {
-  for (const { line, text } of renderedStrings(readFileSync(join(ROOT, rel), 'utf-8'))) {
+for (const rel of [...jargonScope, ...jargonTsScope]) {
+  const source = readFileSync(join(ROOT, rel), 'utf-8');
+  const strings = rel.endsWith('.svelte') ? renderedStrings(source) : tsStrings(source);
+  for (const { line, text } of strings) {
     for (const { re, use } of [...JARGON_NAMES, ...JARGON_WORDS]) {
       const m = re.exec(text);
       if (m) {
@@ -765,7 +788,39 @@ for (const rel of jargonScope) {
   }
 }
 
-// Report
+
+const platformNoteVariants = Math.max(
+  0,
+  ...allChecklistItems.map(({ item }) => Object.keys(item?.platform_notes ?? {}).length)
+);
+
+const PLATFORM_WORD = String.raw`(operating systems?|platform|device|phone|computer|os)`;
+const PLATFORM_PROMISES: RegExp[] = [
+  new RegExp(String.raw`\bsteps?\b[^.]{0,40}\bfor your\b[^.]{0,30}\b${PLATFORM_WORD}\b`, 'i'),
+  new RegExp(String.raw`\bsteps?\b[^.]{0,30}\b(written|tailored|specific) (for|to)\b[^.]{0,30}\b${PLATFORM_WORD}\b`, 'i'),
+  new RegExp(String.raw`\bwhich (device|platform|system)\b[^.]{0,30}\bsteps?\b`, 'i'),
+  new RegExp(String.raw`\bfor your specific\b[^.]{0,20}\b${PLATFORM_WORD}\b`, 'i')
+];
+
+if (platformNoteVariants <= 1) {
+  for (const rel of [...jargonScope, ...jargonTsScope]) {
+    const source = readFileSync(join(ROOT, rel), 'utf-8');
+    const strings = rel.endsWith('.svelte') ? renderedStrings(source) : tsStrings(source);
+    for (const { line, text } of strings) {
+      for (const re of PLATFORM_PROMISES) {
+        if (!re.test(text)) continue;
+        fail('PLATFORM_PROMISE_MATCHES_CONTENT', rel,
+          `line ${line} promises steps written for the reader's platform, and no item can keep ` +
+          `that: every one of the ${allChecklistItems.length} items carries a single ` +
+          `'platform_notes' key, so the choice changes nothing for anyone. Either write ` +
+          `per-platform notes, starting with device-encrypt-001, or do not claim them. ` +
+          `Full string: "${text.trim().slice(0, 90)}"`);
+        break;
+      }
+    }
+  }
+}
+
 console.log('');
 
 const totalItems =
@@ -785,7 +840,6 @@ if (warnings.length > 0) {
 if (errors.length > 0) {
   console.log(`${R}${BOLD}FAILURES (${errors.length}) — blocking${X}`);
 
-  // Group by file for readability
   const byFile = new Map<string, ValidationResult[]>();
   for (const e of errors) {
     if (!byFile.has(e.file)) byFile.set(e.file, []);

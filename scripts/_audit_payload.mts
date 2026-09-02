@@ -7,6 +7,5 @@ console.log('  items only:', JSON.stringify(s.items).length.toLocaleString());
 console.log('  resources only:', JSON.stringify(s.resources).length.toLocaleString());
 const per = [...g.items.values()].map(i => [i.id, JSON.stringify(i).length] as [string, number]).sort((a,b)=>b[1]-a[1]);
 console.log('  heaviest items:', per.slice(0,5).map(([id,n])=>id+'='+n).join(' '));
-// Which routes ship the full graph?
 console.log('\nRoutes shipping serializeGraph(): /audit, /incident, /graph, /resources, /threats');
 console.log('/resources uses only graph.resources ->', JSON.stringify(s.resources).length, 'of', j.length, 'bytes needed');

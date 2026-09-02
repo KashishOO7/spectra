@@ -2,17 +2,17 @@
   "name": "spectra",
   "version": "1.0.0",
   "description": "Personal Security Self-Audit Framework by FPSZero",
-  "license": "AGPL-3.0-only",
+  "license": "AGPL-3.0-only AND CC-BY-SA-4.0",
   "private": true,
   "scripts": {
     "dev": "vite dev",
     "build": "tsx scripts/check-internals.ts && vite build",
     "preview": "vite preview",
-    "validate": "tsx scripts/validate.ts && tsx scripts/check-internals.ts",
+    "validate": "tsx scripts/validate.ts && tsx scripts/check-internals.ts && tsx scripts/check-protected.ts && tsx scripts/check-prose.ts",
     "maintain": "tsx scripts/maintain.ts",
     "new:item": "tsx scripts/new-item.ts",
     "check:links": "tsx scripts/check-links.ts",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc -p scripts/tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "check:internals": "tsx scripts/check-internals.ts"
   },
@@ -33,7 +33,8 @@
     "vite": "^5.4.0"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "qrcode-generator": "^2.0.4"
   },
   "type": "module"
 }

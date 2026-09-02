@@ -1,6 +1,4 @@
 #!/usr/bin/env tsx
-// Dead-link check for every URL in content/.
-//   npm run check:links
 
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
