@@ -77,9 +77,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./build
-
-  # Deploy and the post-deploy check run only for this repository, which is the one with a Pages
-  # site. A fork or a mirror running this same file stops here.
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest

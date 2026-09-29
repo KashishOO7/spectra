@@ -1,6 +1,11 @@
 node_modules/
 .svelte-kit/
 build/
+
 .env
 .env.*
-*.tar.gz
+
+.DS_Store
+Thumbs.db
+*.log
+/commits/

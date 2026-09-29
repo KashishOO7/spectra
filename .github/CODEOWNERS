@@ -1,21 +1,12 @@
 # CODEOWNERS
 
-# Schema changes require core maintainer
+# The engine's types and scoring
 /src/lib/types.ts                   @KashishOO7
 /src/lib/engine/scoring.ts          @KashishOO7
 
-# Score weight and threat multiplier changes: covered by the /content/items/ rule below, and
-# blocked before a push by scripts/check-protected.ts.
+# Every word a reader sees: steps, guides, lookups, page words, playbooks, quiz and glossary.
+# Score weights and threat multipliers in the steps are also sealed by scripts/check-protected.ts.
+/wiki/                              @KashishOO7
 
-# Content quality — all item PRs need review
-/content/items/                     @KashishOO7
-/content/resources/                 @KashishOO7
-
-# Women's safety track — specialized review required
-# /content/items/*womens*           @safety-reviewer
-
-# Kids/teen track — age-appropriate review required
-# /content/items/*kids*             @KashishOO7
-
-# CI/CD pipeline changes
+# CI
 /.github/                           @KashishOO7

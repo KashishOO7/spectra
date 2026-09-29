@@ -19,6 +19,14 @@ COLLECTION_FILES = [
     Path("content/resources/tools.yaml"),
 ]
 
+RESOURCE_NOTE_DIRS = [
+    Path("wiki/resources"),
+]
+
+NOTE_DIRS = [
+    Path("wiki/controls"),
+]
+
 AMBER_DAYS    = 180
 RED_DAYS      = 365
 CRITICAL_DAYS = 548
@@ -63,18 +71,81 @@ def extract_items_from_file(path: Path, data: object) -> list[dict]:
     return items
 
 
+def load_note(path: Path) -> Optional[dict]:
+    """Frontmatter of a control note, with its `## Where` rows restored as `resources`."""
+    try:
+        text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    except Exception as exc:
+        print(f"  PARSE_ERROR  {path}: {exc}", flush=True)
+        return None
+    match = re.match(r"^---\n(.*?)\n---\n?(.*)$", text, re.DOTALL)
+    if not match:
+        print(f"  PARSE_ERROR  {path}: no frontmatter between --- lines", flush=True)
+        return None
+    try:
+        data = yaml.safe_load(match.group(1))
+    except Exception as exc:
+        print(f"  PARSE_ERROR  {path}: {exc}", flush=True)
+        return None
+    if not isinstance(data, dict):
+        return None
+    resources, heading = [], None
+    for line in match.group(2).split("\n"):
+        if line.startswith("## "):
+            heading = line[3:].strip()
+        elif line.startswith("### ") and heading == "Where":
+            resources.append({"id": line[4:].strip(), "platform_specific": []})
+    data["resources"] = resources
+    return data
+
+
+def load_resource_note(path: Path) -> Optional[dict]:
+    """A guide note, as the object it was in tools.yaml: frontmatter plus title and description."""
+    try:
+        text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    except Exception as exc:
+        print(f"  PARSE_ERROR  {path}: {exc}", flush=True)
+        return None
+    match = re.match(r"^---\n(.*?)\n---\n\n# ([^\n]+)\n\n(.+?)\n$", text, re.DOTALL)
+    if not match:
+        print(f"  PARSE_ERROR  {path}: not frontmatter, # title, description", flush=True)
+        return None
+    try:
+        data = yaml.safe_load(match.group(1))
+    except Exception as exc:
+        print(f"  PARSE_ERROR  {path}: {exc}", flush=True)
+        return None
+    if not isinstance(data, dict):
+        return None
+    data["title"] = match.group(2)
+    data["description"] = match.group(3)
+    return data
+
+
 def load_all_items_raw() -> list[dict]:
     raw = []
+    for directory in NOTE_DIRS:
+        if not directory.exists():
+            continue
+        for path in sorted(directory.rglob("*.md")):
+            raw.extend(extract_items_from_file(path, load_note(path)))
+    for directory in RESOURCE_NOTE_DIRS:
+        if not directory.exists():
+            continue
+        for path in sorted(directory.glob("*.md")):
+            raw.extend(extract_items_from_file(path, load_resource_note(path)))
     for directory in SINGLE_ITEM_DIRS:
         if not directory.exists():
-            print(f"  WARN  Directory not found: {directory}", flush=True)
+            if directory != Path("content/items"):
+                print(f"  WARN  Directory not found: {directory}", flush=True)
             continue
         for path in sorted(directory.rglob("*.yaml")):
             data = load_yaml_safe(path)
             raw.extend(extract_items_from_file(path, data))
     for filepath in COLLECTION_FILES:
         if not filepath.exists():
-            print(f"  WARN  Collection file not found: {filepath}", flush=True)
+            if filepath != Path("content/resources/tools.yaml"):
+                print(f"  WARN  Collection file not found: {filepath}", flush=True)
             continue
         data = load_yaml_safe(filepath)
         raw.extend(extract_items_from_file(filepath, data))
