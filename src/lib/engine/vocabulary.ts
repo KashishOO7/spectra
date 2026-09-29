@@ -8,6 +8,7 @@ export const STOPWORDS = new Set([
   'what', 'which', 'who', 'when', 'where', 'how', 'why', 'there', 'here', 'get', 'got',
   'know', 'think', 'want', 'need', 'just', 'now', 'then', 'some', 'any', 'all', 'so', 'up',
   'out', 'down', 'over', 'very', 'really', 'still', 'help', 'please',
+  'sit',
   'someone', 'something', 'anyone', 'everyone', 'somebody', 'people', 'person'
 ]);
 
@@ -22,7 +23,7 @@ export function tokenize(text: string): string[] {
   return (text ?? '')
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter(t => t.length > 1)
+    .filter(t => t.length > 1 && !STOPWORDS.has(t))
     .map(stem)
     .filter(t => t.length > 1 && !STOPWORDS.has(t));
 }
@@ -35,8 +36,12 @@ export const SYNONYMS: Record<string, string[]> = {
   login:       ['login', 'credential', 'password', 'authentication'],
   signin:      ['login', 'credential', 'password', 'authentication'],
   locked:      ['recovery', 'backup', 'code', 'credential'],
-  '2fa':       ['two', 'step', 'authentication', 'code'],
-  otp:         ['two', 'step', 'code', 'authentication'],
+  recover:     ['recovery'],
+  '2fa':       ['two', 'factor', 'authentication', 'code'],
+  otp:         ['two', 'factor', 'code', 'authentication'],
+  twostep:     ['2fa', 'factor', 'authentication'],
+  '2step':     ['2fa', 'factor', 'authentication'],
+  twofactor:   ['2fa', 'factor', 'authentication'],
   passcode:    ['password', 'credential', 'screen', 'lock'],
 
   money:       ['financial', 'money', 'payment', 'bank'],
@@ -47,6 +52,9 @@ export const SYNONYMS: Record<string, string[]> = {
   scam:        ['scam', 'phishing', 'social', 'engineering', 'sender', 'message'],
   scammed:     ['scam', 'phishing', 'social', 'engineering'],
   phishing:    ['phishing', 'sender', 'message', 'scam'],
+  suspicious:  ['scam', 'phishing', 'sender', 'message'],
+  weird:       ['scam', 'phishing', 'sender', 'message'],
+  sms:         ['message', 'code', 'two', 'factor', 'authentication'],
 
   stalker:     ['stalkerware', 'location', 'insider', 'physical', 'access', 'malware'],
   stalking:    ['stalkerware', 'location', 'insider', 'physical', 'access'],
@@ -89,6 +97,10 @@ export const SYNONYMS: Record<string, string[]> = {
   pic:         ['intimate', 'image', 'reputation', 'deepfake'],
   photo:       ['intimate', 'image', 'reputation', 'deepfake'],
   revenge:     ['intimate', 'image', 'reputation'],
+  chatgpt: ['training', 'model', 'chat'],
+  gemini: ['training', 'model', 'chat'],
+  copilot: ['training', 'model', 'chat'],
+  chatbot: ['training', 'model', 'chat'],
   deepfake:    ['deepfake', 'image', 'voice', 'clone', 'pretend'],
   impersonate: ['deepfake', 'voice', 'clone', 'identity', 'pretend'],
   pretend:     ['pretend', 'deepfake', 'voice', 'clone', 'identity', 'caller'],
@@ -108,8 +120,8 @@ export const SYNONYMS: Record<string, string[]> = {
   wifi:        ['network', 'interception', 'vpn', 'dns'],
   vpn:         ['vpn', 'network', 'interception'],
   cafe:        ['network', 'interception', 'vpn'],
-  message:     ['message', 'communication', 'chat', 'sender'],
-  text:        ['message', 'communication', 'chat', 'sender'],
+  message:     ['message', 'communication', 'chat'],
+  text:        ['message', 'communication', 'chat'],
   chat:        ['message', 'communication', 'chat', 'encrypt'],
   email:       ['email', 'account', 'credential', 'message'],
   call:        ['voice', 'clone', 'caller', 'sender'],
@@ -144,7 +156,41 @@ export const SYNONYMS: Record<string, string[]> = {
   install:     ['malware', 'stalkerware', 'app', 'update'],
   app:         ['app', 'permission', 'device'],
   report:      ['harassment', 'reporting', 'incident'],
-  secret:      ['secret', 'word', 'family', 'clone']
+  secret:      ['secret', 'word', 'family', 'clone'],
+
+  instagram:   ['social', 'profile', 'visibility'],
+  facebook:    ['social', 'profile', 'visibility'],
+  tiktok:      ['social', 'profile', 'visibility'],
+  snapchat:    ['social', 'profile', 'visibility', 'chat'],
+  twitter:     ['social', 'profile', 'visibility'],
+  linkedin:    ['social', 'profile', 'visibility'],
+  youtube:     ['social', 'profile', 'visibility'],
+  reddit:      ['social', 'profile', 'visibility'],
+  discord:     ['chat', 'message', 'gaming', 'social'],
+  roblox:      ['game', 'gaming', 'child'],
+  fortnite:    ['game', 'gaming', 'child'],
+  minecraft:   ['game', 'gaming', 'child'],
+  whatsapp:    ['messaging', 'message', 'communication', 'chat'],
+  telegram:    ['messaging', 'message', 'communication', 'chat'],
+  messenger:   ['messaging', 'message', 'communication', 'chat'],
+  imessage:    ['messaging', 'message', 'communication', 'chat'],
+  wechat:      ['messaging', 'message', 'communication', 'chat'],
+  viber:       ['messaging', 'message', 'communication', 'chat'],
+  gmail:       ['email', 'account'],
+  outlook:     ['email', 'account'],
+  hotmail:     ['email', 'account'],
+  yahoo:       ['email', 'account'],
+  icloud:      ['cloud', 'backup', 'account'],
+  ipad:        ['iphone', 'device'],
+  samsung:     ['android', 'phone', 'device'],
+  paypal:      ['payment', 'money', 'financial'],
+  venmo:       ['payment', 'money', 'financial'],
+  cashapp:     ['payment', 'money', 'financial'],
+  zelle:       ['payment', 'money', 'financial'],
+  revolut:     ['payment', 'money', 'financial'],
+  safari:      ['browser'],
+  firefox:     ['browser'],
+  chrome:      ['browser', 'chrome']
 };
 
 export const SYNONYM_INDEX: Map<string, string[]> = new Map(
@@ -162,7 +208,31 @@ function variants(token: string): string[] {
   return out;
 }
 
+const ENDINGS = ['ingly', 'edly', 'ing', 'ed', 'ly', 'es', 'en', 's', 'y', 'e'];
+
+export function root(word: string): string {
+  let r = word;
+  for (const e of ENDINGS) {
+    if (r.length - e.length >= 3 && r.endsWith(e)) { r = r.slice(0, -e.length); break; }
+  }
+  if (r.length > 3 && r.endsWith('e')) r = r.slice(0, -1);
+  if (/([b-df-hj-np-tv-z])\1$/.test(r)) r = r.slice(0, -1);
+  return r;
+}
+
+export function sameWord(a: string, b: string): boolean {
+  return a !== b && a.length >= 4 && b.length >= 4 && root(a) === root(b);
+}
+
+export const NEGATIONS = new Set([
+  'cant', 'cannot', 'dont', 'wont', 'didnt', 'doesnt', 'isnt', 'wasnt', 'arent', 'havent',
+  'hasnt', 'couldnt', 'wouldnt', 'shouldnt', 'aint'
+]);
+
 export function expand(token: string): string[] {
+  const own = SYNONYM_INDEX.get(token);
+  if (own) return [token, ...own];
+
   const forms = variants(token);
   const out = new Set<string>(forms);
   for (const form of forms) {

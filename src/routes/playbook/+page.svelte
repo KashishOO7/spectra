@@ -1,14 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { PageData } from './$types.js';
-  import type { UserProfile, ScoredItem } from '$lib/types.js';
+  import type { UserProfile, ScoredItem, Track } from '$lib/types.js';
   import { deserializeGraph } from '$lib/content/deserialize.js';
   import { scoreAssessment } from '$lib/engine/scoring.js';
   import { loadProfile, createDefaultProfile, computeAdversaries } from '$lib/engine/store.js';
   import { decodeFingerprint } from '$lib/engine/fingerprint.js';
-  import { noteBlocks } from '$lib/audit/helpers.js';
+  import { noteBlocks, getActiveTrackNotes, leadSentence, lineParts } from '$lib/audit/helpers.js';
+  import note from '#spectra-wiki/page/print';
+  import { text, link, pieces, rows } from '$lib/wiki/page.js';
 
   export let data: PageData;
+
+  const groupWords = rows(note, 'groups', ['todo', 'done', 'aside'] as const, 2);
+  const back = link(note, 'back');
 
   interface Group {
     key: string;
@@ -24,6 +29,7 @@
 
   let source: 'link' | 'device' | 'basics' = 'basics';
   let loading = true;
+  let tracks: Track[] = ['general'];
 
   let showTodo = true;
   let showDone = false;
@@ -32,16 +38,16 @@
 
   $: groups = [
     ...(showTodo ? [{
-      key: 'todo', title: 'Still to do', ticked: false, items: todo,
-      blurb: 'In order, most useful first.'
+      key: 'todo', title: groupWords.todo[0], ticked: false, items: todo,
+      blurb: groupWords.todo[1]
     }] : []),
     ...(showDone ? [{
-      key: 'done', title: 'Already done', ticked: true, items: done,
-      blurb: 'Kept here as a record of what is set up.'
+      key: 'done', title: groupWords.done[0], ticked: true, items: done,
+      blurb: groupWords.done[1]
     }] : []),
     ...(showAside ? [{
-      key: 'aside', title: 'Set aside', ticked: false, items: aside,
-      blurb: 'Marked as not applying. Here in case that changes.'
+      key: 'aside', title: groupWords.aside[0], ticked: false, items: aside,
+      blurb: groupWords.aside[1]
     }] : [])
   ] as Group[];
 
@@ -55,6 +61,10 @@
     const key = notes.all !== undefined ? 'all' : Object.keys(notes)[0];
     const note = key ? notes[key as keyof typeof notes] : undefined;
     return note ? noteBlocks(note) : [];
+  }
+
+  function situationFor(item: ScoredItem): Array<{ heading: string | null; lines: string[] }> {
+    return getActiveTrackNotes(item.track_notes, tracks).flatMap(([, note]) => noteBlocks(note));
   }
 
   onMount(async () => {
@@ -80,6 +90,7 @@
     }
 
     profile.adversaries = computeAdversaries(profile);
+    tracks = profile.tracks ?? ['general'];
 
     const outcome = scoreAssessment(graph, profile);
     todo  = outcome.all_items.filter(i => !i.is_implemented && !i.is_skipped);
@@ -90,49 +101,54 @@
 </script>
 
 <svelte:head>
-  <title>Print your list · Spectra</title>
+  <title>{text(note, 'title')}</title>
   <meta name="description"
-        content="Your steps as a printable page, so you can hand them to someone on paper." />
+        content={text(note, 'description')} />
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
 
   <div class="no-print mb-10">
-    <h1 class="font-display text-2xl sm:text-3xl font-bold text-white mb-3 tracking-tight">
-      Print your list
+    <h1 class="text-3xl font-bold text-white mb-3 tracking-tight">
+      {text(note, 'heading')}
     </h1>
     <p class="text-body leading-relaxed mb-2">
-      Choose what goes on the sheet, then print it or save it as a PDF. Made for handing to
-      someone who would rather work from paper than from a website.
+      {text(note, 'intro')}
     </p>
     <p class="text-sm text-dim leading-relaxed mb-6">
       {#if source === 'link'}
-        This is the setup that came in the link you opened. Nothing was saved to this device.
+        {text(note, 'from-link')}
       {:else if source === 'device'}
-        This is your own list, read from this browser.
+        {text(note, 'from-device')}
       {:else}
-        Nobody has set anything up here yet, so this is the list everyone starts with.
+        {text(note, 'from-basics')}
       {/if}
     </p>
 
-    <fieldset class="border border-border rounded-lg p-4 mb-4">
-      <legend class="label-mono px-2">What to put on the sheet</legend>
+    {#if tracks.includes('known_person_risk')}
+      <p class="text-sm text-teal-light border border-teal/30 bg-teal-dim/10 rounded px-3 py-2 mb-4 leading-relaxed">
+        {text(note, 'known-person')}
+      </p>
+    {/if}
+
+    <fieldset class="border border-border rounded-xl p-4 mb-4">
+      <legend class="label-mono px-2">{text(note, 'choose')}</legend>
       <div class="flex flex-col gap-2.5">
         <label class="flex items-center gap-2.5 text-sm text-body cursor-pointer">
           <input type="checkbox" bind:checked={showTodo} class="accent-current" />
-          Still to do <span class="text-dim">({todo.length})</span>
+          {groupWords.todo[0]} <span class="text-dim">({todo.length})</span>
         </label>
         <label class="flex items-center gap-2.5 text-sm text-body cursor-pointer">
           <input type="checkbox" bind:checked={showDone} class="accent-current" />
-          Already done <span class="text-dim">({done.length})</span>
+          {groupWords.done[0]} <span class="text-dim">({done.length})</span>
         </label>
         <label class="flex items-center gap-2.5 text-sm text-body cursor-pointer">
           <input type="checkbox" bind:checked={showAside} class="accent-current" />
-          Set aside <span class="text-dim">({aside.length})</span>
+          {groupWords.aside[0]} <span class="text-dim">({aside.length})</span>
         </label>
         <label class="flex items-center gap-2.5 text-sm text-body cursor-pointer border-t border-border/60 pt-2.5 mt-1">
           <input type="checkbox" bind:checked={withDetail} class="accent-current" />
-          Include how to do each one
+          {text(note, 'with-detail')}
         </label>
       </div>
     </fieldset>
@@ -140,16 +156,15 @@
     <div class="flex flex-wrap items-center gap-4">
       <button type="button" class="btn-primary" on:click={() => window.print()}
               disabled={loading || total === 0}>
-        Print this page
+        {text(note, 'print')}
       </button>
-      <a href="/audit" class="text-sm text-dim hover:text-body underline underline-offset-2 transition-colors">
-        Back to your list
+      <a href={back.href} data-print-back class="inline-flex items-center min-h-[24px] text-sm text-dim hover:text-body underline underline-offset-2 transition-colors">
+        {back.text}
       </a>
     </div>
 
     <p class="text-sm text-dim mt-3 leading-relaxed">
-      With the instructions this runs to several sheets, which is what you want if you are handing
-      it over. Without them it is a short list to tick off.
+      {text(note, 'sheets')}
     </p>
   </div>
 
@@ -157,25 +172,24 @@
     <header class="mb-8 pb-4 border-b border-border">
       <div class="flex items-center gap-2.5 mb-3">
         <svg width="20" height="20" viewBox="0 0 28 28" fill="none" aria-hidden="true"
-             class="text-amber-light">
+             class="text-teal-light">
           <path d="M14 3.5a10.5 10.5 0 0 0 0 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
           <path d="M14 3.5a10.5 10.5 0 0 1 0 21" stroke="currentColor" stroke-width="2.6"
                 stroke-linecap="round" stroke-dasharray="1 4.4" opacity="0.85"/>
         </svg>
-        <span class="font-display text-bright font-semibold tracking-tight">Spectra</span>
+        <span class="text-bright font-semibold tracking-tight">{text(note, 'mark')}</span>
       </div>
 
-      <h2 class="font-display text-xl font-bold text-white mb-1">Your list</h2>
+      <h2 class="text-lg font-bold text-white mb-1">{text(note, 'sheet-heading')}</h2>
       <p class="text-sm text-dim">
         {#if loading}
-          Working it out.
+          {text(note, 'working')}
         {:else if total === 0}
-          Nothing to print with those choices.
+          {text(note, 'nothing')}
         {:else if onlyTodo}
-          {total} thing{total === 1 ? '' : 's'} to do, most useful first.
-          Tick them off as you go.
+          {#each pieces(note, total === 1 ? 'count-todo-one' : 'count-todo-many', { count: total }) as piece}{piece}{/each}
         {:else}
-          {total} step{total === 1 ? '' : 's'} on this sheet.
+          {#each pieces(note, total === 1 ? 'count-one' : 'count-many', { count: total }) as piece}{piece}{/each}
         {/if}
       </p>
     </header>
@@ -185,7 +199,7 @@
         {#if group.items.length}
           <section class="mb-8">
             {#if grouped}
-              <h3 class="playbook-group font-display text-base font-semibold text-bright mb-1">
+              <h3 class="playbook-group text-base font-semibold text-bright mb-1">
                 {group.title}
               </h3>
               <p class="text-sm text-dim mb-4">{group.blurb}</p>
@@ -199,7 +213,7 @@
                   <div class="min-w-0 flex-1">
                     <p class="playbook-line text-body font-medium leading-snug">
                       <span class="text-dim tabular-nums mr-1">{i + 1}.</span>
-                      {step.simple_description ?? step.title}
+                      {leadSentence(step)}
                     </p>
                     {#if withDetail}
                       {#each howFor(step) as block}
@@ -207,8 +221,30 @@
                           {#if block.heading}
                             <p class="text-sm font-semibold text-dim">{block.heading}</p>
                           {/if}
-                          {#each block.lines as line}
-                            <p class="text-sm text-dim leading-relaxed">{line}</p>
+                          {#each lineParts(block.lines) as part}
+                            {#if part.kind === 'p'}
+                              <p class="text-sm text-dim leading-relaxed">{part.text}</p>
+                            {:else}
+                              <svelte:element this={part.kind} class="text-sm text-dim leading-relaxed pl-5 {part.kind === 'ol' ? 'list-decimal' : 'list-disc'}" data-print-list>
+                                {#each part.items as item}<li>{item}</li>{/each}
+                              </svelte:element>
+                            {/if}
+                          {/each}
+                        </div>
+                      {/each}
+                      {#each situationFor(step) as block}
+                        <div class="mt-2">
+                          {#if block.heading}
+                            <p class="text-sm font-semibold text-dim">{block.heading}</p>
+                          {/if}
+                          {#each lineParts(block.lines) as part}
+                            {#if part.kind === 'p'}
+                              <p class="text-sm text-dim leading-relaxed">{part.text}</p>
+                            {:else}
+                              <svelte:element this={part.kind} class="text-sm text-dim leading-relaxed pl-5 {part.kind === 'ol' ? 'list-decimal' : 'list-disc'}" data-print-list>
+                                {#each part.items as item}<li>{item}</li>{/each}
+                              </svelte:element>
+                            {/if}
                           {/each}
                         </div>
                       {/each}
@@ -223,14 +259,14 @@
 
       {#if total === 0}
         <p class="text-body">
-          Tick at least one of the boxes above to put something on the sheet.
+          {text(note, 'tick-one')}
         </p>
       {/if}
     {/if}
 
     <footer class="mt-10 pt-4 border-t border-border text-sm text-dim">
-      <p>Made with Spectra. spectra.fpszero.com</p>
-      <p class="mt-1">Educational information, not legal or professional security advice.</p>
+      <p>{text(note, 'made-with')}</p>
+      <p class="mt-1">{text(note, 'not-advice')}</p>
     </footer>
   </div>
 </div>

@@ -2,9 +2,14 @@
   import type { ContentGraph } from '$lib/types.js';
   import { INCIDENT_PLAYBOOKS } from '$lib/audit/playbooks.js';
   import { categoryLabel } from '$lib/audit/helpers.js';
+  import note from '#spectra-wiki/page/incident';
+  import { text } from '$lib/wiki/page.js';
+  import Glossed from '$lib/components/Glossed.svelte';
+  import GlossScope from '$lib/components/GlossScope.svelte';
 
-  export let incidentScenario: string | null;   
-  export let isSimpleMode: boolean;              
+
+  export let incidentScenario: string | null;
+  export let isSimpleMode: boolean;
   export let graph: ContentGraph;
   export let implemented: Record<string, boolean>;
   export let onScrollToItem: (id: string, category?: string) => void;
@@ -13,49 +18,37 @@
   $: isImplemented = (id: string) => !!implemented[id];
 </script>
 
-<div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-fade-up">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
 
   {#if !incidentScenario}
     <div class="mb-8">
-      <div class="flex items-center gap-3 mb-2">
-        <span class="text-red-light text-xl">⚠</span>
-        <h1 class="font-display text-2xl font-bold text-white">Something happened</h1>
-      </div>
-      <p class="text-body text-sm">
-        What happened? Pick the closest match and you will get the steps for right now.
+      <h1 class="text-3xl font-bold text-white mb-3">{text(note, 'heading')}</h1>
+      <p class="text-body">
+        {text(note, 'lead')}
       </p>
     </div>
 
-    <div class="grid gap-2.5 mb-8">
+    <div class="grid gap-3 mb-8">
       {#each INCIDENT_PLAYBOOKS as pb}
         <button type="button"
           on:click={() => incidentScenario = pb.id}
-          class="panel text-left p-5 hover:border-red/40 transition-all duration-150 group
-                 {pb.severity === 'critical' ? 'border-red/20' : 'border-border'}">
-          <div class="flex items-start gap-4">
-            <span class="text-2xl flex-shrink-0">{pb.icon}</span>
+          class="panel text-left p-5 hover:border-teal transition-colors duration-150 group">
+          <div class="flex items-center gap-4">
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <h2 class="font-display font-semibold text-bright group-hover:text-white transition-colors">
-                  {pb.title}
-                </h2>
-                <span class="pill-{pb.severity === 'critical' ? 'red' : 'amber'} text-xs">
-                  {pb.severity === 'critical' ? 'Critical' : 'High'}
-                </span>
-              </div>
+              <h2 class="text-lg font-semibold text-bright mb-1">{pb.title}</h2>
               <p class="text-sm text-dim">{pb.subtitle}</p>
             </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                 stroke-width="1.5" class="flex-shrink-0 text-dim group-hover:text-body mt-1 transition-colors">
-              <path d="M4 8h8M9 5l3 3-3 3"/>
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 text-teal">
+              <path d="M6 3.5 10.5 8 6 12.5"/>
             </svg>
           </div>
         </button>
       {/each}
     </div>
 
-    <button type="button" on:click={onToChecklist} class="btn-ghost text-sm">
-      Skip this and go to your full list
+    <button type="button" on:click={onToChecklist} class="btn-ghost">
+      {text(note, 'skip')}
     </button>
 
   {:else}
@@ -64,70 +57,71 @@
 
     <button type="button"
       on:click={() => incidentScenario = null}
-      class="flex items-center gap-2 text-sm text-dim hover:text-body transition-colors mb-8">
-      ← Back to scenarios
+      class="inline-flex items-center min-h-[44px] text-sm text-body hover:text-bright transition-colors mb-4">
+      {text(note, 'back-to-scenarios')}
     </button>
 
-    <div class="flex items-start gap-4 mb-6">
-      <span class="text-3xl flex-shrink-0">{pb.icon}</span>
-      <div>
-        <div class="flex items-center gap-2 mb-1">
-          <h1 class="font-display text-2xl font-bold text-white">{pb.title}</h1>
-          <span class="pill-{pb.severity === 'critical' ? 'red' : 'amber'}">
-            {pb.severity === 'critical' ? 'Critical' : 'High'}
-          </span>
-        </div>
-        <p class="text-sm text-dim">{pb.subtitle}</p>
-      </div>
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-white mb-2">{pb.title}</h1>
+      <p class="text-body">{pb.subtitle}</p>
     </div>
 
-    <div class="border border-red/30 bg-red-dim/10 rounded-lg p-4 mb-6 flex items-start gap-3">
-      <span class="text-red-light flex-shrink-0 text-sm">✕</span>
-      <p class="text-sm text-red-light leading-relaxed">{pb.doNotText}</p>
+    <GlossScope>
+    <div class="border border-muted bg-surface-2 rounded-2xl p-5 mb-6 flex items-start gap-3">
+      <span class="flex-shrink-0 flex items-center h-[1.6em] text-base" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" class="text-bright">
+          <circle cx="8" cy="8" r="6.5"/><path d="m5.8 5.8 4.4 4.4m0-4.4-4.4 4.4"/>
+        </svg>
+      </span>
+      <p class="text-base text-bright"><Glossed text={pb.doNotText} /></p>
     </div>
 
     <div class="panel p-5 mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <p class="label-mono text-amber">Do these right now</p>
-        <div class="flex items-center gap-1 rounded-lg border border-border bg-surface p-0.5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="text-lg font-semibold text-bright">{text(note, 'right-now')}</h2>
+        <div class="flex items-center gap-1 rounded-full border border-border bg-surface-2 p-1">
           <button type="button"
             on:click={() => isSimpleMode = true}
-            class="px-3 py-1 text-sm rounded-md transition-colors duration-150
-                   {isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
-            Plain English
+            aria-pressed={isSimpleMode}
+            class="px-4 min-h-[36px] text-sm font-semibold rounded-full transition-colors duration-150
+                   {isSimpleMode ? 'bg-surface text-bright shadow-sm' : 'text-body hover:text-bright'}">
+            {text(note, 'plain')}
           </button>
           <button type="button"
             on:click={() => isSimpleMode = false}
-            class="px-3 py-1 text-sm rounded-md transition-colors duration-150
-                   {!isSimpleMode ? 'bg-amber/20 text-amber-light' : 'text-dim hover:text-body'}">
-            Technical
+            aria-pressed={!isSimpleMode}
+            class="px-4 min-h-[36px] text-sm font-semibold rounded-full transition-colors duration-150
+                   {!isSimpleMode ? 'bg-surface text-bright shadow-sm' : 'text-body hover:text-bright'}">
+            {text(note, 'technical')}
           </button>
         </div>
       </div>
       <ol class="space-y-4">
         {#each (isSimpleMode ? pb.simpleSteps : pb.immediateSteps) as step, i}
           <li class="flex items-start gap-4">
-            <span class="flex-shrink-0 w-6 h-6 rounded-full border border-amber/40 bg-amber-dim/20
-                         flex items-center justify-center text-xs font-mono text-amber-light font-semibold">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-teal-dim
+                         flex items-center justify-center text-sm text-bright font-semibold tabular-nums">
               {i + 1}
             </span>
-            <p class="text-sm text-body leading-relaxed pt-0.5">{step}</p>
+            <p class="text-base text-body"><Glossed text={step} /></p>
           </li>
         {/each}
       </ol>
     </div>
+    </GlossScope>
 
     {#if pb.relatedItemIds.length > 0}
     <div class="panel p-5 mb-6">
-      <p class="text-xs tracking-wide text-dim mb-3">Once you are safe, do these too</p>
+      <h2 class="text-lg font-semibold text-bright mb-3">{text(note, 'once-safe')}</h2>
       <div class="space-y-2">
         {#each pb.relatedItemIds as id}
           {@const item = graph.items.get(id)}
           {#if item}
             <button type="button"
               on:click={() => onScrollToItem(id, item.category)}
-              class="w-full text-left flex items-center gap-3 p-3 rounded-lg border border-border
-                     hover:border-amber/30 hover:bg-amber-dim/5 transition-colors group">
+              class="w-full text-left flex items-center gap-3 p-3 min-h-[48px] rounded-xl border border-border
+                     hover:border-teal transition-colors group">
               <div class="w-4 h-4 rounded border flex-shrink-0
                            {isImplemented(id)
                              ? 'bg-teal border-teal flex items-center justify-center'
@@ -142,15 +136,15 @@
                 <span class="text-sm text-body group-hover:text-white transition-colors font-sans">
                   {item.title}
                 </span>
-                <span class="text-[11px] text-muted ml-2">
+                <span class="text-xs text-muted ml-2">
                   {categoryLabel(item.category)}
                 </span>
               </div>
               {#if isImplemented(id)}
-                <span class="text-sm text-teal-light flex-shrink-0">Done ✓</span>
+                <span class="text-sm text-teal-light flex-shrink-0">{text(note, 'done')}</span>
               {:else}
-                <span class="text-sm text-dim group-hover:text-amber-light flex-shrink-0 transition-colors">
-                  Open →
+                <span class="text-sm text-dim group-hover:text-teal-light flex-shrink-0 transition-colors">
+                  {text(note, 'open')}
                 </span>
               {/if}
             </button>
@@ -163,13 +157,13 @@
     <div class="flex flex-wrap gap-3">
       <button type="button"
         on:click={() => { incidentScenario = null; onToChecklist(); }}
-        class="btn-primary text-sm">
-        Continue to full audit →
+        class="btn-primary">
+        {text(note, 'continue')}
       </button>
       <button type="button"
         on:click={() => incidentScenario = null}
-        class="btn-ghost text-sm">
-        Back to scenarios
+        class="btn-ghost">
+        {text(note, 'back')}
       </button>
     </div>
 

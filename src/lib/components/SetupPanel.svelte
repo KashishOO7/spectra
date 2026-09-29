@@ -6,20 +6,28 @@
   import type { UserProfile } from '$lib/types.js';
   import { LIFE_EVENTS } from '$lib/audit/life-events.js';
   import type { LifeEvent } from '$lib/audit/life-events.js';
-  import { ADVERSARY_OPTIONS, TRACK_OPTIONS, ENVIRONMENT_OPTIONS } from '$lib/audit/constants.js';
+  import { ADVERSARY_OPTIONS, TRACK_OPTIONS, OFFERED_TRACKS, tierDot } from '$lib/audit/constants.js';
+  import { leadSentence } from '$lib/audit/helpers.js';
   import {
     loadProfile, saveProfile, exportProfile, importProfile, clearAllData,
-    applyLifeEvent, revertLifeEvent, createDefaultProfile, derivedAdversaries
+    applyLifeEvent, revertLifeEvent, createDefaultProfile, derivedAdversaries,
+    InvalidProfileError, ClearIncompleteError
   } from '$lib/engine/store.js';
   import { assessment, bumpProfile } from '$lib/engine/session.js';
   import { assessFromAnywhere, invalidateAssessment } from '$lib/engine/lazyAssessment.js';
-  import { coverageOf, coverageLine, PENDING_LABEL, COVERED_MEANS } from '$lib/engine/coverage.js';
-  import { encodeFingerprint, decodeFingerprint } from '$lib/engine/fingerprint.js';
+  import { coverageOf, PENDING_LABEL } from '$lib/engine/coverage.js';
+  import { encodeFingerprint, encodeSetup, decodeFingerprint } from '$lib/engine/fingerprint.js';
   import { qrSvg } from '$lib/engine/qr.js';
   import type { AdversaryType, Track, AssessmentResult } from '$lib/types.js';
+  import note from '#spectra-wiki/page/setup-panel';
+  import { text, fill, pieces, link, placed, named } from '$lib/wiki/page.js';
 
-  export let open: boolean;                 
-  export let onClose: () => void;
+  const familySetup = link(note, 'family-setup');
+  const openYou = link(note, 'open-you');
+
+  export let open = true;
+  export let onClose: () => void = () => {};
+  export let inline = false;
 
   let profile: UserProfile | null = null;
   let panel: HTMLElement;
@@ -64,7 +72,7 @@
   const focusables = () =>
     panel ? [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(n => n.offsetParent !== null) : [];
 
-  $: if (open && panel) void tick().then(() => focusables()[0]?.focus());
+  $: if (open && panel && !inline) void tick().then(() => focusables()[0]?.focus());
 
   function trapTab(e: KeyboardEvent) {
     if (e.key !== 'Tab') return;
@@ -88,8 +96,23 @@
   $: manualLabels = manualOnly.map(a => ADVERSARY_OPTIONS.find(o => o.value === a)?.label ?? a);
   $: nothingPicked = harms.length === 0 && manualLabels.length === 0;
 
-  $: environmentLabels = (profile?.environment_flags ?? [])
-    .map(f => ENVIRONMENT_OPTIONS.find(o => o.value === f)?.label ?? f);
+  let advOpen = false;
+
+  async function toggleAdversary(v: AdversaryType) {
+    const p = (await loadProfile()) ?? createDefaultProfile();
+    const now = p.adversariesManual ?? [];
+    const next = now.includes(v) ? now.filter(a => a !== v) : [...now, v];
+    if (next.length > 0) p.adversariesManual = next;
+    else delete p.adversariesManual;
+    await saveProfile(p);
+    await afterWrite();
+  }
+
+  $: manualPicked = new Set(profile?.adversariesManual ?? []);
+
+  $: situationLabels = (profile?.tracks ?? [])
+    .filter(t => OFFERED_TRACKS.some(o => o.value === t))
+    .map(t => TRACK_OPTIONS.find(o => o.value === t)?.label ?? t);
 
   let fetched: AssessmentResult | null = null;
   $: result = $assessment ?? fetched;
@@ -103,11 +126,16 @@
     else await goto('/audit?configure=1');
   }
 
+  async function changeHarms() {
+    onClose();
+    await tick();
+    await goto('/?edit=harms', { noScroll: true });
+  }
+
   async function seeEverything() {
     onClose();
     await tick();
-    if (onAudit) window.dispatchEvent(new CustomEvent('spectra:results'));
-    else await goto('/audit?view=results');
+    await goto('/you');
   }
 
   async function handleExport() {
@@ -117,7 +145,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `spectra-profile-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `spectra-copy-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       exportStatus = 'done';
@@ -133,21 +161,23 @@
     const file = input.files?.[0];
     if (!file) return;
     try {
-      const text = await file.text();
-      const parsed: unknown = JSON.parse(text);
+      const raw = await file.text();
+      const parsed: unknown = JSON.parse(raw);
       if (
         typeof parsed !== 'object' || parsed === null || Array.isArray(parsed) ||
         !Array.isArray((parsed as Record<string, unknown>).tracks) ||
         !Array.isArray((parsed as Record<string, unknown>).platforms)
       ) {
-        throw new Error('Not a valid Spectra profile');
+        throw new Error(text(note, 'not-a-profile'));
       }
-      await importProfile(text);
+      await importProfile(raw);
       await afterWrite();
       importStatus = 'done';
       setTimeout(() => { importStatus = 'idle'; }, 3000);
     } catch (err: any) {
-      importError = err?.message ?? 'Invalid file';
+      importError = err instanceof InvalidProfileError ? text(note, 'invalid-profile')
+        : err?.message === text(note, 'not-a-profile') ? text(note, 'not-a-profile')
+        : text(note, 'invalid-file');
       importStatus = 'error';
       setTimeout(() => { importStatus = 'idle'; importError = ''; }, 4000);
     }
@@ -162,14 +192,15 @@
   let pasteCode = '';
   let pasteStatus: 'idle' | 'done' | 'error' = 'idle';
   let pasteError = '';
+  let pasteMapped: string[] = [];
 
   async function buildShare() {
     const profile = (await loadProfile()) ?? createDefaultProfile();
-    shareCode = encodeFingerprint(profile);
-    shareUrl = `${location.origin}/#${shareCode}`;
+    shareCode = encodeSetup(profile);
+    shareUrl = `${location.origin}/#${encodeFingerprint(profile)}`;
     shareQr = qrSvg(shareUrl, {
       size: 168,
-      title: 'Scan to load this setup on another device'
+      title: text(note, 'qr-title')
     });
     showShare = true;
   }
@@ -186,9 +217,10 @@
 
   async function applyPasted() {
     pasteError = '';
+    pasteMapped = [];
     const decoded = decodeFingerprint(pasteCode);
     if (!decoded) {
-      pasteError = 'That code was not recognised.';
+      pasteError = text(note, 'not-recognised');
       pasteStatus = 'error';
       setTimeout(() => { pasteStatus = 'idle'; pasteError = ''; }, 4000);
       return;
@@ -203,6 +235,8 @@
     profile.snoozed = decoded.snoozed;
     await saveProfile(profile);
     await afterWrite();
+    pasteMapped = decoded.mappedTracks
+      .map(m => TRACK_OPTIONS.find(o => o.value === m.to)?.label ?? m.to);
     pasteStatus = 'done';
     pasteCode = '';
     setTimeout(() => { pasteStatus = 'idle'; }, 3000);
@@ -214,7 +248,10 @@
     try {
       await clearAllData();
     } catch (err: any) {
-      clearError = err?.message ?? 'Some data could not be cleared.';
+      const parts = named(note, 'clear-parts');
+      clearError = err instanceof ClearIncompleteError
+        ? fill(note, 'clear-partial', { what: err.parts.map(p => parts[p]).join(', ') })
+        : err?.message ?? text(note, 'clear-failed');
     }
     profile = createDefaultProfile();
     clearConfirm = false;
@@ -255,33 +292,40 @@
 </script>
 
 <svelte:window on:keydown={(e) => {
-  if (!open) return;
+  if (inline || !open) return;
   if (e.key === 'Escape') onClose();
   else trapTab(e);
 }} />
 
+      {#if !inline}
 <button type="button" class="fixed inset-0 bg-void/70 backdrop-blur-sm z-40"
-  on:click={onClose} aria-label="Close Your setup" tabindex="-1"></button>
+  on:click={onClose} aria-label={text(note, 'close')} tabindex="-1"></button>
+{/if}
 
 <div bind:this={panel}
-     role="dialog" aria-modal="true" aria-label="Your setup"
-     class="fixed top-0 right-0 h-full w-full max-w-sm bg-surface border-l border-border
-            z-50 overflow-y-auto shadow-2xl flex flex-col sidebar-scroll">
+     role={inline ? null : 'dialog'} aria-modal={inline ? null : 'true'} aria-label={inline ? null : text(note, 'heading')}
+     data-setup={inline ? 'inline' : 'sheet'}
+     class={inline ? 'flex flex-col' : `fixed top-0 right-0 h-full w-full max-w-sm bg-surface border-l border-border
+            z-50 overflow-y-auto shadow-2xl flex flex-col sidebar-scroll`}>
 
+  {#if !inline}
   <div class="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-    <h2 class="font-display font-semibold text-white">Your setup</h2>
+    <h2 class="font-semibold text-white">{text(note, 'heading')}</h2>
     <button type="button" on:click={onClose}
       class="w-11 h-11 -mr-2 flex items-center justify-center text-dim hover:text-body
-             transition-colors text-lg leading-none" aria-label="Close Your setup">✕</button>
+             transition-colors text-lg leading-none" aria-label={text(note, 'close')}>✕</button>
   </div>
+  <a href={openYou.href} on:click={onClose} data-open-you
+     class="mx-5 mt-4 inline-flex items-center min-h-[44px] text-sm font-semibold text-teal-light link-inline">{openYou.text}</a>
+  {/if}
 
-  <div class="flex-1 px-5 py-5 space-y-6">
+  <div class="flex-1 {inline ? '' : 'px-5'} divide-y divide-border [&>section]:py-5">
 
     <section>
-      <p class="label-mono mb-3">Who you're protecting yourself from</p>
+      <p class="label-head mb-3">{text(note, 'worries-heading')}</p>
       {#if nothingPicked}
         <p class="text-sm text-dim mb-3 leading-relaxed">
-          Nothing picked yet, so you're seeing the basics.
+          {text(note, 'nothing-picked')}
         </p>
       {:else}
         <ul class="space-y-1.5 mb-3">
@@ -293,56 +337,89 @@
           {/each}
         </ul>
       {/if}
-      <button type="button" on:click={changeThis} class="btn-ghost text-xs py-1.5 px-3">
-        Change this
+      <button type="button" on:click={changeHarms} class="btn-ghost btn-sm">
+        {text(note, 'change-worries')}
       </button>
-    </section>
-
-    {#if environmentLabels.length > 0}
-    <section>
-      <p class="label-mono mb-3">What applies where you are</p>
-      <ul class="space-y-1.5">
-        {#each environmentLabels as label}
-          <li class="text-sm text-body leading-snug">{label}</li>
-        {/each}
-      </ul>
-    </section>
-    {/if}
-
-    <section>
-      <p class="label-mono mb-3">What's on your list</p>
-      <p class="text-sm text-body mb-3">
-        {coverage ? `${coverage.applicable} things on your list` : PENDING_LABEL}
+      <button type="button" on:click={() => advOpen = !advOpen} aria-expanded={advOpen}
+        class="btn-ghost btn-sm mt-2">
+        {text(note, 'add-someone')} <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" class="transition-transform duration-150 {advOpen ? 'rotate-180' : ''}"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      {#if advOpen}
+      <p class="text-sm text-dim mb-2 leading-relaxed">
+        {text(note, 'add-someone-lead')}
       </p>
-      <button type="button" on:click={seeEverything} class="btn-ghost text-xs py-1.5 px-3">
-        See everything, in detail
-      </button>
-    </section>
-
-    <section>
-      <p class="label-mono mb-3">How far you've got</p>
-      <p class="text-sm text-body" data-testid="panel-coverage">{coverageLine(coverage)}</p>
-      <p class="text-sm text-dim mt-1 leading-relaxed">{COVERED_MEANS}</p>
-      {#if coverage}
-        <p class="text-sm text-muted mt-2">
-          {coverage.done} of {coverage.applicable} things done{#if coverage.skipped}&nbsp;· {coverage.skipped} skipped{/if}
-        </p>
+      <div class="space-y-1.5">
+        {#each ADVERSARY_OPTIONS as opt}
+          {@const on = manualPicked.has(opt.value)}
+          <button type="button" on:click={() => toggleAdversary(opt.value)}
+            class="w-full text-left rounded-xl border px-3 py-2 flex items-center gap-2.5 transition-colors
+                   {on ? 'border-teal/50 bg-teal-dim/15' : 'border-border hover:border-muted'}">
+            <span class="w-1.5 h-1.5 rounded-full {tierDot[opt.tier]} flex-shrink-0 opacity-80"></span>
+            <span class="text-sm flex-1 {on ? 'text-white' : 'text-body'}">{opt.label}</span>
+            {#if on}<span class="text-sm text-teal-light flex-shrink-0">✓</span>{/if}
+          </button>
+        {/each}
+      </div>
       {/if}
     </section>
 
+    <section>
+      <p class="label-head mb-3">{text(note, 'situation-heading')}</p>
+      {#if situationLabels.length === 0}
+        <p class="text-sm text-dim mb-3 leading-relaxed">
+          {text(note, 'nothing-added')}
+        </p>
+      {:else}
+        <ul class="space-y-1.5 mb-3">
+          {#each situationLabels as label}
+            <li class="text-sm text-body leading-snug">{label}</li>
+          {/each}
+        </ul>
+      {/if}
+      <button type="button" on:click={changeThis} class="btn-ghost btn-sm">
+        {text(note, 'change-this')}
+      </button>
+    </section>
+
+
+    <section>
+      <p class="label-head mb-3">{text(note, 'list-heading')}</p>
+      <p class="text-sm text-body mb-3">
+        {coverage ? fill(note, 'list-count', { count: coverage.applicable }) : PENDING_LABEL}
+      </p>
+      {#if !inline}
+      <button type="button" on:click={seeEverything} class="btn-ghost btn-sm">
+        {text(note, 'see-everything')}
+      </button>
+      {/if}
+    </section>
+
+    <section>
+      <p class="label-head mb-3">{text(note, 'someone-else-heading')}</p>
+      <p class="text-sm text-body mb-3 leading-relaxed">
+        {text(note, 'someone-else-lead')}
+      </p>
+      <a href={familySetup.href} on:click={onClose}
+         class="btn-ghost btn-sm">
+        {familySetup.text}
+      </a>
+    </section>
+
+
+
     {#if result && result.reverify_items.length > 0}
     <section>
-      <p class="label-mono mb-3">Worth re-checking</p>
+      <p class="label-head mb-3">{text(note, 'recheck-heading')}</p>
       <p class="text-sm text-body mb-2 leading-relaxed">
         {#if result.reverify_items.length === 1}
-          One thing you've marked done has changed. Worth a re-read.
+          {text(note, 'recheck-one')}
         {:else}
-          {result.reverify_items.length} things you've marked done have changed. Worth a re-read.
+          {#each pieces(note, 'recheck-many', { count: result.reverify_items.length }) as piece}{piece}{/each}
         {/if}
       </p>
       <ul class="space-y-1.5">
         {#each result.reverify_items as item}
-          <li class="text-sm text-dim leading-snug">{item.simple_description ?? item.title}</li>
+          <li class="text-sm text-dim leading-snug">{leadSentence(item)}</li>
         {/each}
       </ul>
     </section>
@@ -351,43 +428,41 @@
     <section>
       <button type="button" on:click={() => lifeEventsOpen = !lifeEventsOpen}
         aria-expanded={lifeEventsOpen}
-        class="text-sm text-dim hover:text-body transition-colors py-2 mb-1 text-left">
-        {lifeEventsOpen ? 'Hide ↑' : 'Something changed in my life'}
+        class="btn-ghost btn-sm mb-2">
+        {text(note, 'life-open')} <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" class="transition-transform duration-150 {lifeEventsOpen ? 'rotate-180' : ''}"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
       {#if lifeEventsOpen}
       <div class="space-y-2">
         {#each LIFE_EVENTS as ev}
           {@const applied = profile?.life_events_applied?.includes(ev.id)}
           {@const confirming = pendingLifeEvent?.id === ev.id}
-          <div class="rounded-lg border transition-colors
-                      {applied ? 'border-teal/20 bg-teal-dim/10' : confirming ? 'border-amber/40 bg-amber-dim/10' : 'border-border'}">
+          <div class="rounded-xl border transition-colors
+                      {applied ? 'border-teal/20 bg-teal-dim/10' : confirming ? 'border-teal/40 bg-teal-dim/10' : 'border-border'}">
             <button type="button" on:click={() => !applied && handleLifeEvent(ev)}
               class="w-full text-left flex items-center gap-3 p-3 {applied ? 'cursor-default' : ''}">
-              <span class="text-base flex-shrink-0">{ev.icon}</span>
               <div class="flex-1 min-w-0">
-                <p class="text-xs font-sans {applied ? 'text-teal-light' : 'text-body'}">{ev.label}</p>
+                <p class="text-sm font-semibold {applied ? 'text-teal-light' : 'text-bright'}">{ev.label}</p>
                 {#if !applied && ((ev.adversary_delta?.length ?? 0) > 0 || (ev.track_delta?.length ?? 0) > 0)}
                   <p class="text-sm text-muted mt-0.5">
-                    Adds {[...(ev.adversary_delta || []), ...(ev.track_delta || [])].slice(0,2).map(deltaLabel).join(', ')}
+                    {#each pieces(note, 'adds', { names: [...(ev.adversary_delta || []), ...(ev.track_delta || [])].slice(0,2).map(v => `“${deltaLabel(v)}”`).join(' and ') }) as piece}{piece}{/each}
                   </p>
                 {/if}
               </div>
-              {#if applied}<span class="text-sm text-teal-light flex-shrink-0">Applied ✓</span>{/if}
+              {#if applied}<span class="text-sm text-teal-light flex-shrink-0">{text(note, 'applied')}</span>{/if}
             </button>
             {#if confirming}
               <div class="px-3 pb-3 -mt-1">
                 <p class="text-sm text-body leading-relaxed mb-2">
-                  This reorders your checklist. It will not write what happened to your timeline &mdash;
-                  the entry will read “Your setup updated”. You can undo it here at any time.
+                  {text(note, 'sensitive-confirm')}
                 </p>
                 <div class="flex gap-2">
                   <button type="button" on:click={() => handleLifeEvent(ev)}
-                    class="flex-1 py-2 px-3 rounded border border-amber/50 bg-amber-dim/20 text-amber-light text-sm hover:bg-amber-dim/40 transition-colors">
-                    Apply
+                    class="flex-1 py-2 px-3 rounded border border-teal/50 bg-teal-dim/20 text-teal-light text-sm hover:bg-teal-dim/40 transition-colors">
+                    {text(note, 'apply')}
                   </button>
                   <button type="button" on:click={() => pendingLifeEvent = null}
                     class="flex-1 py-2 px-3 rounded border border-border text-dim text-sm hover:text-body transition-colors">
-                    Cancel
+                    {text(note, 'cancel')}
                   </button>
                 </div>
               </div>
@@ -395,146 +470,145 @@
             {#if applied}
               <div class="px-3 pb-2.5 -mt-1">
                 <button type="button" on:click={() => handleRevertLifeEvent(ev)}
-                  class="text-sm text-muted hover:text-amber-light transition-colors py-1">
-                  Undo this
+                  class="text-sm text-muted hover:text-teal-light transition-colors py-1">
+                  {text(note, 'undo')}
                 </button>
               </div>
             {/if}
           </div>
         {/each}
       </div>
-      <p class="text-sm text-muted mt-2">Reorders your checklist. Nothing here is written to your timeline in words.</p>
+      <p class="text-sm text-muted mt-2">{text(note, 'life-footnote')}</p>
       {/if}
     </section>
 
     <section>
-      <p class="label-mono mb-3">Save a copy</p>
+      <p class="label-head mb-3">{text(note, 'save-heading')}</p>
       <p class="text-sm text-dim mb-3 leading-relaxed">
-        Saves a file to your device. Nothing is sent anywhere, but this file describes your
-        situation, so mind where it lands.
+        {text(note, 'save-lead')}
       </p>
       <button type="button" on:click={handleExport}
-        class="btn-ghost text-xs py-2 px-3 w-full text-center">
-        {exportStatus === 'done' ? '✓ Downloaded' : exportStatus === 'error' ? 'Export failed' : '↓ Export profile.json'}
+        class="btn-ghost btn-sm w-full text-center">
+        {exportStatus === 'done' ? text(note, 'exported') : exportStatus === 'error' ? text(note, 'export-failed') : text(note, 'export')}
       </button>
-      <p class="text-sm text-dim mt-3 mb-2">Restore a previously exported Spectra profile.</p>
+      <p class="text-sm text-dim mt-3 mb-2">{text(note, 'restore')}</p>
       <button type="button" on:click={() => importInput?.click()}
-        class="btn-ghost text-xs py-2 px-3 w-full text-center">
-        {importStatus === 'done' ? '✓ Imported' : importStatus === 'error' ? `Error: ${importError}` : '↑ Choose file to import'}
+        class="btn-ghost btn-sm w-full text-center">
+        {importStatus === 'done' ? text(note, 'imported') : importStatus === 'error' ? fill(note, 'import-error', { message: importError }) : text(note, 'import')}
       </button>
       <input type="file" accept=".json" class="hidden" tabindex="-1" aria-hidden="true"
         bind:this={importInput} on:change={handleImport}/>
     </section>
 
     <section>
-      <p class="label-mono mb-3">Move this to another device</p>
+      <p class="label-head mb-3">{text(note, 'move-heading')}</p>
 
       {#if !showShare}
         <p class="text-sm text-dim mb-3 leading-relaxed">
-          Your setup fits in twenty characters. Send it as a link, scan it as a code, or write it
-          down. It carries what you tapped and what you have done, never your notes or timeline.
+          {text(note, 'move-lead')}
         </p>
         <button type="button" on:click={buildShare}
-          class="btn-ghost text-xs py-2 px-3 w-full text-center">
-          Show my setup code
+          class="btn-ghost btn-sm w-full text-center">
+          {text(note, 'show-code')}
         </button>
       {:else}
         <div class="flex flex-col items-center gap-3 mb-4">
           {#if shareQr}
-            <div class="rounded-lg overflow-hidden border border-border p-2 bg-white">
+            <div class="rounded-xl overflow-hidden border border-border p-2 bg-white">
               {@html shareQr}
             </div>
           {/if}
-          <p class="font-mono text-sm text-bright tracking-wider select-all break-all text-center">
+          <p data-setup-code class="text-lg font-semibold text-bright tracking-wider select-all break-all text-center tabular-nums">
             {shareCode}
           </p>
         </div>
 
         <div class="flex gap-2 mb-3">
           <button type="button" on:click={() => copyShare(shareUrl)}
-            class="btn-ghost text-xs py-2 px-3 flex-1 text-center">
-            {copyStatus === 'done' ? '✓ Copied' : copyStatus === 'error' ? 'Copy failed' : 'Copy link'}
+            class="btn-ghost btn-sm flex-1 text-center">
+            {copyStatus === 'done' ? text(note, 'copied') : copyStatus === 'error' ? text(note, 'copy-failed') : text(note, 'copy-link')}
           </button>
           <button type="button" on:click={() => copyShare(shareCode)}
-            class="btn-ghost text-xs py-2 px-3 flex-1 text-center">
-            Copy code
+            class="btn-ghost btn-sm flex-1 text-center">
+            {text(note, 'copy-code')}
           </button>
         </div>
 
         <p class="text-sm text-dim leading-relaxed mb-3">
-          The code sits after the <span class="font-mono">#</span> in that link, and browsers never
-          send that part to a server. Ours never receives it. Whatever you send the link
-          <em>through</em> can still see it.
+          {#each placed(note, 'link-private', ['hash', 'through']) as part}{#if part.value === 'hash' && part.kind === 'slot'}<span class="tabular-nums">#</span>{:else if part.kind === 'slot'}<em>{text(note, 'through')}</em>{:else}{part.value}{/if}{/each}
         </p>
 
         <a href="/playbook#{shareCode}"
-          class="btn-ghost text-xs py-2 px-3 w-full text-center block">
-          Print this list on paper
+          class="btn-ghost btn-sm w-full">
+          {text(note, 'print')}
         </a>
       {/if}
 
       <div class="mt-4 pt-4 border-t border-border/50">
         <label class="block text-sm text-dim mb-2" for="paste-code">
-          Or enter a code from another device
+          {text(note, 'paste-label')}
         </label>
         <div class="flex gap-2">
           <input id="paste-code" type="text" bind:value={pasteCode}
-            placeholder="20 characters"
+            placeholder={text(note, 'paste-placeholder')}
             autocomplete="off" spellcheck="false"
-            class="flex-1 min-w-0 bg-void border border-border rounded px-3 py-2 text-sm font-mono
-                   text-bright placeholder:text-muted focus:border-amber/50 focus:outline-none"/>
+            class="flex-1 min-w-0 bg-void border border-border rounded px-3 py-2 text-sm text-bright placeholder:text-muted focus:border-teal/50 focus:outline-none"/>
           <button type="button" on:click={applyPasted} disabled={!pasteCode.trim()}
-            class="btn-ghost text-xs py-2 px-3 flex-shrink-0 disabled:opacity-40">
-            Use it
+            class="btn-ghost btn-sm flex-shrink-0 disabled:opacity-40">
+            {text(note, 'use-it')}
           </button>
         </div>
         {#if pasteStatus === 'done'}
-          <p class="text-sm text-teal-light mt-2">Loaded. Your list has been updated.</p>
+          <p class="text-sm text-teal-light mt-2">{text(note, 'loaded')}</p>
         {:else if pasteStatus === 'error'}
-          <p class="text-sm text-red-light mt-2">{pasteError}</p>
+          <p class="text-sm text-bright mt-2">{pasteError}</p>
+        {/if}
+        {#if pasteMapped.length}
+          <p class="text-sm text-dim mt-2 leading-relaxed">
+            {`${text(note, 'reworded')} `}{pasteMapped.length === 1 ? text(note, 'reworded-one') : fill(note, 'reworded-many', { count: pasteMapped.length })}{#each pieces(note, 'reworded-names', { names: pasteMapped.join('” and “') }) as piece, i}{i === 0 ? ` ${piece}` : piece}{/each}
+          </p>
         {/if}
       </div>
     </section>
 
-    <section class="border-t border-border pt-5">
-      <p class="label-mono text-red-light mb-3">Start over</p>
+    <section class="pt-5">
+      <p class="label-head mb-3">{text(note, 'start-over-heading')}</p>
       {#if clearStatus === 'error'}
-        <p class="text-sm text-amber-light border border-amber/30 bg-amber-dim/10 rounded px-3 py-2 mb-3">{clearError}</p>
+        <p class="text-sm text-teal-light border border-teal/30 bg-teal-dim/10 rounded px-3 py-2 mb-3">{clearError}</p>
       {:else if clearStatus === 'done'}
         <p class="text-sm text-teal-light border border-teal/30 bg-teal-dim/10 rounded px-3 py-2 mb-3">
-          Cleared. Nothing is left in this browser's storage.
+          {text(note, 'cleared')}
         </p>
       {/if}
       {#if clearConfirm}
-        <div class="border border-red/40 rounded-lg p-3 bg-red-dim/10">
-          <p class="text-sm text-red-light mb-3 leading-relaxed">
-            This clears everything Spectra stored on this device. It cannot be undone. It does not
-            clear your browser history.
+        <div class="border border-muted/40 rounded-xl p-3 bg-surface-2/10">
+          <p class="text-sm text-bright mb-3 leading-relaxed">
+            {text(note, 'clear-confirm')}
           </p>
           <div class="flex gap-2">
             <button type="button" on:click={handleClear}
-              class="flex-1 py-2 px-3 rounded border border-red/60 bg-red-dim/20
-                     text-red-light text-sm hover:bg-red-dim/40 transition-colors">
-              Start over
+              class="flex-1 py-2 px-3 rounded border border-muted/60 bg-surface-2/20
+                     text-bright text-sm hover:bg-surface-2/40 transition-colors">
+              {text(note, 'start-over')}
             </button>
             <button type="button" on:click={() => clearConfirm = false}
               class="flex-1 py-2 px-3 rounded border border-border text-dim text-sm hover:text-body transition-colors">
-              Cancel
+              {text(note, 'cancel')}
             </button>
           </div>
         </div>
       {:else}
         <button type="button" on:click={handleClear}
-          class="text-sm text-red-light border border-red/30 rounded px-3 py-2
-                 hover:bg-red-dim/20 transition-colors w-full text-center">
-          Start over
+          class="text-sm text-bright border border-muted/30 rounded px-3 py-2
+                 hover:bg-surface-2/20 transition-colors w-full text-center">
+          {text(note, 'start-over')}
         </button>
       {/if}
     </section>
 
-    <section class="border-t border-border pt-4">
+    <section class="pt-4">
       <p class="text-sm text-muted leading-relaxed">
-        Spectra has no accounts. Nothing here leaves your browser.
+        {text(note, 'no-accounts')}
       </p>
     </section>
 

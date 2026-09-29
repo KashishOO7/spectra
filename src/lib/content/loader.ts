@@ -1,52 +1,13 @@
-import { readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
-import yaml from 'js-yaml';
 import type { ChecklistItem, Resource, Lookup, ContentGraph, Category, AdversaryType, AttackVector, Asset, Track } from '../types.js';
+import { readControls } from './controls.js';
+import { readResources } from './resources.js';
+import { readLookups } from './lookups.js';
 
-
-const CONTENT_DIR = join(process.cwd(), 'content');
-
-function readYamlDir<T>(subdir: string): T[] {
-  const dir = join(CONTENT_DIR, subdir);
-  try {
-    const files = readdirSync(dir).filter((f: string) => f.endsWith('.yaml') || f.endsWith('.yml'));
-    const results: T[] = [];
-
-    for (const f of files) {
-      const raw = readFileSync(join(dir, f), 'utf-8');
-    
-      const normalized = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-      const parts = normalized.split(/^---\s*$/m).filter((s: string) => s.trim().length > 0);
-
-      for (const part of parts) {
-        try {
-          const parsed = yaml.load(part.trim());
-          if (!parsed || typeof parsed !== 'object') continue;
-          if (Array.isArray(parsed)) {
-            for (const entry of parsed) {
-              if (entry && typeof entry === 'object') results.push(entry as T);
-            }
-          } else {
-            results.push(parsed as T);
-          }
-        } catch (e) {
-          console.warn(`[spectra] YAML parse error in ${f}:`, e);
-        }
-      }
-    }
-
-    return results;
-  } catch (e) {
-    console.warn(`[spectra] Content directory not found or empty: ${subdir}`, e);
-    return [];
-  }
-}
 
 export function loadContentGraph(): ContentGraph {
-  const rawItems = readYamlDir<ChecklistItem>('items');
-  const rawResources = readYamlDir<Resource>('resources');
-  const rawLookups = readYamlDir<Lookup>('lookups');
+  const rawItems = readControls(process.cwd()).map(c => c.item as ChecklistItem);
+  const rawResources = readResources(process.cwd()).map(r => r.item as Resource);
+  const rawLookups = readLookups(process.cwd()).map(l => l.item as Lookup);
 
   const activeItems = rawItems.filter(i =>
     i.status === 'active' || i.status === 'under_review' || i.status === 'contested'

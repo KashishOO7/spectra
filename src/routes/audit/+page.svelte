@@ -1,42 +1,44 @@
 <script lang="ts">
   import { onMount, onDestroy, tick } from 'svelte';
   import { page } from '$app/stores';
+  import { goto, afterNavigate } from '$app/navigation';
+  import type { Snapshot } from '@sveltejs/kit';
+  import { settle } from '$lib/nav/trail.js';
   import type { PageData } from './$types.js';
   import type {
     UserProfile, AssessmentResult, ChecklistItem, ContentGraph,
-    ScoredItem, AdversaryType, Track, Platform, EnvironmentFlag
+    ScoredItem, Track, Platform
   } from '$lib/types.js';
   import {
     loadProfile, saveProfile, markImplemented, markSkipped, markSnoozed, saveNote,
-    createDefaultProfile, exportProfile, addTimelineEvent, saveSEQuizResult,
+    createDefaultProfile, addTimelineEvent,
     backfillImplementedVersions
   } from '$lib/engine/store.js';
   import { scoreAssessment } from '$lib/engine/scoring.js';
   import { buildIndex, route } from '$lib/engine/router.js';
   import { deserializeGraph } from '$lib/content/deserialize.js';
   import { assessment, profileVersion } from '$lib/engine/session.js';
-  import { SE_QUIZ_QUESTIONS } from '$lib/audit/quiz.js';
   import type { Harm } from '$lib/types.js';
   import OnboardView from '$lib/components/audit/OnboardView.svelte';
-  import QuizView from '$lib/components/audit/QuizView.svelte';
   import IncidentView from '$lib/components/audit/IncidentView.svelte';
-  import ResultsView from '$lib/components/audit/ResultsView.svelte';
   import AuditView from '$lib/components/audit/AuditView.svelte';
+  import note from '#spectra-wiki/page/your-list';
+  import { text, fill } from '$lib/wiki/page.js';
+
+  const description = text(note, 'description');
 
   export let data: PageData;
 
   let profile: UserProfile | null = null;
   let result: AssessmentResult | null = null;
   let loading = true;
-  let view: 'onboard' | 'checklist' | 'results' | 'incident' | 'quiz' = 'checklist';
+  let view: 'onboard' | 'checklist' | 'incident' = 'checklist';
   let mode: 'normal' | 'incident' | 'guardian' = 'normal';
-
-  let exportStatus: 'idle' | 'done' | 'error' = 'idle';
 
   let selectedCategory: string = 'all';
   let searchQuery = '';
   let expandedItems = new Set<string>();
-  let detailItems = new Set<string>();   
+  let detailItems = new Set<string>();
   function toggleDetails(id: string) {
     if (detailItems.has(id)) detailItems.delete(id); else detailItems.add(id);
     detailItems = detailItems;
@@ -46,11 +48,7 @@
   let activePlatform: Platform | 'all' = 'all';
   let noteValues: Record<string, string> = {};
 
-  let onboardStep = 1;
-  let onboardAdversaries: AdversaryType[] = [];
   let onboardTracks: Track[] = ['general'];
-  let onboardPlatforms: Platform[] = [];
-  let onboardEnvironment: EnvironmentFlag[] = [];
   let isReconfiguring = false;
 
   let incidentScenario: string | null = null;
@@ -66,19 +64,14 @@
     }
   }
 
-  let quizStep = 0; 
-  let quizAnswers: Record<string, number> = {};
-
   let prefilledHarms: Harm[] = [];
 
-  const showResults = () => { view = 'results'; };
   let unsubscribeProfile: (() => void) | null = null;
 
   onDestroy(() => {
     unsubscribeProfile?.();
     if (typeof window !== 'undefined') {
       window.removeEventListener('spectra:configure', startReconfigure);
-      window.removeEventListener('spectra:results', showResults);
     }
     assessment.set(null);
   });
@@ -86,32 +79,15 @@
   let navHistory: Array<{ id: string; title: string; category: string }> = [];
 
 
-  function toggleAdversary(v: AdversaryType) {
-    onboardAdversaries = onboardAdversaries.includes(v)
-      ? onboardAdversaries.filter(a => a !== v) : [...onboardAdversaries, v];
-  }
   function toggleTrack(v: Track) {
     if (v === 'general') return;
     onboardTracks = onboardTracks.includes(v)
       ? onboardTracks.filter(t => t !== v) : [...onboardTracks, v];
   }
-  function togglePlatform(v: Platform) {
-    onboardPlatforms = onboardPlatforms.includes(v)
-      ? onboardPlatforms.filter(p => p !== v) : [...onboardPlatforms, v];
-  }
-  function toggleEnvironment(v: EnvironmentFlag) {
-    onboardEnvironment = onboardEnvironment.includes(v)
-      ? onboardEnvironment.filter(f => f !== v) : [...onboardEnvironment, v];
-  }
 
   async function finishOnboard() {
     if (!profile) return;
-    if (onboardAdversaries.length > 0) profile.adversariesManual = [...onboardAdversaries];
-    else delete profile.adversariesManual;
     profile.tracks = ['general', ...onboardTracks.filter(t => t !== 'general')];
-    profile.platforms = onboardPlatforms.length > 0 ? onboardPlatforms : ['all' as Platform];
-    profile.environment_flags = onboardEnvironment;
-    if (onboardPlatforms.length > 0) activePlatform = onboardPlatforms[0];
     await saveProfile(profile);
     recalculate();
     isReconfiguring = false;
@@ -149,12 +125,15 @@
     if (!routed.covered) return [];
 
     const rank = new Map(routed.items.map((hit, i) => [hit.id, i]));
-    return list
+    return orderedItems
       .filter(item => rank.has(item.id))
       .sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
   })();
 
   onMount(async () => {
+    if ($page.url.searchParams.get('view') === 'quiz') { await goto('/quiz', { replaceState: true }); return; }
+    if ($page.url.searchParams.get('view') === 'results') { await goto('/you', { replaceState: true }); return; }
+
     const urlMode = $page.url.searchParams.get('mode');
     if (urlMode === 'incident') mode = 'incident';
     else if (urlMode === 'guardian') mode = 'guardian';
@@ -184,11 +163,11 @@
     }
 
     loading = false;
+    await tick();
+    settle();
 
     if ($page.url.searchParams.get('configure') === '1') startReconfigure();
-    if ($page.url.searchParams.get('view') === 'results') view = 'results';
     window.addEventListener('spectra:configure', startReconfigure);
-    window.addEventListener('spectra:results', showResults);
 
     let firstTick = true;
     unsubscribeProfile = profileVersion.subscribe(() => {
@@ -203,7 +182,27 @@
     }
   });
 
-  const GUARDIAN_TRACKS: Track[] = ['kids_teen', 'womens_safety'];
+  afterNavigate(nav => {
+    if (nav.type === 'enter' || loading) return;
+    const m = $page.url.searchParams.get('mode');
+    const next = m === 'incident' ? 'incident' : m === 'guardian' ? 'guardian' : 'normal';
+    if (next === mode) return;
+    mode = next;
+    view = mode === 'incident' ? 'incident' : 'checklist';
+    recalculate();
+  });
+
+  export const snapshot: Snapshot<{ queueOpen: boolean; expanded: string[]; category: string; search: string }> = {
+    capture: () => ({ queueOpen, expanded: [...expandedItems], category: selectedCategory, search: searchQuery }),
+    restore: v => {
+      queueOpen = v.queueOpen;
+      expandedItems = new Set(v.expanded);
+      selectedCategory = v.category;
+      searchQuery = v.search;
+    }
+  };
+
+  const GUARDIAN_TRACKS: Track[] = ['caring_for_someone', 'known_person_risk'];
 
   function recalculate() {
     if (!profile) return;
@@ -240,21 +239,6 @@
     }
   }
 
-
-  async function submitSEQuiz() {
-    const susceptibilities: Record<string, number> = {};
-    for (const q of SE_QUIZ_QUESTIONS) {
-      susceptibilities[q.register] = ((quizAnswers[q.id] ?? 1) - 1) * 25;
-    }
-    const sorted = Object.entries(susceptibilities).sort((a, b) => b[1] - a[1]);
-    const topRegister = sorted[0]?.[0] ?? 'urgency';
-    const result_quiz = { completed_at: new Date().toISOString(), answers: quizAnswers, susceptibilities, top_register: topRegister };
-    await saveSEQuizResult(result_quiz);
-    await addTimelineEvent({ type: 'quiz_completed', timestamp: new Date().toISOString() });
-    profile = await loadProfile();
-    recalculate();
-    quizStep = SE_QUIZ_QUESTIONS.length + 1;
-  }
 
   async function toggleSkip(itemId: string) {
     if (profile?.skipped?.[itemId]) {
@@ -306,7 +290,7 @@
     for (const dep of item.depends_on) {
       if (dep.hard_dependency && !isImplemented(dep.id)) {
         const depItem = graph.items.get(dep.id);
-        return `Complete "${depItem?.title ?? dep.id}" first. ${dep.reason}`;
+        return fill(note, 'blocked', { title: depItem?.title ?? dep.id, reason: `${dep.reason}` });
       }
     }
     return null;
@@ -357,14 +341,8 @@
   }
 
   function startReconfigure() {
-    if (profile) {
-      onboardAdversaries = [...(profile.adversariesManual ?? [])];
-      onboardTracks = [...(profile.tracks ?? ['general'])];
-      onboardPlatforms = (profile.platforms ?? []).filter(p => p !== 'all') as Platform[];
-      onboardEnvironment = [...(profile.environment_flags ?? [])];
-    }
+    if (profile) onboardTracks = [...(profile.tracks ?? ['general'])];
     isReconfiguring = true;
-    onboardStep = 1;
     view = 'onboard';
   }
 
@@ -402,31 +380,12 @@
     expandedPlatforms = expandedPlatforms;
   }
 
-  async function handleExport() {
-    try {
-      const json = await exportProfile();
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `spectra-profile-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      exportStatus = 'done';
-      setTimeout(() => { exportStatus = 'idle'; }, 3000);
-    } catch { exportStatus = 'error'; setTimeout(() => { exportStatus = 'idle'; }, 3000); }
-  }
-
   async function syncFromPanel() {
     profile = (await loadProfile()) ?? createDefaultProfile();
     easyMode = profile.easy_mode ?? true;
     noteValues = {};
-    onboardAdversaries = [...(profile.adversariesManual ?? [])];
     onboardTracks = [...(profile.tracks ?? ['general'])];
-    onboardPlatforms = (profile.platforms ?? []).filter(p => p !== 'all') as Platform[];
-    onboardEnvironment = [...(profile.environment_flags ?? [])];
     isReconfiguring = false;
-    onboardStep = 1;
     if (view !== 'incident') view = 'checklist';
     recalculate();
   }
@@ -434,44 +393,25 @@
 </script>
 
 <svelte:head>
-  <title>{(view === 'results' ? 'Results' :
-    view === 'incident' ? 'Something happened' :
-    view === 'quiz' ? 'Social Engineering Quiz' :
-    mode === 'guardian' ? 'Family setup' : 'Your list')} | Spectra</title>
-  <meta name="description" content="Answer a few questions about who might try, then work through a list ordered by what matters most for you." />
+  <title>{view === 'incident' ? text(note, 'title-incident') :
+    mode === 'guardian' ? text(note, 'title-guardian') : text(note, 'title')}</title>
+  <meta name="description" content={description} />
   <link rel="canonical" href="https://spectra.fpszero.com/audit" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="Your list | Spectra" />
-  <meta property="og:description" content="Answer a few questions about who might try, then work through a list ordered by what matters most for you." />
-  <meta property="og:url" content="https://spectra.fpszero.com/audit" />
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Your list | Spectra" />
-  <meta name="twitter:description" content="Answer a few questions about who might try, then work through a list ordered by what matters most for you." />
 </svelte:head>
 
 {#if loading}
   <div class="flex items-center justify-center h-64">
     <div class="flex items-center gap-3 text-dim text-sm">
-      <span class="w-1.5 h-1.5 rounded-full bg-amber animate-pulse-slow"></span>
-      Loading your assessment…
+      <span class="w-1.5 h-1.5 rounded-full bg-teal animate-pulse-slow"></span>
+      {text(note, 'loading')}
     </div>
   </div>
 
 {:else if view === 'onboard'}
 <OnboardView
-  bind:onboardStep
   {isReconfiguring}
-  {onboardAdversaries}
   {onboardTracks}
-  {onboardPlatforms}
-  {onboardEnvironment}
-  {toggleAdversary}
   {toggleTrack}
-  {togglePlatform}
-  {toggleEnvironment}
   onFinish={finishOnboard}
   onCancel={() => { view = 'checklist'; isReconfiguring = false; }} />
 
@@ -484,25 +424,6 @@
   onScrollToItem={scrollToItem}
   onToChecklist={() => view = 'checklist'} />
 
-{:else if view === 'quiz'}
-<QuizView
-  bind:quizStep
-  bind:quizAnswers
-  seQuiz={profile?.se_quiz}
-  onSubmit={submitSEQuiz}
-  onBack={() => view = 'checklist'}
-  onSeeHumanItems={() => { view = 'checklist'; selectedCategory = 'human_vulnerability'; }} />
-
-{:else if view === 'results'}
-<ResultsView
-  {result}
-  {profile}
-  {exportStatus}
-  onBack={() => view = 'checklist'}
-  onExport={handleExport}
-  onScrollToItem={scrollToItem}
-  onTakeQuiz={() => { quizStep = 0; view = 'quiz'; }} />
-
 {:else}
 <AuditView
   {profile} {result} {graph} {mode} {easyMode} {categories} {displayItems}
@@ -511,7 +432,7 @@
   {toggleItem} {toggleSkip} {toggleSnooze} {toggleExpand} {toggleDetails} {togglePlatformExpand} {orderedItems}
   {toggleEasyMode} {startReconfigure} {prefilledHarms}
   {searchRefused} {routedOutsideList}
-  bind:selectedCategory bind:searchQuery bind:activePlatform bind:itemPlatformTab
+  bind:selectedCategory bind:searchQuery bind:itemPlatformTab
   bind:noteValues bind:navHistory bind:queueOpen
   onViewIncident={() => view = 'incident'} />
 {/if}

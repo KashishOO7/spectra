@@ -39,7 +39,8 @@ export type AttackVector =
   | 'deepfake'
   | 'voice_clone'
   | 'data_broker_aggregation'
-  | 'insider_access';
+  | 'insider_access'
+  | 'identity_fraud';
 
 export type Asset =
   | 'credentials'
@@ -54,14 +55,15 @@ export type Asset =
   | 'reputation'
   | 'devices'
   | 'biometrics'
-  | 'behavioral_data';
+  | 'behavioral_data'
+  | 'account_access';
 
 export type Track =
   | 'general'
-  | 'kids_teen'
-  | 'womens_safety'
-  | 'journalist'
-  | 'corporate'
+  | 'caring_for_someone'
+  | 'known_person_risk'
+  | 'public_work'
+  | 'work_accounts'
   | 'ai_focused';
 
 export type Platform =
@@ -122,7 +124,9 @@ export type Harm =
   | 'Someone reads what you say'
   | 'Someone uses your device against you'
   | 'Someone pretends to be you'
-  | 'Someone already has your details';
+  | 'Someone already has your details'
+  | 'Someone will not leave you alone'
+  | 'You are locked out of your own account';
 
 
 
@@ -152,7 +156,7 @@ export interface RelatedItem {
 }
 
 export interface NotApplicableCondition {
-  condition: string; 
+  condition: string;
   reason: string;
 }
 
@@ -216,7 +220,6 @@ export interface ChecklistItem {
   schema_version: string;
   version: string;
   title: string;
-  simple_description?: string;
   description: string;
   threat_narrative: string;
   category: Category;
@@ -226,6 +229,7 @@ export interface ChecklistItem {
   platform_notes?: Record<string, string>;
   platform_notes_verified?: Record<string, string>;
   environment_notes?: Partial<Record<EnvironmentFlag, string>>;
+  track_notes?: Partial<Record<Track, string>>;
   not_applicable_if?: NotApplicableCondition[];
   sensitive?: boolean;
   difficulty: {
@@ -330,16 +334,23 @@ export interface TimelineEvent {
   score_after?: number;
   life_event_label?: string;
   note?: string;
+  href?: string;
   timestamp: string;
   formula?: 1 | 2;
 }
 
 
+export interface QuizProgress { at: number; picks: Record<string, 0 | 1 | 2> }
+
+export interface GameProgress { round: string[]; at: number; said: Record<string, 'real' | 'scam'> }
+
 export interface SEQuizResult {
   completed_at: string;
   answers: Record<string, number>;          
-  susceptibilities: Record<string, number>;  
+  susceptibilities: Record<string, number>;
   top_register: string;
+  sources?: { game?: Record<string, number>; quiz?: Record<string, number>; legacy?: Record<string, number> };
+  quiz_at?: string;
 }
 
 
@@ -372,6 +383,9 @@ export interface UserProfile {
   assessment_version: string;
   timeline?: TimelineEvent[];
   se_quiz?: SEQuizResult | null;
+  in_progress?: { quiz?: QuizProgress; game?: GameProgress };
+  start?: { answers: Record<string, 'yes' | 'no' | 'unsure'>; ticked: string[] };
+  last_open?: { id: string; at: string };
   life_events_applied?: string[];  
   easy_mode?: boolean;             
   environment_flags?: EnvironmentFlag[];
@@ -380,6 +394,7 @@ export interface UserProfile {
 
 export interface ScoredItem extends ChecklistItem {
   effective_score: number;
+  priority_score: number;
   relevance_score: number;
   is_applicable: boolean;
   priority_rank: number;
@@ -394,8 +409,6 @@ export interface AssessmentResult {
   overall_score: number;
   overall_maturity: 1 | 2 | 3 | 4 | 5;
   critical_gaps: ScoredItem[];
-  quick_wins: ScoredItem[];
-  next_items: ScoredItem[];
   reverify_items: ScoredItem[];
   all_items: ScoredItem[];
   human_vulnerability_score: number | null;

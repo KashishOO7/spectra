@@ -2,8 +2,11 @@
   import { onMount } from 'svelte';
   import { decodeFingerprint, type ProfileFingerprint } from '$lib/engine/fingerprint.js';
   import { loadProfile, saveProfile, createDefaultProfile } from '$lib/engine/store.js';
-  import { HARMS } from '$lib/audit/constants.js';
+  import { HARMS, TRACK_OPTIONS } from '$lib/audit/constants.js';
   import type { Harm } from '$lib/types.js';
+  import note from '#spectra-wiki/page/share-bar';
+  import { text, pieces } from '$lib/wiki/page.js';
+
 
   let incoming: ProfileFingerprint | null = null;
   let hasExisting = false;
@@ -41,6 +44,9 @@
   $: harmNames = (incoming?.harms ?? []) as Harm[];
   $: doneCount = Object.keys(incoming?.implemented ?? {}).length;
 
+  $: mappedNames = (incoming?.mappedTracks ?? [])
+    .map(m => TRACK_OPTIONS.find(o => o.value === m.to)?.label ?? m.to);
+
   async function apply() {
     if (!incoming || applying) return;
     applying = true;
@@ -66,34 +72,43 @@
 </script>
 
 {#if incoming}
-  <div class="w-full border-b border-amber/30 bg-amber-dim/10" role="region"
-       aria-label="A shared setup was found in this link">
+  <div class="w-full border-b border-teal/30 bg-teal-dim/10" role="region"
+       aria-label={text(note, 'region')}>
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
       <div class="min-w-0 flex-1">
-        <p class="text-sm text-bright font-semibold">This link carries a setup</p>
+        <p class="text-sm text-bright font-semibold">{text(note, 'heading')}</p>
         <p class="text-sm text-body leading-relaxed mt-0.5">
           {#if harmNames.length}
-            It picks {harmNames.length} of {Object.keys(HARMS).length} things to worry about{#if doneCount}, and marks {doneCount} step{doneCount === 1 ? '' : 's'} already done{/if}.
+            {#each pieces(note, !doneCount ? 'picks' : doneCount === 1 ? 'picks-done-one' : 'picks-done-many',
+              doneCount ? { picked: harmNames.length, total: Object.keys(HARMS).length, done: doneCount }
+                        : { picked: harmNames.length, total: Object.keys(HARMS).length }) as piece}{piece}{/each}
           {:else if doneCount}
-            It marks {doneCount} step{doneCount === 1 ? '' : 's'} already done.
+            {#each pieces(note, doneCount === 1 ? 'done-one' : 'done-many', { done: doneCount }) as piece}{piece}{/each}
           {:else}
-            It sets which steps apply to you.
+            {text(note, 'sets')}
           {/if}
           {#if hasExisting}
-            <span class="text-amber-light">Using it replaces what is on this device.</span>
+            <span class="text-teal-light">{text(note, 'replaces')}</span>
           {:else}
-            Nothing was sent anywhere. The setup travelled inside the link itself.
+            {text(note, 'nothing-sent')}
           {/if}
         </p>
+        {#if mappedNames.length}
+          <p class="text-sm text-dim leading-relaxed mt-1">
+            {#each mappedNames.length === 1
+              ? pieces(note, 'reworded-one', { names: mappedNames.join('” and “') })
+              : pieces(note, 'reworded-many', { count: mappedNames.length, names: mappedNames.join('” and “') }) as piece}{piece}{/each}
+          </p>
+        {/if}
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
         <button type="button" class="btn-primary text-sm" on:click={apply} disabled={applying}>
-          {applying ? 'Loading…' : 'Use this setup'}
+          {applying ? text(note, 'loading') : text(note, 'use')}
         </button>
         <button type="button"
                 class="text-sm text-dim hover:text-body underline transition-colors px-2 py-2"
                 on:click={dismiss}>
-          No thanks
+          {text(note, 'decline')}
         </button>
       </div>
     </div>

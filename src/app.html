@@ -4,37 +4,32 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#080c12" />
+    <meta name="theme-color" content="#f6f4ef" />
     <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
     <script>
       (function () {
         var theme = 'light';
         try {
-          var stored = localStorage.getItem('spectra-theme');
-          if (stored === 'light' || stored === 'dark') {
-            theme = stored;
-          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            theme = 'dark';
-          }
+          if (localStorage.getItem('spectra-theme') === 'dark') theme = 'dark';
         } catch (e) {
         }
         document.documentElement.setAttribute('data-theme', theme);
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', theme === 'light' ? '#faf6ef' : '#080c12');
+        if (meta) meta.setAttribute('content', theme === 'light' ? '#f6f4ef' : '#0f1217');
       })();
     </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Spectra" />
-    <link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.svg" />
+    <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 
     <meta name="robots" content="index, follow" />
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';" />
+          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <meta name="disclaimer" content="Spectra is for educational purposes only. Not legal, professional security, or medical advice. Use at your own risk. Open source: AGPL-3.0 (code) / CC BY-SA 4.0 (content)." />
 

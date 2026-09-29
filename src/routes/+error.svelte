@@ -1,24 +1,27 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import note from '#spectra-wiki/page/error';
+  import { text, link } from '$lib/wiki/page.js';
+
+  const start = link(note, 'start');
+  const list = link(note, 'list');
 </script>
 
 <svelte:head>
-  <title>{$page.status === 404 ? 'Page not found' : 'Something went wrong'} | Spectra</title>
+  <title>{$page.status === 404 ? text(note, 'title-not-found') : text(note, 'title-failed')}</title>
   <meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
   <p class="label-mono mb-3">{$page.status}</p>
-  <h1 class="font-display text-3xl font-bold text-white mb-3">
-    {$page.status === 404 ? "That page isn't here" : 'Something went wrong'}
+  <h1 class="text-3xl font-bold text-white mb-3">
+    {$page.status === 404 ? text(note, 'heading-not-found') : text(note, 'heading-failed')}
   </h1>
   <p class="text-body text-base leading-relaxed max-w-xl mb-8">
-    {$page.status === 404
-      ? 'The link may be old, or the page may have moved. Nothing is kept on a server, so nothing of yours is affected.'
-      : 'Reloading usually fixes it. Nothing is kept on a server, so nothing of yours is affected.'}
+    {$page.status === 404 ? text(note, 'body-not-found') : text(note, 'body-failed')}
   </p>
   <div class="flex flex-wrap gap-4">
-    <a href="/" class="btn-primary text-sm">Back to the start →</a>
-    <a href="/audit" class="text-dim hover:text-body underline transition-colors text-sm">Your list →</a>
+    <a href={start.href} class="btn-primary text-sm">{start.text}</a>
+    <a href={list.href} class="text-dim hover:text-body underline transition-colors text-sm">{list.text}</a>
   </div>
 </div>

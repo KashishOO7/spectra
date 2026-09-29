@@ -2,6 +2,8 @@
 import type { AssessmentResult, Harm, ScoredItem } from '../types.js';
 import { HARMS } from '../audit/constants.js';
 import { harmsForItem } from '../audit/helpers.js';
+import note from '#spectra-wiki/page/coverage';
+import { fill, text } from '../wiki/page.js';
 
 export function isHarmCovered(items: ScoredItem[], harm: Harm): boolean {
   const mapped = items.filter(i => harmsForItem(i).includes(harm));
@@ -30,14 +32,14 @@ export function coverageOf(result: AssessmentResult | null | undefined): Coverag
   };
 }
 
-export const PENDING_LABEL = 'One moment…';
+export const PENDING_LABEL = text(note, 'pending');
 
 export function coverageLine(coverage: Coverage | null): string {
   if (!coverage) return PENDING_LABEL;
-  return `${coverage.covered} of ${coverage.total} covered`;
+  return fill(note, 'line', { covered: coverage.covered, total: coverage.total });
 }
 
-export const COVERED_MEANS = "Covered means you've done the essentials for that one.";
+export const COVERED_MEANS = text(note, 'means');
 
 export interface HarmProgress {
   harm: Harm;

@@ -1,6 +1,13 @@
 <script lang="ts">
   import type { PageData } from './$types.js';
   import type { Resource, ChecklistItem } from '$lib/types.js';
+  import note from '#spectra-wiki/page/guides';
+  import { text, lines } from '$lib/wiki/page.js';
+
+  const title = text(note, 'title');
+  const description = text(note, 'description');
+  const why = lines(note, 'why');
+  const [noPlacement] = lines(note, 'no-placement');
 
   export let data: PageData;
 
@@ -28,32 +35,21 @@
 </script>
 
 <svelte:head>
-  <title>The guides our steps point at | Spectra</title>
-  <meta name="description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
+  <title>{title}</title>
+  <meta name="description" content={description} />
   <link rel="canonical" href="https://spectra.fpszero.com/resources" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="The guides our steps point at | Spectra" />
-  <meta property="og:description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
-  <meta property="og:url" content="https://spectra.fpszero.com/resources" />
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="The guides our steps point at | Spectra" />
-  <meta name="twitter:description" content="The guides our steps point at. Spectra does not keep a tool catalogue and does not name apps." />
 </svelte:head>
 
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
 
-  <h1 class="font-display text-3xl font-bold text-white mb-3">The guides our steps point at</h1>
+  <h1 class="text-3xl font-bold text-white mb-3">{text(note, 'heading')}</h1>
 
   <p class="text-body text-base leading-relaxed max-w-2xl mb-10">
-    We don't keep a tool catalogue and we don't name apps. These are maintained by people who
-    track this properly and update them more often than we could.
+    {text(note, 'lead')}
   </p>
 
   <section class="mb-12">
-    <h2 class="label-section mb-4">Where our steps send you</h2>
+    <h2 class="label-section mb-4">{text(note, 'where-heading')}</h2>
 
     <ul class="space-y-5">
       {#each listed as guide}
@@ -61,7 +57,7 @@
         <li class="border-b border-border/50 pb-5 last:border-0">
           <p class="mb-1.5">
             <a href={guide.url} target="_blank" rel="noopener noreferrer"
-               class="font-display text-lg font-semibold text-bright hover:text-amber-light transition-colors">
+               class="text-lg font-semibold text-bright hover:text-teal-light transition-colors">
               {guide.title}
             </a>
             <span class="text-muted text-sm ml-1.5" aria-hidden="true">&#8599;</span>
@@ -69,7 +65,7 @@
           <p class="text-sm text-body leading-relaxed mb-1">{guide.description}</p>
           {#if steps.length}
             <p class="text-sm text-dim leading-relaxed">
-              {steps.length === 1 ? 'Used by this step:' : 'Used by these steps:'}
+              {steps.length === 1 ? text(note, 'used-by-one') : text(note, 'used-by-many')}
               {#each steps as step, i}<span class="text-muted">{step.title}</span>{#if i < steps.length - 1}<span class="text-muted">; </span>{/if}{/each}
             </p>
           {/if}
@@ -78,26 +74,16 @@
     </ul>
 
     {#if listed.length === 0}
-      <p class="text-sm text-dim">No step currently points anywhere.</p>
+      <p class="text-sm text-dim">{text(note, 'none')}</p>
     {/if}
   </section>
 
   <section>
-    <h2 class="label-section mb-4">Why we send you elsewhere</h2>
-    <p class="text-sm text-body leading-relaxed mb-3 max-w-2xl">
-      We used to name specific apps. We stopped, because a recommendation is a claim about a
-      company, and companies get bought, change their terms, or quietly start doing something new.
-      Nothing on this page would move when that happened.
-    </p>
-    <p class="text-sm text-body leading-relaxed max-w-2xl">
-      So we keep the part that stays true, which is what to look for in a tool, and the guides above
-      keep the part that changes, which is which one to pick this year. They update far more often
-      than we could, and they publish the standards they use.
-    </p>
+    <h2 class="label-section mb-4">{text(note, 'why-heading')}</h2>
+    {#each why as line, i}
+    <p class={i < why.length - 1 ? 'text-sm text-body leading-relaxed mb-3 max-w-2xl' : 'text-sm text-body leading-relaxed max-w-2xl'}>{#each line as p}{#if p.kind === 'text'}{p.value}{:else if p.kind === 'strong'}<strong>{p.value}</strong>{:else if p.kind === 'link'}<a href={p.href} class="underline hover:text-dim transition-colors">{p.value}</a>{/if}{/each}</p>
+    {/each}
   </section>
 
-  <p class="text-sm text-muted mt-12">
-    Nothing here is a paid placement, an affiliate link, or a commercial relationship.
-    <a href="/methodology#references" class="underline hover:text-dim transition-colors">Where our sources come from</a>
-  </p>
+  <p class="text-sm text-muted mt-12">{#each noPlacement as p}{#if p.kind === 'link'}<a href={p.href} class="underline hover:text-dim transition-colors">{p.value}</a>{:else}{p.value}{/if}{/each}</p>
 </div>

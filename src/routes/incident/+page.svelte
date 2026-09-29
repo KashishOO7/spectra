@@ -6,6 +6,8 @@
   import { loadProfile } from '$lib/engine/store.js';
   import { deserializeGraph } from '$lib/content/deserialize.js';
   import IncidentView from '$lib/components/audit/IncidentView.svelte';
+  import note from '#spectra-wiki/page/incident';
+  import { text } from '$lib/wiki/page.js';
 
   export let data: PageData;
 
@@ -25,25 +27,18 @@
     void goto(`/audit?highlight=${encodeURIComponent(id)}`);
   }
 
+  const title = text(note, 'title');
+  const description = text(note, 'description');
+
   function toChecklist() {
     void goto('/audit');
   }
 </script>
 
 <svelte:head>
-  <title>Something happened | Spectra</title>
-  <meta name="description" content="Hacked, stolen, or something feels wrong? Start here." />
+  <title>{title}</title>
+  <meta name="description" content={description} />
   <link rel="canonical" href="https://spectra.fpszero.com/incident" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="Something happened | Spectra" />
-  <meta property="og:description" content="Hacked, stolen, or something feels wrong? Start here." />
-  <meta property="og:url" content="https://spectra.fpszero.com/incident" />
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Something happened | Spectra" />
-  <meta name="twitter:description" content="Hacked, stolen, or something feels wrong? Start here." />
 </svelte:head>
 
 <IncidentView

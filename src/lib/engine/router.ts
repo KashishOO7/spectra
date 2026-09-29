@@ -2,7 +2,8 @@
 import type { ContentGraph, ChecklistItem, Harm, Lookup } from '../types.js';
 import { HARMS } from '../audit/constants.js';
 import { INCIDENT_PLAYBOOKS } from '../audit/playbooks.js';
-import { tokenize, expand } from './vocabulary.js';
+import { leadSentence } from '../audit/helpers.js';
+import { tokenize, expand, stem, sameWord, NEGATIONS, SYNONYM_INDEX } from './vocabulary.js';
 
 export type RouteKind = 'item' | 'lookup' | 'playbook' | 'harm';
 
@@ -23,9 +24,9 @@ export interface RouteAnswer {
   best: number;
 }
 
-const W_STRONG = 3;   
-const W_MEDIUM = 2;   
-const W_WEAK = 1;     
+const W_STRONG = 3;
+const W_MEDIUM = 2;
+const W_WEAK = 1;
 
 interface Doc {
   kind: RouteKind;
@@ -33,6 +34,8 @@ interface Doc {
   title: string;
   blurb: string;
   terms: Map<string, number>;
+  about: Map<string, number>;
+  parts: Map<string, number>[];
   weight: number;
 }
 
@@ -42,62 +45,98 @@ function add(terms: Map<string, number>, text: string | undefined, weight: numbe
   }
 }
 
+function sentences(text: string | undefined, weight: number): Map<string, number>[] {
+  const out: Map<string, number>[] = [];
+  for (const line of (text ?? '').split(/\n+/)) {
+    for (const s of line.replace(/([.!?:])\s+/g, '$1\u0000').split('\u0000')) {
+      const m = new Map<string, number>();
+      add(m, s, weight);
+      if (m.size) out.push(m);
+    }
+  }
+  return out;
+}
+
+function doc(kind: RouteKind, id: string, title: string, blurb: string, weight: number,
+  about: Map<string, number>, parts: Map<string, number>[] = []): Doc {
+  const terms = new Map(about);
+  for (const part of parts) {
+    for (const [t, w] of part) if ((terms.get(t) ?? 0) < w) terms.set(t, w);
+  }
+  return { kind, id, title, blurb, terms, about, parts, weight };
+}
+
 function itemDoc(item: ChecklistItem): Doc {
-  const terms = new Map<string, number>();
-  add(terms, item.title, W_STRONG);
-  add(terms, item.simple_description, W_STRONG);
-  add(terms, item.category, W_MEDIUM);
-  add(terms, item.subcategory, W_MEDIUM);
-  add(terms, (item.attack_vectors ?? []).join(' '), W_MEDIUM);
-  add(terms, (item.assets_protected ?? []).join(' '), W_MEDIUM);
-  add(terms, (item.tracks ?? []).join(' '), W_MEDIUM);
-  add(terms, item.id.replace(/[-_]/g, ' '), W_STRONG);
-  add(terms, item.description, W_WEAK);
-  return {
-    kind: 'item',
-    id: item.id,
-    title: item.title,
-    blurb: item.simple_description ?? item.title,
-    terms,
-    weight: item.score_weight ?? 0
-  };
+  const about = new Map<string, number>();
+  add(about, item.title, W_STRONG);
+  const lead = leadSentence(item);
+  add(about, lead, W_STRONG);
+  add(about, item.category, W_MEDIUM);
+  add(about, item.subcategory, W_MEDIUM);
+  add(about, (item.attack_vectors ?? []).join(' '), W_MEDIUM);
+  add(about, (item.assets_protected ?? []).join(' '), W_MEDIUM);
+  add(about, (item.tracks ?? []).join(' '), W_MEDIUM);
+  add(about, item.id.replace(/[-_]/g, ' '), W_STRONG);
+  const description = item.description ?? '';
+  const rest = description.startsWith(lead) ? description.slice(lead.length) : description;
+  const notes = [
+    item.threat_narrative,
+    ...Object.values(item.platform_notes ?? {}),
+    ...Object.values(item.track_notes ?? {}),
+    ...Object.values(item.environment_notes ?? {})
+  ];
+  const parts = [rest, ...notes].flatMap(text => sentences(text, W_WEAK));
+  return doc('item', item.id, item.title, lead, item.score_weight ?? 0, about, parts);
 }
 
 function lookupDoc(lookup: Lookup): Doc {
-  const terms = new Map<string, number>();
-  add(terms, lookup.title, W_STRONG);
-  for (const row of lookup.rows ?? []) {
-    add(terms, row.look_for, W_STRONG);
-    add(terms, row.also_called, W_STRONG);
-    add(terms, row.why, W_MEDIUM);
-  }
-  add(terms, lookup.intro, W_WEAK);
-  return { kind: 'lookup', id: lookup.id, title: lookup.title, blurb: lookup.intro ?? '', terms, weight: 0 };
+  const about = new Map<string, number>();
+  add(about, lookup.title, W_STRONG);
+  add(about, lookup.id.replace(/[-_]/g, ' '), W_STRONG);
+  const rows = (lookup.rows ?? []).map(row => {
+    const m = new Map<string, number>();
+    add(m, row.look_for, W_STRONG);
+    add(m, row.also_called, W_STRONG);
+    add(m, row.why, W_MEDIUM);
+    return m;
+  });
+  return doc('lookup', lookup.id, lookup.title, lookup.intro ?? '', 0, about,
+    [...rows, ...sentences(lookup.intro, W_WEAK)]);
 }
 
 function harmDoc(harm: Harm): Doc {
-  const terms = new Map<string, number>();
-  add(terms, harm, W_STRONG);
-  add(terms, HARMS[harm].assets.join(' '), W_MEDIUM);
-  add(terms, HARMS[harm].vectors.join(' '), W_MEDIUM);
-  return { kind: 'harm', id: harm, title: harm, blurb: '', terms, weight: 0 };
+  const about = new Map<string, number>();
+  add(about, harm, W_STRONG);
+  add(about, HARMS[harm].assets.join(' '), W_MEDIUM);
+  add(about, HARMS[harm].vectors.join(' '), W_MEDIUM);
+  return doc('harm', harm, harm, '', 0, about);
 }
 
 function playbookDocs(): Doc[] {
   return INCIDENT_PLAYBOOKS.map(p => {
-    const terms = new Map<string, number>();
-    add(terms, p.title, W_STRONG);
-    add(terms, p.subtitle, W_MEDIUM);
-    add(terms, p.id.replace(/_/g, ' '), W_STRONG);
-    return { kind: 'playbook' as const, id: p.id, title: p.title, blurb: p.subtitle, terms, weight: 0 };
+    const about = new Map<string, number>();
+    add(about, p.title, W_STRONG);
+    add(about, p.subtitle, W_MEDIUM);
+    add(about, p.id.replace(/_/g, ' '), W_STRONG);
+    add(about, PLAYBOOK_ALSO[p.id] ?? '', W_STRONG);
+    return doc('playbook', p.id, p.title, p.subtitle, 0, about);
   });
 }
+
+const PLAYBOOK_ALSO: Record<string, string> = {
+  account_hacked: 'account hacked',
+  data_breach: 'data breach notification',
+  device_stolen: 'device stolen',
+  phishing_clicked: 'phishing link clicked',
+  stalkerware: 'monitoring suspected'
+};
 
 export interface RouterIndex {
   docs: Doc[];
   df: Map<string, number>;
   info: Map<string, number>;
   total: number;
+  vocab: string[];
 }
 
 export function buildIndex(graph: ContentGraph): RouterIndex {
@@ -110,72 +149,145 @@ export function buildIndex(graph: ContentGraph): RouterIndex {
 
   const df = new Map<string, number>();
   for (const doc of docs) {
-    for (const term of doc.terms.keys()) df.set(term, (df.get(term) ?? 0) + 1);
+    for (const [term, w] of doc.terms) df.set(term, (df.get(term) ?? 0) + w / W_STRONG);
   }
 
   const info = new Map<string, number>();
-  const ceiling = Math.log(docs.length);
+  const ceiling = Math.log(docs.length * W_STRONG / W_WEAK);
   for (const [term, n] of df) {
-    info.set(term, INFO_FLOOR + (1 - INFO_FLOOR) * (Math.log(docs.length / n) / ceiling));
+    info.set(term, INFO_FLOOR + (1 - INFO_FLOOR) * (Math.max(0, Math.log(docs.length / n)) / ceiling));
   }
 
-  return { docs, df, info, total: docs.length };
+  return { docs, df, info, total: docs.length, vocab: [...df.keys()] };
 }
 
 const INFO_FLOOR = 0.3;
 
 const UNKNOWN_PREMIUM = 1.7;
 
+const SAME_WORD = 0.8;
+
+const TOGETHER = 0.5;
+
+const TOPIC_POWER = 0.5;
+
+const LONE_CARRIER = 0.5;
+
 interface Concept {
-  tokens: string[];
+  typed: string;
+  tokens: Map<string, number>;
   weight: number;
+  absent: number;
+}
+
+function queryTokens(query: string, index: RouterIndex): string[] {
+  const words = query.toLowerCase().replace(/['’]/g, '').split(/[^a-z0-9]+/).filter(Boolean)
+    .map(w => NEGATIONS.has(w) ? 'not' : w);
+  const joined: string[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const pair = i + 1 < words.length ? words[i] + words[i + 1] : '';
+    if (pair && (index.df.has(stem(pair)) || SYNONYM_INDEX.has(stem(pair)))) { joined.push(pair); i++; }
+    else joined.push(words[i]);
+  }
+  return tokenize(joined.join(' '));
+}
+
+function carriersOf(tokens: Map<string, number>, index: RouterIndex): number {
+  let n = 0;
+  for (const doc of index.docs) {
+    let best = 0;
+    for (const [t, sim] of tokens) {
+      const w = doc.terms.get(t);
+      if (w !== undefined) best = Math.max(best, (w / W_STRONG) * sim * (index.info.get(t) ?? 1));
+    }
+    n += best;
+  }
+  return n;
 }
 
 function concepts(query: string, index: RouterIndex): Concept[] {
   const out: Concept[] = [];
   const seen = new Set<string>();
 
-  for (const token of tokenize(query)) {
+  for (const token of queryTokens(query, index)) {
     if (seen.has(token)) continue;
     seen.add(token);
 
-    const tokens = expand(token);
-    let carriers = 0;
-    for (const doc of index.docs) {
-      if (tokens.some(t => doc.terms.has(t))) carriers++;
+    const tokens = new Map<string, number>(expand(token).map(t => [t, 1]));
+    let carriers = carriersOf(tokens, index);
+    if (carriers === 0) {
+      for (const v of index.vocab) if (sameWord(token, v)) tokens.set(v, SAME_WORD);
+      carriers = carriersOf(tokens, index);
     }
     if (carriers === 0) {
-      out.push({ tokens, weight: Math.log(index.total + 1) * UNKNOWN_PREMIUM });
+      const unknown = Math.log(index.total + 1) * UNKNOWN_PREMIUM;
+      out.push({ typed: token, tokens, weight: unknown, absent: unknown });
       continue;
     }
-    out.push({ tokens, weight: Math.log(index.total / carriers) + 0.05 });
+    let about = 0;
+    for (const doc of index.docs) {
+      for (const [t, sim] of tokens) {
+        const w = doc.terms.get(t);
+        if (w !== undefined) about = Math.max(about, (w / W_STRONG) * sim);
+      }
+    }
+    const rarity = Math.log(index.total / carriers) + 0.05;
+    out.push({
+      typed: token, tokens,
+      weight: rarity * Math.pow(about, TOPIC_POWER),
+      absent: carriers < LONE_CARRIER ? Math.max(rarity, Math.log(index.total + 1) * UNKNOWN_PREMIUM) : rarity * Math.pow(about, TOPIC_POWER)
+    });
   }
   return out;
 }
 
-function confidenceOf(doc: Doc, cs: Concept[], index: RouterIndex):
-  { confidence: number; direct: number } {
+function passageScore(get: (t: string) => number | undefined, cs: Concept[], index: RouterIndex,
+  together: boolean, carried: boolean[]): number {
+  let phi = 0;
+  if (together && cs.length >= 2) {
+    let total = 0;
+    for (const c of cs) {
+      total += c.weight;
+      for (const t of c.tokens.keys()) if (get(t) !== undefined) { phi += c.weight; break; }
+    }
+    phi = total ? phi / total : 0;
+  }
   let earned = 0;
   let possible = 0;
-  let direct = 0;
-  for (const c of cs) {
-    possible += c.weight * W_STRONG;
+  for (const [i, c] of cs.entries()) {
+    possible += (carried[i] ? c.weight : c.absent) * W_STRONG;
     let best = 0;
-    for (const t of c.tokens) {
-      const w = doc.terms.get(t);
-      if (w === undefined) continue;
-      const value = w * (index.info.get(t) ?? 1);
+    for (const [t, sim] of c.tokens) {
+      const found = get(t);
+      if (found === undefined) continue;
+      const w = found + (W_STRONG - found) * phi * TOGETHER;
+      const value = w * (index.info.get(t) ?? 1) * sim;
       if (value > best) best = value;
     }
-    if (best > 0) {
-      earned += c.weight * best;
-      if (doc.terms.has(c.tokens[0])) direct++;
-    }
+    earned += c.weight * best;
   }
-  return { confidence: possible === 0 ? 0 : earned / possible, direct };
+  return possible === 0 ? 0 : earned / possible;
 }
 
-export const COVERAGE_THRESHOLD = 0.23;
+function confidenceOf(doc: Doc, cs: Concept[], index: RouterIndex):
+  { confidence: number; direct: number } {
+  const carried = cs.map(c => [...c.tokens.keys()].some(t => doc.terms.has(t)));
+  let confidence = passageScore(t => doc.about.get(t), cs, index, false, carried);
+  for (const part of doc.parts) {
+    const get = (t: string) => {
+      const a = doc.about.get(t);
+      const b = part.get(t);
+      return a === undefined ? b : b === undefined ? a : Math.max(a, b);
+    };
+    const s = passageScore(get, cs, index, true, carried);
+    if (s > confidence) confidence = s;
+  }
+  let direct = 0;
+  for (const c of cs) if (doc.terms.has(c.typed)) direct++;
+  return { confidence, direct };
+}
+
+export const COVERAGE_THRESHOLD = 0.325;
 
 const RELATIVE_FLOOR = 0.8;
 

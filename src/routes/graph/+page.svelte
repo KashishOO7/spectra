@@ -3,9 +3,15 @@
   import type { PageData } from './$types.js';
   import type { ChecklistItem, AdversaryType, Harm, Track } from '$lib/types.js';
   import { loadProfile } from '$lib/engine/store.js';
-  import { categoryLabel } from '$lib/audit/helpers.js';
-  import { ADVERSARY_HARMS } from '$lib/audit/constants.js';
+  import { categoryLabel, leadSentence } from '$lib/audit/helpers.js';
+  import { ADVERSARY_HARMS, ADVERSARY_OPTIONS } from '$lib/audit/constants.js';
   import { activeTracksFor, itemsForHarms } from '$lib/engine/scoring.js';
+  import note from '#spectra-wiki/page/your-map';
+  import { text, pieces, link, fill, named } from '$lib/wiki/page.js';
+
+  const title = text(note, 'title');
+  const description = text(note, 'description');
+  const goToList = link(note, 'go-to-list');
 
   export let data: PageData;
 
@@ -28,15 +34,28 @@
     userHarms = profile?.harms ?? [];
     userTracks = activeTracksFor(profile ?? { tracks: [] });
     profileLoaded = true;
+    try {
+      await document.fonts.load(LABEL_FONT);
+      const ctx = document.createElement('canvas').getContext('2d');
+      if (ctx) { ctx.font = LABEL_FONT; measure = (s: string) => ctx.measureText(s).width; }
+    } catch {  }
   });
 
-  const ORIENTATION =
-    'Left to right: who might try, the steps that help, and what those steps protect. ' +
-    'Tap anything to see what to do.';
+  const ORIENTATION = text(note, 'orientation');
 
   let fullScreen = false;
   let selectedAdversary: string | null = null;
   let hoveredItem: string | null = null;
+  let hoverAdv: string | null = null;
+  let hoverAsset: string | null = null;
+  let sway = false;
+  onMount(() => {
+    const mq = matchMedia('(prefers-reduced-motion: reduce)');
+    const set = () => { sway = !mq.matches; };
+    set();
+    mq.addEventListener('change', set);
+    return () => mq.removeEventListener('change', set);
+  });
   let selectedItem: string | null = null;
 
   let zoom = 1;
@@ -154,47 +173,13 @@
 
   $: selectedItemFull = selectedItem ? (itemMap.get(selectedItem) ?? null) : null;
 
-  const ADVERSARY_LABELS: Record<string, string> = {
-    opportunistic: 'Bots & scammers',
-    targeted_individual: 'Targeted attacker',
-    criminal_org: 'Organised crime',
-    intimate_partner: 'Intimate partner',
-    employer: 'Employer',
-    isp_network: 'ISP / Network',
-    data_broker: 'Data broker',
-    domestic_government: 'Your government',
-    foreign_government: 'Foreign gov.',
-    ai_automated: 'AI-powered attacks'
-  };
+  const ADVERSARY_ORDER = ['opportunistic', 'targeted_individual', 'criminal_org', 'intimate_partner', 'employer',
+    'isp_network', 'data_broker', 'domestic_government', 'foreign_government', 'ai_automated'];
+  const ADVERSARY_LABELS: Record<string, string> = Object.fromEntries(
+    ADVERSARY_ORDER.map(v => [v, ADVERSARY_OPTIONS.find(o => o.value === v)?.label ?? v]));
 
-  const ASSET_LABELS: Record<string, string> = {
-    credentials: 'Credentials',
-    local_data: 'Local data',
-    cloud_data: 'Cloud data',
-    communications: 'Communications',
-    metadata: 'Metadata',
-    location: 'Location',
-    identity: 'Identity',
-    financial: 'Financial',
-    relationships: 'Relationships',
-    reputation: 'Reputation',
-    devices: 'Devices',
-    biometrics: 'Biometrics',
-    behavioral_data: 'Behaviour data'
-  };
+  const ASSET_LABELS: Record<string, string> = named(note, 'protects');
 
-  const CATEGORY_COLORS: Record<string, string> = {
-    device_security: '#2a8a8a',
-    account_security: '#d4862a',
-    communications: '#7a5af8',
-    network_security: '#2a6fd4',
-    physical_security: '#c0392b',
-    human_vulnerability: '#e67e22',
-    data_management: '#27ae60',
-    osint_footprint: '#8e44ad',
-    incident_response: '#e74c3c',
-    ai_threats: '#1abc9c'
-  };
 
   $: noThreatModel = profileLoaded && userAdversaries.length === 0;
   $: activeAdversaries = fullScreen || noThreatModel
@@ -213,8 +198,6 @@
   $: implementedCount = displayItems.filter((i: ChecklistItem) => implemented[i.id]).length;
   $: gapCount = displayItems.filter((i: ChecklistItem) => !implemented[i.id] && !skipped[i.id]).length;
 
-
-  $: coveragePct = displayItems.length > 0 ? Math.round((implementedCount / displayItems.length) * 100) : 0;
 
   $: exposedItemIds = new Set(
     displayItems
@@ -236,37 +219,39 @@
   })();
 
   const SVG_W = 960;
-  const COL_ADV = 100;
+  const COL_ADV = 170;
   const COL_ITEM = 480;
-  const COL_ASSET = 860;
+  const COL_ASSET = 790;
   const NODE_R = 22;
-  const ITEM_W = 260;
-  const ITEM_H = 34;
-  const ROW_PITCH = 44;
-  const CHAR_W = 5.42;          
+  const ITEM_W = 380;
+  const ITEM_H = 46;
+  const ROW_PITCH = 56;
+  const LABEL_SIZE = 13;
+  const LABEL_LEAD = 16;
+  const LABEL_FONT = `400 ${LABEL_SIZE}px "Public Sans"`;
   const LABEL_LINES = 2;
-  const LABEL_CHARS = Math.floor((ITEM_W - 31) / CHAR_W);
+  const LABEL_W = ITEM_W - 12 - 30;
 
-  function wrapLabel(text: string, chars: number, maxLines: number): string[] {
+  let measure: (s: string) => number = (s) => s.length * LABEL_SIZE * 0.56;
+
+  function wrapLabel(text: string, width: number, maxLines: number, fits: (s: string) => number): string[] {
     const words = text.split(/\s+/).filter(Boolean);
     const lines: string[] = [];
     let line = '';
     let overflow = false;
+    const cut = (s: string) => { while (s.length > 1 && fits(`${s}…`) > width) s = s.slice(0, -1); return `${s}…`; };
 
     for (const word of words) {
       const candidate = line ? `${line} ${word}` : word;
-      if (candidate.length <= chars) { line = candidate; continue; }
+      if (fits(candidate) <= width) { line = candidate; continue; }
       if (lines.length + 1 >= maxLines && line) { overflow = true; break; }
       if (line) lines.push(line);
-      line = word.length > chars ? `${word.slice(0, chars - 1)}…` : word;
+      line = fits(word) > width ? cut(word) : word;
     }
     if (line) lines.push(line);
 
-    if (overflow) {
-      const last = lines[lines.length - 1];
-      lines[lines.length - 1] = last.length < chars ? `${last}…` : `${last.slice(0, chars - 1)}…`;
-    }
-    return lines.length > 0 ? lines : [text.slice(0, chars)];
+    if (overflow) lines[lines.length - 1] = cut(lines[lines.length - 1]);
+    return lines.length > 0 ? lines : [text];
   }
 
   $: advList = Object.keys(ADVERSARY_LABELS);
@@ -320,7 +305,8 @@
     x: COL_ADV,
     y: yPos(i, advList.length),
     active: noThreatModel || userAdversaries.includes(adv as AdversaryType),
-    selected: selectedAdversary === adv
+    selected: selectedAdversary === adv,
+    lines: wrapLabel(ADVERSARY_LABELS[adv] ?? adv, COL_ADV - NODE_R - 12, 2, measure)
   }));
 
   $: itemPositions = baseItems.map((item: ChecklistItem, i: number) => ({
@@ -332,7 +318,7 @@
     exposed: exposedItemIds.has(item.id),
     visible: displayItems.some((d: ChecklistItem) => d.id === item.id),
     title: item.title,
-    lines: wrapLabel(item.title, LABEL_CHARS, LABEL_LINES),
+    lines: wrapLabel(item.title, LABEL_W, LABEL_LINES, measure),
     category: item.category,
     hovered: hoveredItem === item.id,
     chosen: selectedItem === item.id
@@ -342,10 +328,26 @@
     id: asset,
     x: COL_ASSET,
     y: yPos(i, Math.max(assetList.length, 1)),
-    coverage: coveredAssets.get(asset) ?? { total: 0, covered: 0 }
+    coverage: coveredAssets.get(asset) ?? { total: 0, covered: 0 },
+    lines: wrapLabel(ASSET_LABELS[asset] ?? asset, SVG_W - COL_ASSET - NODE_R - 14, 2, measure)
   }));
 
-  interface Edge { x1: number; y1: number; x2: number; y2: number; color: string; opacity: number }
+  interface Edge { x1: number; y1: number; x2: number; y2: number; kind: 'done' | 'who' | 'protect' | 'off'; opacity: number; a?: string; i: string; s?: string }
+
+  const SWAY = 7;
+  function threadPath(e: Edge, w: number): string {
+    const c = (e.x2 - e.x1) * 0.55;
+    return `M ${e.x1} ${e.y1} C ${e.x1 + c} ${e.y1 + w * SWAY}, ${e.x2 - c} ${e.y2 - w * SWAY}, ${e.x2} ${e.y2}`;
+  }
+
+  $: litItems = hoverAdv ? new Set(itemsByAdversary[hoverAdv] ?? [])
+    : hoverAsset ? new Set(baseItems.filter((i: ChecklistItem) => ((i.assets_protected ?? []) as string[]).includes(hoverAsset as string)).map((i: ChecklistItem) => i.id))
+    : hoveredItem ? new Set([hoveredItem])
+    : null;
+  function threadLit(e: Edge, lit: Set<string> | null, adv: string | null, asset: string | null): boolean {
+    if (!lit || !lit.has(e.i)) return false;
+    return e.s ? (!asset || e.s === asset) : (!adv || e.a === adv);
+  }
 
   $: edges = (() => {
     const result: Edge[] = [];
@@ -365,8 +367,8 @@
         result.push({
           x1: ap.x + NODE_R, y1: ap.y,
           x2: ip.x - ITEM_W / 2, y2: ip.y,
-          color: impl ? '#2a8a8a' : exposed ? '#c0392b' : '#2a3a5c',
-          opacity: ap.active ? (impl ? 0.5 : 0.45) : 0.1
+          kind: impl ? 'done' : exposed ? 'who' : 'off', a: ap.id, i: iid,
+          opacity: ap.active ? (impl ? 0.45 : 0.25) : 0.08
         });
       }
     }
@@ -380,8 +382,8 @@
         result.push({
           x1: ip.x + ITEM_W / 2, y1: ip.y,
           x2: asp.x - NODE_R, y2: asp.y,
-          color: ip.impl ? '#2a8a8a' : '#2a3a5c',
-          opacity: ip.impl ? 0.4 : 0.12
+          kind: ip.impl ? 'done' : 'protect', i: item.id, s: asset,
+          opacity: ip.impl ? 0.4 : 0.2
         });
       }
     }
@@ -402,19 +404,9 @@
 </script>
 
 <svelte:head>
-  <title>Your map | Spectra</title>
-  <meta name="description" content="A map of who might try to reach parts of your life, the steps that stand in the way, and what those steps protect. Built from what you tapped." />
+  <title>{title}</title>
+  <meta name="description" content={description} />
   <link rel="canonical" href="https://spectra.fpszero.com/graph" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="Your map | Spectra" />
-  <meta property="og:description" content="A map of who might try to reach parts of your life, the steps that stand in the way, and what those steps protect. Built from what you tapped." />
-  <meta property="og:url" content="https://spectra.fpszero.com/graph" />
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Your map | Spectra" />
-  <meta name="twitter:description" content="A map of who might try to reach parts of your life, the steps that stand in the way, and what those steps protect. Built from what you tapped." />
 </svelte:head>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -423,14 +415,14 @@
 
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
     <div>
-      <h1 class="font-display text-2xl font-bold text-white mb-1">Your map</h1>
+      <h1 class="text-3xl font-bold text-white mb-1">{text(note, 'heading')}</h1>
       <p class="text-sm text-dim">
         {#if profileLoaded && userHarms.length > 0}
-          Showing what you tapped
+          {text(note, 'showing-tapped')}
         {:else if profileLoaded}
-          Showing everything
+          {text(note, 'showing-everything')}
         {:else}
-          Loading your setup…
+          {text(note, 'loading-setup')}
         {/if}
       </p>
     </div>
@@ -438,37 +430,38 @@
       <button type="button"
         on:click={openFullScreen}
         class="text-sm px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors">
-        Full screen
+        {text(note, 'full-screen')}
       </button>
       {#if selectedAdversary}
         <button type="button"
           on:click={() => selectedAdversary = null}
           class="text-sm text-dim hover:text-body transition-colors">
-          Clear filter ×
+          {text(note, 'clear-filter')}
         </button>
       {/if}
-      <div class="flex items-center border border-border rounded overflow-hidden">
+      <div class="hidden sm:flex items-center border border-border rounded overflow-hidden">
         <button type="button"
           on:click={() => { zoom = clampZoom(zoom * 1.3); }}
-          class="text-sm font-mono px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
-          title="Zoom in">+</button>
-        <span class="text-xs font-mono text-muted px-1.5 border-x border-border">{Math.round(zoom * 100)}%</span>
+          class="text-sm px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
+          title={text(note, 'zoom-in')}>+</button>
+        <span class="text-xs text-muted px-1.5 border-x border-border">{Math.round(zoom * 100)}%</span>
         <button type="button"
           on:click={() => { zoom = clampZoom(zoom * 0.7); }}
-          class="text-sm font-mono px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
-          title="Zoom out">−</button>
+          class="text-sm px-2.5 py-1 text-dim hover:text-body hover:bg-surface transition-colors"
+          title={text(note, 'zoom-out')}>−</button>
       </div>
       <button type="button"
         on:click={resetView}
-        class="text-sm px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors"
-        title="Reset pan and zoom">
-        Reset view
+        class="hidden sm:inline-flex text-sm px-3 py-1.5 rounded border border-border text-dim hover:text-body transition-colors"
+        title={text(note, 'reset-title')}>
+        {text(note, 'reset')}
       </button>
-      <a href="/audit" class="btn-primary text-xs py-1.5 px-3">Go to your list →</a>
+      <a href={goToList.href} class="btn-primary btn-sm whitespace-nowrap">{goToList.text}</a>
     </div>
   </div>
 
-  <p class="text-sm text-body max-w-3xl mb-6">{ORIENTATION}</p>
+  <p class="hidden sm:block text-sm text-body max-w-3xl mb-6">{ORIENTATION}</p>
+  <p class="sm:hidden text-sm text-body mb-6">{text(note, 'orientation-list')}</p>
 
   {#if selectedAdversary && selectedAdversaryHarms.length > 0}
     <div class="panel px-4 py-3 mb-6 max-w-3xl">
@@ -476,49 +469,47 @@
         <span class="text-bright font-medium">{ADVERSARY_LABELS[selectedAdversary] ?? selectedAdversary}</span>
       </p>
       <p class="text-sm text-dim mt-1">
-        Here because you tapped: {selectedAdversaryHarms.join(', ')}.
+        {#each pieces(note, 'because-tapped', { harms: selectedAdversaryHarms.join(', ') }) as piece}{piece}{/each}
       </p>
     </div>
   {/if}
 
   {#if profileLoaded && displayItems.length > 0}
-  <div class="grid grid-cols-3 gap-3 mb-6">
+  <div class="grid grid-cols-2 gap-3 mb-6 max-w-md">
     <div class="panel p-3 text-center">
-      <p class="font-display text-xl font-bold text-teal-light">{implementedCount}</p>
-      <p class="text-sm text-dim">steps done</p>
+      <p class="text-lg font-bold text-bright tabular-nums">{implementedCount}</p>
+      <p class="text-sm text-dim">{text(note, 'steps-done')}</p>
     </div>
     <div class="panel p-3 text-center">
-      <p class="font-display text-xl font-bold text-red-light">{gapCount}</p>
-      <p class="text-sm text-dim">still to do</p>
-    </div>
-    <div class="panel p-3 text-center">
-      <p class="font-display text-xl font-bold {coveragePct >= 80 ? 'text-teal-light' : coveragePct >= 50 ? 'text-amber-light' : 'text-red-light'}">{coveragePct}%</p>
-      <p class="text-sm text-dim">of your map covered</p>
+      <p class="text-lg font-bold text-bright tabular-nums">{gapCount}</p>
+      <p class="text-sm text-dim">{text(note, 'still-to-do')}</p>
     </div>
   </div>
   {/if}
 
   <div class="flex flex-wrap gap-x-4 gap-y-2 mb-2 text-sm">
-    <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-teal inline-block"></span>Done</span>
-    <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-red inline-block"></span>Still to do</span>
-    <span class="flex items-center gap-1.5"><span data-theme="dark" class="w-3 h-3 rounded-full bg-border inline-block"></span>Skipped, or not in your setup</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block border-2" style="border-color: rgb(var(--c-map-who)); background: rgb(var(--c-map-who) / 0.14)"></span>{text(note, 'column-who')}</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block bg-teal-dim border-2 border-viz"></span>{text(note, 'column-protect')}</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block bg-viz border-2 border-viz"></span>{text(note, 'key-done')}</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block bg-surface border-2 border-teal"></span>{text(note, 'key-to-do')}</span>
+    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm inline-block bg-surface border-2 border-muted"></span>{text(note, 'key-skipped')}</span>
   </div>
-  <div class="flex flex-wrap gap-x-4 mb-4 text-sm text-muted">
-    <span>Click a name in the left column to filter</span>
-    <span>Scroll to zoom · Drag to pan</span>
+  <div class="hidden sm:flex flex-wrap gap-x-4 mb-4 text-sm text-muted">
+    <span>{text(note, 'hint-filter')}</span>
+    <span>{text(note, 'hint-zoom')}</span>
   </div>
 
   {#if !profileLoaded}
     <div class="panel p-16 text-center">
-      <p class="text-dim text-sm">Loading profile…</p>
+      <p class="text-dim text-sm">{text(note, 'loading-profile')}</p>
     </div>
   {:else if displayItems.length === 0}
     <div class="panel p-16 text-center">
-      <p class="font-display text-bright font-semibold mb-2">No items to show</p>
+      <p class="text-bright font-semibold mb-2">{text(note, 'no-items')}</p>
       <p class="text-sm text-body mb-4">
-        Nothing you tapped has steps in your setup yet.
+        {text(note, 'no-items-lead')}
       </p>
-      <a href="/audit" class="btn-primary text-sm">Go to your list →</a>
+      <a href={goToList.href} class="btn-primary text-sm">{goToList.text}</a>
     </div>
   {:else}
 
@@ -526,15 +517,50 @@
     <div class="fixed inset-0 z-[90] bg-void/80 backdrop-blur-sm"></div>
   {/if}
 
+  {#if !fullScreen}
+  <div class="sm:hidden space-y-3" data-map-list>
+    {#each advList.filter(a => activeAdversaries.includes(a) && (!selectedAdversary || a === selectedAdversary)) as adv (adv)}
+      {@const steps = myItems.filter(i => (itemsByAdversary[adv] ?? []).includes(i.id))}
+      {#if steps.length}
+      <section class="panel p-4">
+        <h2 class="text-base font-semibold text-bright flex items-center gap-2"><span class="w-3 h-3 rounded-full border-2 flex-shrink-0" style="border-color: rgb(var(--c-map-who)); background: rgb(var(--c-map-who) / 0.14)" aria-hidden="true"></span>{ADVERSARY_LABELS[adv] ?? adv}</h2>
+        <ul class="mt-2 space-y-1">
+          {#each steps as s (s.id)}
+            <li>
+              <button type="button" on:click={() => openItem(s.id)}
+                class="w-full text-left text-sm py-1.5 flex items-start gap-2 {implemented[s.id] ? 'text-dim' : skipped[s.id] ? 'text-muted' : 'text-body'} hover:text-bright">
+                <span class="mt-1 w-3 h-3 flex-shrink-0 rounded-sm border-2 {implemented[s.id] ? 'bg-teal-dim border-viz' : skipped[s.id] ? 'border-muted' : 'border-dim'}" aria-hidden="true"></span>
+                <span>{s.title}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </section>
+      {/if}
+    {/each}
+    <section class="panel p-4">
+      <h2 class="text-base font-semibold text-bright">{text(note, 'column-protect')}</h2>
+      <ul class="mt-2 space-y-1.5">
+        {#each assetPositions as asp (asp.id)}
+          <li class="flex items-baseline justify-between gap-3 text-sm text-body">
+            <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full border-2 border-viz bg-teal-dim flex-shrink-0" aria-hidden="true"></span>{ASSET_LABELS[asp.id] ?? asp.id}</span>
+            <span class="tabular-nums text-dim">{fill(note, 'protect-count', { covered: asp.coverage.covered, total: asp.coverage.total })}</span>
+          </li>
+        {/each}
+      </ul>
+    </section>
+  </div>
+  {/if}
+
   <div
     bind:this={overlay}
-    data-theme="dark"
+    data-map
     role={fullScreen ? 'dialog' : undefined}
     aria-modal={fullScreen ? 'true' : undefined}
-    aria-label={fullScreen ? 'Your map, full screen' : undefined}
+    aria-label={fullScreen ? text(note, 'full-screen-label') : undefined}
     class={fullScreen
-      ? 'fixed inset-2 sm:inset-6 z-[100] flex flex-col rounded-lg border border-border bg-surface overflow-hidden'
-      : 'panel overflow-hidden'}
+      ? 'fixed inset-2 sm:inset-6 z-[100] flex flex-col rounded-xl border border-border bg-surface overflow-hidden'
+      : 'panel overflow-hidden hidden sm:block'}
   >
     {#if fullScreen}
       <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4
@@ -544,26 +570,27 @@
           <div class="flex items-center border border-border rounded overflow-hidden">
             <button type="button"
               on:click={() => { zoom = clampZoom(zoom * 1.3); }}
-              class="text-sm font-mono px-2.5 py-1 min-h-[44px] sm:min-h-0 text-dim hover:text-body hover:bg-surface transition-colors"
-              title="Zoom in">+</button>
-            <span class="text-xs font-mono text-muted px-1.5 border-x border-border">{Math.round(zoom * 100)}%</span>
+              class="text-sm px-2.5 py-1 min-h-[44px] sm:min-h-0 text-dim hover:text-body hover:bg-surface transition-colors"
+              title={text(note, 'zoom-in')}>+</button>
+            <span class="text-xs text-muted px-1.5 border-x border-border">{Math.round(zoom * 100)}%</span>
             <button type="button"
               on:click={() => { zoom = clampZoom(zoom * 0.7); }}
-              class="text-sm font-mono px-2.5 py-1 min-h-[44px] sm:min-h-0 text-dim hover:text-body hover:bg-surface transition-colors"
-              title="Zoom out">−</button>
+              class="text-sm px-2.5 py-1 min-h-[44px] sm:min-h-0 text-dim hover:text-body hover:bg-surface transition-colors"
+              title={text(note, 'zoom-out')}>−</button>
           </div>
           <button type="button" on:click={resetView}
             class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
-            Reset view
+            {text(note, 'reset')}
           </button>
           <button type="button" on:click={closeFullScreen}
             class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded border border-border text-dim hover:text-body transition-colors">
-            Exit full screen
+            {text(note, 'exit-full-screen')}
           </button>
         </div>
       </div>
     {/if}
 
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
       use:measured
       class="select-none {fullScreen ? 'flex-1 min-h-0 overflow-hidden' : 'overflow-x-auto'}"
@@ -578,47 +605,54 @@
         viewBox="0 0 {SVG_W} {viewH}"
         preserveAspectRatio="xMidYMid meet"
         role="group"
-        aria-label="Who might try on the left, steps that help in the centre, what they protect on the right"
-        class={fullScreen ? 'w-full h-full' : 'w-full min-w-[600px]'}
-        style={fullScreen ? '' : `height: ${Math.max(400, baseItems.length * ROW_PITCH)}px`}
+        aria-label={text(note, 'drawing-label')}
+        class={fullScreen ? 'w-full h-full' : 'block w-full min-w-[600px] max-w-[960px] mx-auto'}
+        style={fullScreen ? '' : `aspect-ratio: ${SVG_W} / ${SVG_H}`}
       >
         <g transform="translate({panX},{panY}) scale({zoom})">
-        <text x={COL_ADV} y="22" text-anchor="middle" fill="#6381ac" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="1">WHO MIGHT TRY</text>
-        <text x={COL_ITEM} y="22" text-anchor="middle" fill="#6381ac" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="1">STEPS THAT HELP</text>
-        <text x={COL_ASSET} y="22" text-anchor="middle" fill="#6381ac" font-size="10" font-family="JetBrains Mono, monospace" letter-spacing="1">WHAT THEY PROTECT</text>
+        <text x={COL_ADV} y="22" text-anchor="middle" class="m-head" font-size={LABEL_SIZE} font-weight="600">{text(note, 'column-who')}</text>
+        <text x={COL_ITEM} y="22" text-anchor="middle" class="m-head" font-size={LABEL_SIZE} font-weight="600">{text(note, 'column-steps')}</text>
+        <text x={COL_ASSET} y="22" text-anchor="middle" class="m-head" font-size={LABEL_SIZE} font-weight="600">{text(note, 'column-protect')}</text>
 
-        {#each edges as edge}
+        {#each edges as edge, ei}
+          {@const lit = threadLit(edge, litItems, hoverAdv, hoverAsset)}
           <path
-            d="M {edge.x1} {edge.y1} C {edge.x1 + 120} {edge.y1}, {edge.x2 - 120} {edge.y2}, {edge.x2} {edge.y2}"
-            fill="none"
-            stroke={edge.color}
-            stroke-width="1"
-            opacity={edge.opacity}
-          />
+            d={threadPath(edge, 0)}
+            class="m-edge m-edge-{edge.kind} {lit ? 'm-edge-lit' : ''}"
+            stroke-width={lit ? 2 : 1}
+            opacity={lit ? 0.95 : litItems ? 0.05 : edge.opacity}
+          >{#if sway && lit}<animate attributeName="d" dur="{9 + (ei % 5)}s" begin="-{((ei * 0.73) % 9).toFixed(2)}s"
+              repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1"
+              keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"
+              values="{threadPath(edge, 0)};{threadPath(edge, 1)};{threadPath(edge, 0)};{threadPath(edge, -1)};{threadPath(edge, 0)}"/>{/if}</path>
         {/each}
 
         {#each advPositions as ap}
           <g
             class="cursor-pointer"
             on:click={() => toggleAdversary(ap.id)}
+            on:mouseenter={() => hoverAdv = ap.id}
+            on:mouseleave={() => hoverAdv = null}
+            on:focus={() => hoverAdv = ap.id}
+            on:blur={() => hoverAdv = null}
             role="button"
             tabindex="0"
             aria-pressed={ap.selected}
-            aria-label="{ADVERSARY_LABELS[ap.id] ?? ap.id} — {ap.active ? 'in your setup' : 'not in your setup'}"
+            aria-label={fill(note, 'node-who', { name: ADVERSARY_LABELS[ap.id] ?? ap.id, state: ap.active ? text(note, 'in-setup') : text(note, 'not-in-setup') })}
             on:keydown={(e) => activate(e, () => toggleAdversary(ap.id))}
           >
             <circle
               cx={ap.x} cy={ap.y} r={NODE_R}
-              fill={ap.selected ? '#d4862a33' : ap.active ? '#d4862a22' : '#0d1929'}
-              stroke={ap.selected ? '#d4862a' : ap.active ? '#d4862a88' : '#1a2540'}
+              class={ap.selected ? 'm-node-chosen' : ap.active ? 'm-node-who' : 'm-node-off'}
               stroke-width={ap.selected ? 2 : 1.5}
             />
             <text
-              x={ap.x + NODE_R + 6} y={ap.y + 4}
-              fill={ap.active ? (ap.selected ? '#f0c070' : '#b07040') : '#748097'}
-              font-size="9.5"
-              font-family="JetBrains Mono, monospace"
-            >{ADVERSARY_LABELS[ap.id] ?? ap.id}</text>
+              x={ap.x - NODE_R - 8} y={ap.lines.length > 1 ? ap.y - LABEL_LEAD / 2 + 4.5 : ap.y + 4.5}
+              text-anchor="end"
+              class={ap.active ? 'm-label-yours' : 'm-label-off'}
+              font-size={LABEL_SIZE}
+              font-weight={ap.selected ? 600 : 400}
+            >{#each ap.lines as line, li}<tspan x={ap.x - NODE_R - 8} dy={li === 0 ? 0 : LABEL_LEAD}>{line}</tspan>{/each}</text>
           </g>
         {/each}
 
@@ -628,42 +662,37 @@
             on:click={() => ip.visible && openItem(ip.id)}
             on:mouseenter={() => ip.visible && (hoveredItem = ip.id)}
             on:mouseleave={() => hoveredItem = null}
+            on:focus={() => ip.visible && (hoveredItem = ip.id)}
+            on:blur={() => hoveredItem = null}
             role="button"
             tabindex="0"
-            aria-label="{ip.title} — {ip.impl ? 'implemented' : ip.skipped ? 'skipped' : 'not done'}"
+            aria-label={fill(note, 'node-step', { name: ip.title, state: ip.impl ? text(note, 'step-implemented') : ip.skipped ? text(note, 'step-skipped') : text(note, 'step-not-done') })}
             on:keydown={(e) => activate(e, () => ip.visible && openItem(ip.id))}
-            opacity={ip.visible ? 1 : 0.1}
+            opacity={!ip.visible ? 0.1 : litItems && !litItems.has(ip.id) ? 0.35 : 1}
             style="pointer-events: {ip.visible ? 'auto' : 'none'}"
           >
             <rect
               x={ip.x - ITEM_W / 2} y={ip.y - ITEM_H / 2}
               width={ITEM_W} height={ITEM_H}
-              rx="4"
-              fill={ip.impl ? '#0d2020' : ip.exposed ? '#1a0d0d' : (ip.hovered || ip.chosen) ? '#1a1a2a' : '#0d1420'}
-              stroke={ip.chosen ? '#f0c070' : ip.impl ? '#2a8a8a' : ip.hovered ? '#d4862a' : ip.exposed ? '#c0392b66' : (CATEGORY_COLORS[ip.category] ?? '#1a2540') + '44'}
-              stroke-width={ip.chosen ? 2 : ip.hovered ? 1.5 : ip.exposed ? 1 : 0.8}
+              rx="6"
+              class={ip.impl ? 'm-step-done' : ip.exposed ? 'm-step-open' : 'm-step-off'}
+              data-hot={ip.hovered || ip.chosen ? '' : null}
+              stroke-width={ip.chosen ? 2 : ip.hovered ? 1.5 : 1}
               opacity={ip.skipped ? 0.35 : 1}
             />
-            <rect
-              x={ip.x - ITEM_W / 2} y={ip.y - ITEM_H / 2}
-              width="3" height={ITEM_H}
-              rx="4"
-              fill={CATEGORY_COLORS[ip.category] ?? '#2a3a5c'}
-              opacity="0.7"
-            />
             {#if ip.impl}
-              <circle cx={ip.x + ITEM_W / 2 - 12} cy={ip.y} r="7" fill="#2a8a8a22" stroke="#2a8a8a" stroke-width="1"/>
-              <path d="M {ip.x + ITEM_W/2 - 15} {ip.y} l 3 3 l 5 -5" stroke="#2a8a8a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+              <circle cx={ip.x + ITEM_W / 2 - 16} cy={ip.y} r="8" class="m-tick-ring" stroke-width="1"/>
+              <path d="M {ip.x + ITEM_W/2 - 19.5} {ip.y} l 3 3 l 5.5 -5.5" class="m-tick" stroke-width="1.5" fill="none" stroke-linecap="round"/>
             {/if}
             <text
-              x={ip.x - ITEM_W / 2 + 9}
-              y={ip.lines.length > 1 ? ip.y - 2 : ip.y + 3.5}
-              fill={ip.impl ? '#5ab0a0' : (ip.hovered || ip.chosen) ? '#f0f8ff' : ip.exposed ? '#c07070' : '#8090b0'}
-              font-size="9"
-              font-family="JetBrains Mono, monospace"
+              x={ip.x - ITEM_W / 2 + 12}
+              y={ip.lines.length > 1 ? ip.y - LABEL_LEAD / 2 + 4.5 : ip.y + 4.5}
+              class={ip.impl ? 'm-label-done' : ip.exposed || ip.hovered || ip.chosen ? 'm-label-yours' : 'm-label-off'}
+              font-size={LABEL_SIZE}
+              font-weight={ip.chosen ? 600 : 400}
             >
               {#each ip.lines as line, li}
-                <tspan x={ip.x - ITEM_W / 2 + 9} dy={li === 0 ? 0 : 11}>{line}</tspan>
+                <tspan x={ip.x - ITEM_W / 2 + 12} dy={li === 0 ? 0 : LABEL_LEAD}>{line}</tspan>
               {/each}
             </text>
           </g>
@@ -671,38 +700,35 @@
 
         {#each assetPositions as asp}
           {@const pct = asp.coverage.total > 0 ? asp.coverage.covered / asp.coverage.total : 0}
-          <g>
+          <g role="group" aria-label={fill(note, 'node-protect', { name: ASSET_LABELS[asp.id] ?? asp.id, covered: asp.coverage.covered, total: asp.coverage.total })}
+            on:mouseenter={() => hoverAsset = asp.id} on:mouseleave={() => hoverAsset = null}
+            on:focus={() => hoverAsset = asp.id} on:blur={() => hoverAsset = null}>
             <circle
               cx={asp.x} cy={asp.y} r={NODE_R}
-              fill={pct >= 1 ? '#0d2020' : pct > 0 ? '#1a1a0d' : '#0d1420'}
-              stroke={pct >= 1 ? '#2a8a8a' : pct > 0 ? '#d4862a55' : '#1a2540'}
+              class={pct >= 1 ? 'm-node-done' : 'm-node-protect'}
               stroke-width="1.5"
             />
             {#if pct > 0 && pct < 1}
               <circle
                 cx={asp.x} cy={asp.y} r={NODE_R - 3}
                 fill="none"
-                stroke="#d4862a"
+                class="m-arc"
                 stroke-width="3"
                 stroke-dasharray="{2 * Math.PI * (NODE_R - 3) * pct} {2 * Math.PI * (NODE_R - 3) * (1 - pct)}"
                 stroke-dashoffset="{2 * Math.PI * (NODE_R - 3) * 0.25}"
-                opacity="0.6"
               />
             {/if}
             <text
-              x={asp.x - NODE_R - 6} y={asp.y + 4}
-              text-anchor="end"
-              fill={pct >= 1 ? '#5ab0a0' : pct > 0 ? '#b07040' : '#748097'}
-              font-size="9.5"
-              font-family="JetBrains Mono, monospace"
-            >{ASSET_LABELS[asp.id] ?? asp.id}</text>
+              x={asp.x + NODE_R + 8} y={asp.lines.length > 1 ? asp.y - LABEL_LEAD / 2 + 4.5 : asp.y + 4.5}
+              class="m-label-yours"
+              font-size={LABEL_SIZE}
+            >{#each asp.lines as line, li}<tspan x={asp.x + NODE_R + 8} dy={li === 0 ? 0 : LABEL_LEAD}>{line}</tspan>{/each}</text>
             {#if pct > 0}
               <text
-                x={asp.x} y={asp.y + 4}
+                x={asp.x} y={asp.y + 4.5}
                 text-anchor="middle"
-                fill={pct >= 1 ? '#2a8a8a' : '#d4862a'}
-                font-size="8"
-                font-family="JetBrains Mono, monospace"
+                class="m-label-yours tabular-nums"
+                font-size={LABEL_SIZE}
                 font-weight="600"
               >{asp.coverage.covered}/{asp.coverage.total}</text>
             {/if}
@@ -717,12 +743,12 @@
 
   {#if profileLoaded && userAdversaries.length > 0 && !fullScreen}
   <div class="mt-4 flex flex-wrap gap-2">
-    <span class="label-mono flex-shrink-0 self-center">Filter:</span>
+    <span class="label-mono flex-shrink-0 self-center">{text(note, 'filter')}</span>
     {#each userAdversaries as adv}
       <button type="button"
         on:click={() => toggleAdversary(adv)}
         class="text-sm px-2.5 py-1 rounded border transition-colors
-               {selectedAdversary === adv ? 'border-amber/60 text-amber-light bg-amber-dim/20' : 'border-border text-dim hover:text-body'}">
+               {selectedAdversary === adv ? 'border-teal/60 text-teal-light bg-teal-dim/20' : 'border-border text-dim hover:text-body'}">
         {ADVERSARY_LABELS[adv] ?? adv}
       </button>
     {/each}
@@ -730,14 +756,13 @@
   {/if}
 
   <p class="text-sm text-muted mt-6 text-center">
-    This map is built from what you tapped. All data is stored locally in your browser.
-    <a href="/audit" class="text-dim hover:text-body underline transition-colors">Go to your list →</a>
+    {`${text(note, 'footer')} `}<a href={goToList.href} class="text-dim hover:text-body underline transition-colors">{goToList.text}</a>
   </p>
 </div>
 
 {#if selectedItemFull}
   <button type="button" class="fixed inset-0 bg-void/60 z-[105]"
-    on:click={() => selectedItem = null} aria-label="Close item details" tabindex="-1"></button>
+    on:click={() => selectedItem = null} aria-label={text(note, 'close-item')} tabindex="-1"></button>
 
   <div
     role="dialog" aria-modal="true" aria-label={selectedItemFull.title}
@@ -746,48 +771,78 @@
   >
     <div class="flex items-start justify-between gap-3 px-5 py-4 border-b border-border">
       <div class="flex items-center gap-2 min-w-0">
-        <div class="w-2 h-2 rounded-full flex-shrink-0"
-             style="background: {CATEGORY_COLORS[selectedItemFull.category] ?? '#2a3a5c'}"></div>
-        <span class="text-[10px] font-mono text-dim uppercase tracking-widest truncate">
+        <span class="text-xs text-dim truncate">
           {categoryLabel(selectedItemFull.category)}
         </span>
       </div>
       <button type="button" on:click={() => selectedItem = null}
         class="w-11 h-11 -mr-3 -mt-3 flex items-center justify-center text-dim hover:text-body
-               transition-colors text-lg leading-none flex-shrink-0" aria-label="Close item details">✕</button>
+               transition-colors text-lg leading-none flex-shrink-0" aria-label={text(note, 'close-item')}>✕</button>
     </div>
 
     <div class="px-5 py-5 space-y-4">
-      <h2 class="font-display text-base font-semibold text-white leading-snug">{selectedItemFull.title}</h2>
+      <h2 class="text-base font-semibold text-white leading-snug">{selectedItemFull.title}</h2>
 
-      {#if selectedItemFull.simple_description}
-        <p class="text-sm text-body leading-relaxed">{selectedItemFull.simple_description}</p>
+      {#if selectedItemFull.description}
+        <p class="text-sm text-body leading-relaxed">{leadSentence(selectedItemFull)}</p>
       {/if}
 
       {#if implemented[selectedItemFull.id]}
         <div class="flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-teal flex-shrink-0"></span>
-          <span class="text-sm text-teal-light">Implemented</span>
+          <span class="text-sm text-teal-light">{text(note, 'implemented')}</span>
         </div>
       {:else if skipped[selectedItemFull.id]}
         <div class="flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-border flex-shrink-0"></span>
-          <span class="text-sm text-dim">Skipped</span>
+          <span class="text-sm text-dim">{text(note, 'skipped')}</span>
         </div>
       {:else}
         <div class="flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber flex-shrink-0"></span>
-          <span class="text-sm text-amber-light">Not yet done</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-teal flex-shrink-0"></span>
+          <span class="text-sm text-teal-light">{text(note, 'not-yet-done')}</span>
         </div>
       {/if}
 
-      <div class="text-sm font-mono text-muted">
-        {#if selectedItemFull.maturity_level === 1}Essential · {/if}{selectedItemFull.time_estimate?.setup ?? '—'} setup
-      </div>
+      {#if selectedItemFull.maturity_level === 1}
+        <div class="text-sm text-muted">{text(note, 'essential')}</div>
+      {/if}
 
-      <a href="/audit?highlight={selectedItemFull.id}" class="btn-primary text-sm inline-block">
-        Open in audit →
+      <a href="/audit?highlight={selectedItemFull.id}" class="btn-primary text-sm">
+        {text(note, 'open-in-audit')}
       </a>
     </div>
   </div>
 {/if}
+
+<style>
+  :global([data-map] svg text) { font-family: 'Public Sans', system-ui, sans-serif; }
+  :global([data-map] .m-head) { fill: rgb(var(--c-dim)); }
+  :global([data-map] .m-label-yours) { fill: rgb(var(--c-bright)); }
+  :global([data-map] .m-label-done) { fill: rgb(var(--c-body)); }
+  :global([data-map] .m-label-off) { fill: rgb(var(--c-dim)); }
+
+  :global([data-map] .m-edge) { fill: none; transition: opacity 200ms ease, stroke-width 200ms ease; }
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-map] .m-edge) { transition: none; }
+  }
+  :global([data-map] .m-edge-done) { stroke: rgb(var(--c-viz)); }
+  :global([data-map] .m-edge-who) { stroke: rgb(var(--c-map-who)); }
+  :global([data-map] .m-edge-protect) { stroke: rgb(var(--c-viz)); }
+  :global([data-map] .m-node-who) { fill: rgb(var(--c-map-who) / 0.14); stroke: rgb(var(--c-map-who)); }
+  :global([data-map] .m-node-protect) { fill: rgb(var(--c-teal-dim)); stroke: rgb(var(--c-viz)); }
+  :global([data-map] .m-edge-off) { stroke: rgb(var(--c-muted)); }
+
+  :global([data-map] .m-node-done),
+  :global([data-map] .m-step-done) { fill: rgb(var(--c-teal-dim)); stroke: rgb(var(--c-viz)); }
+  :global([data-map] .m-node-chosen) { fill: rgb(var(--c-teal-dim)); stroke: rgb(var(--c-bright)); }
+  :global([data-map] .m-node-yours),
+  :global([data-map] .m-step-open) { fill: rgb(var(--c-surface)); stroke: rgb(var(--c-teal)); }
+  :global([data-map] .m-node-off),
+  :global([data-map] .m-step-off) { fill: rgb(var(--c-surface)); stroke: rgb(var(--c-muted)); }
+  :global([data-map] rect[data-hot]) { stroke: rgb(var(--c-bright)); }
+
+  :global([data-map] .m-tick-ring) { fill: rgb(var(--c-surface)); stroke: rgb(var(--c-viz)); }
+  :global([data-map] .m-tick),
+  :global([data-map] .m-arc) { stroke: rgb(var(--c-viz)); }
+</style>

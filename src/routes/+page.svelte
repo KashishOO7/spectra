@@ -1,28 +1,122 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
+  import type { PageData } from './$types.js';
   import type { Harm } from '$lib/types.js';
   import { HARMS } from '$lib/audit/constants.js';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { loadProfile, saveProfile, createDefaultProfile } from '$lib/engine/store.js';
+  import home from '#spectra-wiki/page/home';
+  import { text, fill, links, items, plainLines } from '$lib/wiki/page.js';
+  import FactPicture from '$lib/components/FactPicture.svelte';
+
+  const title = text(home, 'title');
+  const description = text(home, 'description');
+  const explainLinks = links(home, 'explain-links');
 
   const harms = Object.keys(HARMS) as Harm[];
+
+  export let data: PageData;
+
+  const cards = items(home, 'cards').map(c => {
+    const [figure, says, alt] = c.lines.slice(0, 3).map(l => (l[0] as { value: string }).value);
+    const step = data.cards.find(s => s.id === c.title)!;
+    return { id: c.title, figure, says, alt, title: step.title, why: step.why };
+  });
+  const bars = plainLines(home, 'ai-bars').map(l => {
+    const m = /^(\d+) (.+)$/.exec(l);
+    if (!m) throw new Error(`wiki/pages/home.md ai-bars: "${l}" is not a number then a label`);
+    return { value: +m[1], label: m[2] };
+  });
+  const scamLine = text(home, 'hero-scam-message');
+  const at = scamLine.lastIndexOf(' ') + 1;
+  const scam = { before: scamLine.slice(0, at), link: scamLine.slice(at) };
+  const twoStep = cards.find(c => c.id === 'auth-2fa-001')!;
+  const count = /^(\d+) of (\d+)\b/.exec(text(home, 'hero-chapter-count'));
+  if (!count) throw new Error('wiki/pages/home.md hero-chapter-count: not "n of m"');
+  const chapter = { done: +count[1], total: +count[2] };
+  const trust = items(home, 'trust').map(t => ({ title: t.title, line: (t.lines[0][0] as { value: string }).value }));
+
+  let flipped: Record<string, boolean> = {};
+  const flip = (id: string) => (flipped = { ...flipped, [id]: !flipped[id] });
+  const turnFrom = (e: MouseEvent, id: string) => {
+    if ((e.target as Element).closest('a')) return;
+    flip(id);
+  };
+
+  let row: HTMLDivElement;
+  let first = 1, last = 3;
+  function measure() {
+    if (!row) return;
+    const box = row.getBoundingClientRect();
+    const shown = (Array.from(row.children) as HTMLElement[])
+      .map((k, i) => ({ i, r: k.getBoundingClientRect() }))
+      .filter(({ r }) => r.left >= box.left - 2 && r.right <= box.right + 2)
+      .map(({ i }) => i + 1);
+    if (shown.length) { first = shown[0]; last = shown[shown.length - 1]; }
+  }
+  function move(dir: 1 | -1) {
+    row?.scrollBy({ left: dir * row.clientWidth, behavior: 'smooth' });
+  }
+
+  let returning = false;
+  let continueHref = '/audit';
 
   let selected: Harm[] = [];
   let starting = false;
 
-  function toggle(harm: Harm) {
+  let tailorEl: HTMLDetailsElement;
+  let tailorOpen = false;
+
+  let hydrated = false;
+
+  async function toggle(harm: Harm) {
     selected = selected.includes(harm)
       ? selected.filter(h => h !== harm)
       : [...selected, harm];
+    try {
+      const stored = await loadProfile();
+      if (selected.length === 0) {
+        if (stored?.harms) {
+          delete stored.harms;
+          await saveProfile(stored);
+        }
+        return;
+      }
+      const profile = stored ?? createDefaultProfile();
+      profile.harms = [...selected];
+      await saveProfile(profile);
+    } catch {
+    }
   }
 
   onMount(async () => {
+    hydrated = true;
+    measure();
     try {
       const profile = await loadProfile();
-      if (profile?.harms?.length) selected = [...profile.harms];
+      returning = !!profile && (
+        Object.values(profile.implemented ?? {}).some(Boolean) ||
+        Object.keys(profile.skipped ?? {}).length > 0 ||
+        !!profile.harms?.length || !!profile.last_open);
+      const last = profile?.last_open?.id;
+      if (last && !profile?.implemented?.[last] && !profile?.skipped?.[last]) continueHref = `/checklist/${last}`;
+      if (profile?.harms?.length) {
+        selected = [...profile.harms];
+        if (tailorEl) tailorEl.open = true;
+        tailorOpen = true;
+      }
     } catch {
     }
   });
+
+  $: if (hydrated && tailorEl && $page.url.searchParams.get('edit') === 'harms' && !tailorEl.open) {
+    tailorEl.open = true;
+    tailorOpen = true;
+    tick().then(() => requestAnimationFrame(() => {
+      tailorEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+  }
 
   async function start(e: MouseEvent) {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -57,150 +151,239 @@
 </script>
 
 <svelte:head>
-  <title>Spectra | Personal Security Self-Audit</title>
-  <meta name="description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
+  <title>{title}</title>
+  <meta name="description" content={description} />
   <link rel="canonical" href="https://spectra.fpszero.com/" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Spectra" />
-  <meta property="og:title" content="Spectra | Personal Security Self-Audit" />
-  <meta property="og:description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
-  <meta property="og:url" content="https://spectra.fpszero.com/" />
-
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Spectra | Personal Security Self-Audit" />
-  <meta name="twitter:description" content="A free personal security audit that weights every step to your own situation. No account, no server, and nothing leaves your browser." />
 </svelte:head>
 
-<section class="bg-spectra-grid overflow-hidden">
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 pt-12 pb-14 relative">
+<section class="px-4 sm:px-6 pt-8 sm:pt-14 pb-16">
+  <div class="hero max-w-6xl mx-auto">
+   <div>
+    <h1 class="text-3xl font-bold text-white mb-5" data-page-title>{text(home, 'heading')}</h1>
+    <p class="text-lg text-body mb-8 max-w-[34ch]">{text(home, 'who-for')}</p>
+    <div class="flex flex-wrap items-center gap-3 min-h-[48px]" data-doors>
+      {#if returning}
+        <a href={continueHref} class="btn-primary">{text(home, 'continue')}</a>
+      {:else}
+        <a href="/start" class="btn-primary">{text(home, 'start-door')}</a>
+      {/if}
+      <a href="/real-or-scam" class="btn-ghost">{text(home, 'game-door')}</a>
+      <a href="/quiz" class="btn-ghost">{text(home, 'quiz-door')}</a>
+    </div>
+    <p class="mt-6 text-sm text-body inline-flex items-center gap-2">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round" class="text-teal flex-shrink-0" aria-hidden="true">
+        <path d="m3.5 8.5 3 3 6-7"/>
+      </svg>
+      {text(home, 'promise')}
+    </p>
+   </div>
 
-    <div class="absolute inset-0 flex items-start justify-center pointer-events-none" aria-hidden="true">
-      <div class="w-[600px] h-[300px] rounded-full bg-amber/[0.03] blur-3xl translate-y-12"></div>
+    <div class="stack" role="img" aria-label={text(home, 'hero-cards-alt')}>
+      <div class="panel hc s1" data-hero-card>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <span class="text-sm text-dim">{text(home, 'hero-scam-from')}</span>
+          <span data-scam-tag data-hero-tag class="pill bg-red-dim text-red-light">{text(home, 'hero-scam')}</span>
+        </div>
+        <p class="text-base text-bright">{scam.before}<span class="text-teal-light underline underline-offset-2 [overflow-wrap:anywhere]">{scam.link}</span></p>
+        <p class="mt-2.5 text-sm text-dim">{text(home, 'hero-scam-why')}</p>
+      </div>
+      <div class="panel hc s2" data-hero-card>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <span class="text-sm text-dim">{text(home, 'hero-step-label')}</span>
+          <span data-hero-tag class="pill-teal">{text(home, 'hero-step-tag')}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-[34px] h-[34px] rounded-full grid place-items-center bg-teal-dim text-teal flex-none">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="m3.5 8.5 3 3 6-7"/></svg>
+          </span>
+          <p class="text-base font-semibold text-bright leading-snug">{twoStep.title}</p>
+        </div>
+        <p class="mt-2.5 text-sm text-body" data-figure><span class="font-semibold text-bright">{twoStep.figure}</span> {twoStep.says}</p>
+      </div>
+      <div class="panel hc s3" data-hero-card>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <span class="text-sm text-dim">{text(home, 'hero-chapter-label')}</span>
+          <span data-hero-tag class="pill-teal tabular-nums">{text(home, 'hero-chapter-count')}</span>
+        </div>
+        <p class="text-base font-semibold text-bright">{text(home, 'hero-chapter')}</p>
+        <div class="mt-3 grid gap-[5px]" style="grid-template-columns: repeat({chapter.total}, 1fr)">
+          {#each Array.from({ length: chapter.total }, (_, i) => i < chapter.done) as on}
+            <i class="block h-2 rounded-full {on ? 'bg-teal' : 'bg-viz-off'}"></i>
+          {/each}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="px-4 sm:px-6 pb-16" aria-labelledby="cards-heading">
+  <div class="max-w-6xl mx-auto border-t border-border pt-14 sm:pt-20">
+    <div class="sec-head mb-8 sm:mb-10">
+      <h2 id="cards-heading" class="text-2xl font-bold text-bright">{text(home, 'cards-heading')}</h2>
+      <p class="text-lg text-body">{text(home, 'cards-lead')}</p>
     </div>
 
-    <div class="text-center relative pt-2">
-      <h1 class="font-display text-[2rem] sm:text-[2.75rem] font-bold text-white mb-4 leading-[1.12] tracking-tight">
-        What are you worried might happen?
-      </h1>
-
-      <p class="text-body text-lg max-w-xl mx-auto mb-9 leading-relaxed">
-        Tap anything below. You get a short list of what to do. Plain steps, no signup, and
-        nothing leaves this browser.
-      </p>
+    <div bind:this={row} on:scroll={measure} data-cards
+         class="cards grid grid-flow-col gap-5 overflow-x-auto snap-x snap-mandatory pb-2">
+      {#each cards as c (c.id)}
+        {@const back = !!flipped[c.id]}
+        <article class="card relative grid snap-start min-h-[26rem]" data-card={c.id}>
+          <button type="button" aria-pressed={back} aria-label={text(home, 'flip-front')}
+                  on:click={() => flip(c.id)} class="flipper"></button>
+          <div data-turn class="turn grid {back ? 'turned' : ''}">
+            <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+            <div data-face="front" class="face panel [grid-area:1/1] flex flex-col p-5 sm:p-6"
+                 inert={back ? true : undefined} on:click={e => turnFrom(e, c.id)}>
+              <FactPicture id={c.id} alt={c.alt} bars={c.id === 'ai-phishing-detect-001' ? bars : []}
+                           labels={[text(home, 'dots-without'), text(home, 'dots-with')]}
+                           caption={c.id === 'location-exposure-001' ? text(home, 'dots-caption') : ''} />
+              <p class="mt-5 text-2xl font-bold text-bright">{c.figure}</p>
+              <p class="mt-2 text-base text-body">{c.says}</p>
+            </div>
+            <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+            <div data-face="back" class="face back panel bg-teal-dim border-transparent [grid-area:1/1] flex flex-col p-5 sm:p-6"
+                 inert={back ? undefined : true} on:click={e => turnFrom(e, c.id)}>
+              <p class="text-sm font-semibold text-dim">{text(home, 'how-label')}</p>
+              <p class="mt-2 text-sm text-body">{c.why}</p>
+              <p class="mt-4 text-sm font-semibold text-dim">{text(home, 'step-label')}</p>
+              <p class="mt-1 text-base font-semibold text-bright">{c.title}</p>
+              <a href="/checklist/{c.id}" class="btn-primary btn-sm self-start mt-4">{text(home, 'show-me-how')}</a>
+            </div>
+          </div>
+        </article>
+      {/each}
     </div>
 
-    <ul class="relative mb-9 space-y-2">
-      {#each harms as harm}
-        {@const isOn = selected.includes(harm)}
+    <div class="flex items-center justify-end gap-3 mt-4">
+      <span class="text-sm text-dim tabular-nums" aria-live="polite">{first === last
+        ? fill(home, 'cards-position-one', { n: first, total: cards.length })
+        : fill(home, 'cards-position', { first, last, total: cards.length })}</span>
+      <button type="button" on:click={() => move(-1)} aria-label={text(home, 'cards-previous')} disabled={first === 1}
+        class="w-11 h-11 rounded-full border border-muted bg-surface text-bright flex items-center justify-center
+               hover:border-teal transition-colors disabled:opacity-40">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5"/></svg>
+      </button>
+      <button type="button" on:click={() => move(1)} aria-label={text(home, 'cards-next')} disabled={last === cards.length}
+        class="w-11 h-11 rounded-full border border-muted bg-surface text-bright flex items-center justify-center
+               hover:border-teal transition-colors disabled:opacity-40">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="px-4 sm:px-6 pb-16">
+  <div class="max-w-3xl mx-auto">
+    <p class="text-base text-bright font-medium text-center">{text(home, 'same-list')}</p>
+
+    <details class="mt-2" bind:this={tailorEl} data-hydrated={hydrated ? 'true' : null}
+             on:toggle={() => (tailorOpen = tailorEl.open)}>
+      <summary class="text-base font-semibold text-body hover:text-bright transition-colors
+                      cursor-pointer list-none min-h-[48px] flex items-center justify-center gap-2 select-none">
+        {text(home, 'say-what')}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+             class="transition-transform duration-150 {tailorOpen ? 'rotate-180' : ''}">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+
+      <ul class="mt-4 space-y-2">
+        {#each harms as harm}
+          {@const isOn = selected.includes(harm)}
+          <li>
+            <button type="button"
+              aria-pressed={isOn}
+              on:click={() => toggle(harm)}
+              class="w-full min-h-[56px] text-left px-4 py-3.5 rounded-xl border flex items-center gap-3.5
+                     transition-colors duration-150 group
+                     {isOn ? 'border-teal bg-teal-dim' : 'border-border bg-surface hover:border-muted'}">
+              <span class="flex-shrink-0 w-[18px] h-[18px] flex items-center justify-center" aria-hidden="true">
+                {#if isOn}
+                  <svg width="18" height="18" viewBox="0 0 14 14" fill="none" class="text-teal">
+                    <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                {:else}
+                  <span class="w-[15px] h-[15px] rounded-full border border-muted block group-hover:border-dim transition-colors"></span>
+                {/if}
+              </span>
+              <span class="text-base {isOn ? 'text-white font-medium' : 'text-bright'}">{harm}</span>
+            </button>
+          </li>
+        {/each}
+      </ul>
+
+      <div class="mt-6 text-center">
+        <a href="/audit" on:click={start} class="btn-primary">{text(home, 'show-my-list')}</a>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="px-4 sm:px-6 border-t border-border">
+  <div class="max-w-6xl mx-auto pt-12">
+    <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {#each trust as t, i}
         <li>
-          <button type="button"
-            aria-pressed={isOn}
-            on:click={() => toggle(harm)}
-            class="w-full min-h-[56px] text-left px-4 py-3.5 rounded-xl border flex items-center gap-3.5
-                   transition-all duration-150 group
-                   {isOn
-                     ? 'border-amber/60 bg-amber-dim/15 shadow-sm shadow-amber/5'
-                     : 'border-border bg-surface hover:border-muted hover:bg-surface/80'}">
-            <span class="flex-shrink-0 w-[18px] h-[18px] flex items-center justify-center" aria-hidden="true">
-              {#if isOn}
-                <svg width="18" height="18" viewBox="0 0 14 14" fill="none" class="text-amber">
-                  <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              {:else}
-                <span class="w-[15px] h-[15px] rounded-full border border-muted block group-hover:border-dim transition-colors"></span>
-              {/if}
-            </span>
-            <span class="font-sans text-[15px] sm:text-base leading-snug
-                         {isOn ? 'text-white font-medium' : 'text-bright'}">{harm}</span>
-          </button>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+               stroke-linecap="round" stroke-linejoin="round" class="text-teal mb-3" aria-hidden="true">
+            {#if i === 0}<path d="M5 4.5h11.5a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h11.5"/>
+            {:else if i === 1}<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+            {:else if i === 2}<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6z"/>
+            {:else}<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>{/if}
+          </svg>
+          <p class="text-base font-semibold text-bright">{t.title}</p>
+          <p class="text-sm text-body mt-1">{t.line}</p>
         </li>
       {/each}
     </ul>
-
-    <div class="relative text-center">
-      <a href="/audit" on:click={start} class="btn-primary inline-block mb-3">
-        Show me what to do
-      </a>
-
-      <p class="text-sm text-dim mb-4">
-        No account. Nothing you tapped left this browser.
-      </p>
-
-      <p class="text-sm mb-3">
-        <a href="/audit" class="text-dim hover:text-body transition-colors">
-          Not sure? Skip this and see the basics &rarr;
-        </a>
-      </p>
-
-      <p class="text-sm flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-        <a href="/how-it-works"
-           class="text-dim hover:text-body transition-colors py-1 min-h-[24px] inline-flex items-center">
-          How Spectra works
-        </a>
-        <a href="/methodology"
-           class="text-muted hover:text-body transition-colors py-1 min-h-[24px] inline-flex items-center">
-          Under the hood
-        </a>
-      </p>
-    </div>
+    <p class="mt-10 flex flex-wrap items-center justify-center gap-x-6 text-base">
+      {#each explainLinks as l}
+        <a href={l.href} class="text-body hover:text-bright transition-colors min-h-[48px] inline-flex items-center">{l.text}</a>
+      {/each}
+    </p>
   </div>
 </section>
 
-<section class="border-t border-border">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
-      <a href="/incident"
-         class="panel p-5 border transition-all duration-200 group cursor-pointer
-                border-red/25 hover:border-red/55 hover:shadow-lg hover:shadow-red/5">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-2 h-2 rounded-full bg-red opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-sm text-red-light opacity-70">Immediate triage, no setup needed</span>
-          </div>
-        </div>
-        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
-          Something already happened
-        </h2>
-        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
-          Hacked, stolen, or something feels wrong? Start here.
-        </p>
-      </a>
+<style>
+  .cards { grid-auto-columns: 86%; scrollbar-width: none; }
+  .cards::-webkit-scrollbar { display: none; }
+  @media (min-width: 640px) { .cards { grid-auto-columns: calc((100% - 1.25rem) / 2); } }
+  @media (min-width: 900px) { .cards { grid-auto-columns: calc((100% - 2.5rem) / 3); } }
+  .card { perspective: 1400px; }
+  .turn { transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); transform-style: preserve-3d; }
+  .turn.turned { transform: rotateY(180deg); }
+  .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; cursor: pointer; }
+  .face.back { transform: rotateY(180deg); }
 
-      <a href="/resources"
-         class="panel p-5 border transition-all duration-200 group cursor-pointer
-                border-teal/25 hover:border-teal/55 hover:shadow-lg hover:shadow-teal/5">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-2 h-2 rounded-full bg-teal opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-sm text-teal-light opacity-70">No apps named, no affiliate links</span>
-          </div>
-        </div>
-        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
-          Where our steps send you
-        </h2>
-        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
-          The maintained guides our steps reference, kept current by people who track this full time.
-        </p>
-      </a>
+  .flipper { position: absolute; inset: 0; z-index: 10; border-radius: 1rem; pointer-events: none; background: transparent; }
 
-      <a href="/audit?mode=guardian"
-         class="panel p-5 border transition-all duration-200 group cursor-pointer
-                border-border hover:border-muted hover:shadow-lg hover:shadow-black/20">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-2 h-2 rounded-full bg-muted opacity-70 mt-0.5 flex-shrink-0"></span>
-            <span class="text-sm text-body opacity-70">Kids, teens, family members</span>
-          </div>
-        </div>
-        <h2 class="font-display text-bright font-semibold text-base mb-2 group-hover:text-white transition-colors">
-          Setting this up for someone else
-        </h2>
-        <p class="text-sm text-dim leading-relaxed group-hover:text-body transition-colors">
-          A kid's first phone, a parent, a friend.
-        </p>
-      </a>
-    </div>
-  </div>
-</section>
+  .sec-head { display: grid; gap: 0.75rem; }
+  @media (min-width: 900px) { .sec-head { grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end; } }
+
+  .hero { display: grid; gap: 1.75rem; align-items: center; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1.08fr 0.92fr; gap: 3.5rem; } }
+
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .hc { width: min(400px, 90%); padding: 18px 20px; }
+  .s1 { align-self: flex-start; margin-left: 2%; rotate: -2.2deg; }
+  .s2 { align-self: flex-end; rotate: 1.6deg; }
+  .s3 { align-self: flex-start; margin-left: 8%; rotate: -0.8deg; }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
+    .hc { animation: float 7s ease-in-out infinite; }
+    .s2 { animation-delay: -2.3s; }
+    .s3 { animation-delay: -4.6s; }
+  }
+  @keyframes float { 50% { translate: 0 -6px; } }
+
+  @media (max-width: 640px) {
+    .stack { gap: 12px; }
+    .hc { width: 100%; padding: 14px 16px; }
+    .s1 { margin-left: 0; rotate: -1deg; }
+    .s2 { rotate: 0.8deg; width: 94%; }
+    .s3 { margin-left: 0; rotate: none; width: 90%; }
+  }
+</style>

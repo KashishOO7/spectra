@@ -1,5 +1,7 @@
 import type { UserProfile, AssessmentResult, TimelineEvent, SEQuizResult, AdversaryType, Track, Harm } from '../types.js';
 import { HARM_ADVERSARIES } from '../audit/constants.js';
+import names from '#spectra-wiki/page/names';
+import { text } from '../wiki/page.js';
 
 const DB_NAME = 'spectra';
 const DB_VERSION = 1;
@@ -71,7 +73,7 @@ export function computeAdversaries(profile: UserProfile): AdversaryType[] {
   ])];
 }
 
-function migrate(stored: UserProfile): { profile: UserProfile; changed: boolean } {
+export function migrate(stored: UserProfile): { profile: UserProfile; changed: boolean } {
   if (Array.isArray(stored.adversariesManual)) return { profile: stored, changed: false };
 
   const derived = new Set(derivedAdversaries(stored.harms));
@@ -183,7 +185,7 @@ export async function addTimelineEvent(event: Omit<TimelineEvent, 'timestamp' | 
   
   const fullEvent = {
     ...event,
-    id: event.id || crypto.randomUUID(), 
+    id: event.id || crypto.randomUUID(),
     timestamp: event.timestamp || new Date().toISOString()
   } as TimelineEvent;
 
@@ -194,6 +196,30 @@ export async function addTimelineEvent(event: Omit<TimelineEvent, 'timestamp' | 
 export async function saveSEQuizResult(result: SEQuizResult): Promise<void> {
   const profile = await loadOrCreateProfile();
   profile.se_quiz = result;
+  await saveProfile(profile);
+}
+
+export async function saveStart(start: NonNullable<UserProfile['start']>): Promise<void> {
+  const profile = await loadOrCreateProfile();
+  profile.start = start;
+  await saveProfile(profile);
+}
+
+export async function saveLastOpen(id: string): Promise<void> {
+  const profile = await loadOrCreateProfile();
+  profile.last_open = { id, at: new Date().toISOString() };
+  await saveProfile(profile);
+}
+
+type Progress = NonNullable<UserProfile['in_progress']>;
+
+export async function saveProgress<K extends keyof Progress>(kind: K, state: Progress[K] | null): Promise<void> {
+  const profile = state ? await loadOrCreateProfile() : await loadProfile();
+  if (!profile) return;
+  const next: Progress = { ...(profile.in_progress ?? {}) };
+  if (state) next[kind] = state;
+  else delete next[kind];
+  profile.in_progress = next;
   await saveProfile(profile);
 }
 
@@ -225,7 +251,7 @@ export async function applyLifeEvent(
 
   await addTimelineEvent({
     type: 'life_event',
-    life_event_label: sensitive ? 'Your setup updated' : label,
+    life_event_label: sensitive ? text(names, 'life-event-private') : label,
     timestamp: new Date().toISOString()
   });
 }
@@ -277,19 +303,29 @@ export function createDefaultProfile(): UserProfile {
   };
 }
 
+export type ClearPart = 'cache' | 'worker' | 'database';
+export class ClearIncompleteError extends Error {
+  readonly parts: ClearPart[];
+  constructor(parts: ClearPart[]) {
+    super(`clear incomplete: ${parts.join(', ')}`);
+    this.name = 'ClearIncompleteError';
+    this.parts = parts;
+  }
+}
+
 export async function clearAllData(): Promise<void> {
-  const problems: string[] = [];
+  const problems: ClearPart[] = [];
 
   if (typeof caches !== 'undefined') {
     try {
       for (const key of await caches.keys()) await caches.delete(key);
-    } catch { problems.push('cache storage'); }
+    } catch { problems.push('cache'); }
   }
 
   if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
     try {
       for (const reg of await navigator.serviceWorker.getRegistrations()) await reg.unregister();
-    } catch { problems.push('service worker'); }
+    } catch { problems.push('worker'); }
   }
 
   try {
@@ -304,33 +340,49 @@ export async function clearAllData(): Promise<void> {
     const req = indexedDB.deleteDatabase(DB_NAME);
     req.onsuccess = () => resolve();
     req.onerror   = () => reject(req.error);
-    req.onblocked = () => { problems.push('the database (another tab has it open)'); resolve(); };
+    req.onblocked = () => { problems.push('database'); resolve(); };
   });
 
-  if (problems.length) {
-    throw new Error(`Cleared your data, but could not clear: ${problems.join(', ')}.`);
-  }
+  if (problems.length) throw new ClearIncompleteError(problems);
 }
 
 export async function exportProfile(): Promise<string> {
-  const profile = await loadProfile();
+  return serializeProfile(await loadProfile());
+}
+
+export function serializeProfile(profile: UserProfile | null): string {
   return JSON.stringify(profile, null, 2);
 }
 
+export class InvalidProfileError extends Error {
+  constructor() {
+    super('invalid profile');
+    this.name = 'InvalidProfileError';
+  }
+}
+
 export async function importProfile(jsonStr: string): Promise<void> {
+  await saveProfile(parseProfile(jsonStr));
+}
+
+export function parseProfile(jsonStr: string): UserProfile {
   const data: unknown = JSON.parse(jsonStr);
   if (
     !data ||
     typeof data !== 'object' ||
     (data as Record<string, unknown>).id !== PROFILE_KEY ||
     !Array.isArray((data as Record<string, unknown>).tracks) ||
-    !Array.isArray((data as Record<string, unknown>).platforms)
+    !Array.isArray((data as Record<string, unknown>).platforms) ||
+    ['harms', 'adversariesManual'].some(k => {
+      const v = (data as Record<string, unknown>)[k];
+      return v !== undefined && !Array.isArray(v);
+    })
   ) {
-    throw new Error('Invalid profile data');
+    throw new InvalidProfileError();
   }
   const profile = data as UserProfile;
   if (!Array.isArray(profile.tracks) || !profile.tracks.includes('general')) {
     profile.tracks = ['general', ...(profile.tracks ?? []).filter(t => t !== 'general')];
   }
-  await saveProfile(profile);
+  return profile;
 }

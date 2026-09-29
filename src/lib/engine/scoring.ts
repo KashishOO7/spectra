@@ -12,13 +12,17 @@ import type {
 import { HARMS } from '../audit/constants.js';
 import { harmsForItem } from '../audit/helpers.js';
 import { isHarmCovered } from './coverage.js';
+import { feelingsFor } from './feelings.js';
 
 function seWeight(item: ChecklistItem, profile: UserProfile): number {
-  if (item.category !== 'human_vulnerability' || !item.emotional_register) return 1.0;
-  const quiz = profile.se_quiz;
-  if (!quiz?.susceptibilities) return 1.0;
-  const score = quiz.susceptibilities[item.emotional_register as string] ?? 50;
-  return 0.8 + (score / 100) * 0.6;
+  const susceptibilities = profile.se_quiz?.susceptibilities;
+  if (!susceptibilities) return 1.0;
+  let weight = 1.0;
+  for (const feeling of feelingsFor(item.id)) {
+    const score = susceptibilities[feeling];
+    if (typeof score === 'number') weight = Math.max(weight, 0.8 + (score / 100) * 0.6);
+  }
+  return weight;
 }
 
 const MATURITY_THRESHOLDS = [
@@ -92,8 +96,7 @@ export function scoreAssessment(
       threat_multiplier = Math.max(...mults);
     }
 
-    const human_multiplier = seWeight(item, profile);
-    threat_multiplier *= human_multiplier;
+    const order_multiplier = seWeight(item, profile);
 
 
     let compensating_factor = 0;
@@ -109,6 +112,7 @@ export function scoreAssessment(
     const relevance_score = threat_multiplier;
     const full_weight = base_weight * threat_multiplier * (1 - compensating_factor);
     const effective_score = full_weight;
+    const priority_score = full_weight * order_multiplier;
     fullWeights.set(item.id, full_weight);
 
     const raw_skipped     = !!(profile.skipped?.[item.id]);
@@ -123,9 +127,10 @@ export function scoreAssessment(
     scoredItems.push({
       ...item,
       effective_score,
+      priority_score,
       relevance_score,
       is_applicable:     true,
-      priority_rank:     0,   
+      priority_rank:     0,
       is_implemented,
       is_skipped,
       is_snoozed,
@@ -134,12 +139,14 @@ export function scoreAssessment(
     });
   }
 
+  const startRank = new Map(Object.entries(profile.start?.answers ?? {})
+    .filter(([, answer]) => answer !== 'yes').map(([id], i) => [id, i]));
   const unimplemented = scoredItems
     .filter(i => !i.is_implemented && !i.is_skipped)
     .sort((a, b) =>
       a.is_snoozed !== b.is_snoozed
         ? (a.is_snoozed ? 1 : -1)
-        : b.effective_score - a.effective_score
+        : (startRank.get(a.id) ?? Infinity) - (startRank.get(b.id) ?? Infinity) || b.priority_score - a.priority_score
     );
   unimplemented.forEach((item, idx) => { item.priority_rank = idx + 1; });
 
@@ -159,31 +166,13 @@ export function scoreAssessment(
 
   const criticalGaps = scoredItems
     .filter(i => !i.is_implemented && !i.is_skipped && i.maturity_level <= 2)
-    .sort((a, b) => b.effective_score - a.effective_score)
+    .sort((a, b) => b.priority_score - a.priority_score)
     .slice(0, 8);
 
-  const QUICK_SETUP = new Set(['5min', '10min']);
-  const critical_ids = new Set(criticalGaps.map(i => i.id));
-
-  const quickWins = scoredItems
-    .filter(i =>
-      !i.is_implemented && !i.is_skipped &&
-      !critical_ids.has(i.id) &&
-      QUICK_SETUP.has(i.time_estimate?.setup as string)
-    )
-    .sort((a, b) => b.effective_score - a.effective_score)
-    .slice(0, 5);
 
   const reverify_items = scoredItems
     .filter(i => i.needs_reverification)
     .sort((a, b) => b.effective_score - a.effective_score);
-
-  const quick_ids    = new Set(quickWins.map(i => i.id));
-
-  const next_items = scoredItems
-    .filter(i => !i.is_implemented && !i.is_skipped && !critical_ids.has(i.id) && !quick_ids.has(i.id))
-    .sort((a, b) => b.effective_score - a.effective_score)
-    .slice(0, 5);
 
   const humanItems      = scoredItems.filter(i => i.category === 'human_vulnerability');
   const humanImplemented = humanItems.filter(i => i.is_implemented).length;
@@ -211,15 +200,15 @@ export function scoreAssessment(
     skipped_weight_ratio: skippedWeightRatio,
     band_capped_by_skips: bandCappedBySkips,
     critical_gaps:    criticalGaps,
-    quick_wins:       quickWins,
     reverify_items,
-    next_items,
     human_vulnerability_score: humanVulnerabilityScore,
     last_calculated:  new Date().toISOString(),
     all_items: scoredItems.sort((a, b) => {
       if (a.is_implemented !== b.is_implemented) return a.is_implemented ? 1 : -1;
       if (!a.is_implemented && a.is_snoozed !== b.is_snoozed) return a.is_snoozed ? 1 : -1;
-      return b.effective_score - a.effective_score;
+      const sa = startRank.get(a.id) ?? Infinity, sb = startRank.get(b.id) ?? Infinity;
+      if (sa !== sb) return sa - sb;
+      return b.priority_score - a.priority_score;
     })
   };
 }
@@ -239,9 +228,7 @@ function emptyResult(): AssessmentResult {
     skipped_weight_ratio: 0,
     band_capped_by_skips: false,
     critical_gaps:    [],
-    quick_wins:       [],
     reverify_items:   [],
-    next_items:       [],
     human_vulnerability_score: null,
     last_calculated:  new Date().toISOString(),
     all_items:        []

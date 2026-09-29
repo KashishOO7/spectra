@@ -1,26 +1,30 @@
 {
-  "name": "Spectra | Your security list",
+  "name": "Spectra",
   "short_name": "Spectra",
-  "description": "A short list of what to do about your own security, ordered by what you say worries you. No account, and nothing leaves your browser.",
+  "description": "A free checklist for your own safety, online and offline. Plain steps with sources, ordered for you. No account, and what you tap stays in your browser.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#080c12",
-  "theme_color": "#080c12",
-  "orientation": "portrait-primary",
-  "categories": [
-    "security",
-    "productivity",
-    "utilities"
-  ],
+  "background_color": "#f6f4ef",
+  "theme_color": "#f6f4ef",
   "icons": [
     {
       "src": "/favicon.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
-  ],
-  "screenshots": [],
-  "prefer_related_applications": false
+  ]
 }
