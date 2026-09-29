@@ -1,0 +1,19 @@
+{
+  "recorded": "2026-09-12",
+  "standard": 6.6,
+  "note": "ADVISORY from 2026-09-12, maintainer's call. Counts print and block nothing. The corpus is being rewritten by hand with him reading every line; a gate will be rebuilt later from content he has approved. Optimising to these rules produced grade 4.59 prose and deleted sourced facts that matched a regex.",
+  "blocking": false,
+  "counts": {
+    "GRADE_TOO_THIN": 25,
+    "READING_GRADE": 167,
+    "SENTENCE_LENGTH": 59,
+    "FRAGMENT": 24,
+    "UNCOMMON_WORD": 151,
+    "ROTTING_DETAIL": 3,
+    "NO_VERBATIM": 19,
+    "JARGON_IN_CONTENT": 14,
+    "DANGLING_REFERENCE": 5,
+    "DUPLICATE_STRING": 2
+  },
+  "advisory": true
+}

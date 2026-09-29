@@ -3,6 +3,8 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join, relative } from 'path';
 import yaml from 'js-yaml';
+import { readControls } from '../src/lib/content/controls.ts';
+import { readResources } from '../src/lib/content/resources.ts';
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, 'content');
@@ -10,9 +12,9 @@ const CONTENT_DIR = join(ROOT, 'content');
 const R = '\x1b[31m'; const G = '\x1b[32m'; const Y = '\x1b[33m';
 const B = '\x1b[34m'; const D = '\x1b[2m'; const X = '\x1b[0m'; const BOLD = '\x1b[1m';
 
-const AMBER_DAYS = 180;     
-const RED_DAYS = 365;       
-const CRITICAL_DAYS = 548;  
+const AMBER_DAYS = 180;
+const RED_DAYS = 365;
+const CRITICAL_DAYS = 548;
 
 const TRACKING_PARAMS = [
   'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
@@ -83,10 +85,10 @@ function* extractUrls(data: any, prefix = ''): Generator<[string, string]> {
 }
 
 function main() {
-  const items = readYamlDir('items');
+  const items: Entry[] = readControls(ROOT).map(({ file, item }) => ({ file, item }));
   const threats = readYamlDir('threats');
   const controls = readYamlDir('controls');
-  const resources = readYamlDir('resources');
+  const resources: Entry[] = readResources(ROOT).map(({ file, item }) => ({ file, item }));
   const all = [...items, ...threats, ...controls, ...resources];
 
   const ids = new Set<string>();

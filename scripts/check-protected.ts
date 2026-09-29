@@ -4,6 +4,9 @@ import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import yaml from 'js-yaml';
+import { readControls } from '../src/lib/content/controls.ts';
+import { readResources } from '../src/lib/content/resources.ts';
+import { readLookups } from '../src/lib/content/lookups.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASELINE = join(ROOT, 'scripts', 'protected-baseline.json');
@@ -14,9 +17,19 @@ const R = '\x1b[31m', G = '\x1b[32m', Y = '\x1b[33m', B = '\x1b[34m', D = '\x1b[
 const BOLD = '\x1b[1m';
 
 
+interface Reseal {
+  on: string;
+  note?: string;
+  accepted: string[];
+}
+
 interface Baseline {
   sealed_on: string;
   sealed_note: string;
+  first_sealed_on?: string;
+  rekeyed_on?: string;
+  rekeyed_note?: string;
+  reseals?: Reseal[];
   fields: Record<string, string>;
 }
 
@@ -38,10 +51,16 @@ function stable(value: unknown): string {
 }
 
 function contentDocs(source?: (rel: string) => string | null): Array<{ file: string; doc: any }> {
-  const out: Array<{ file: string; doc: any }> = [];
+  const out: Array<{ file: string; doc: any }> = [
+    ...readControls(ROOT, source),
+    ...readResources(ROOT, source),
+    ...readLookups(ROOT, source)
+  ].map(({ file, item }) => ({ file, doc: item }));
   const walk = (dir: string) => {
+    if (!existsSync(join(ROOT, dir))) return;
     for (const entry of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
       const rel = `${dir}/${entry.name}`;
+      if (['content/items', 'content/resources', 'content/lookups'].includes(rel)) continue;
       if (entry.isDirectory()) { walk(rel); continue; }
       if (!/\.ya?ml$/.test(entry.name)) continue;
       const raw = source ? source(rel) : readFileSync(join(ROOT, rel), 'utf-8');
@@ -61,10 +80,11 @@ function contentDocs(source?: (rel: string) => string | null): Array<{ file: str
   return out;
 }
 
-function readProtected(source?: (rel: string) => string | null): Map<string, string> {
-  const found = new Map<string, string>();
+function readProtected(source?: (rel: string) => string | null): { values: Map<string, string>; files: Map<string, string> } {
+  const values = new Map<string, string>();
+  const files = new Map<string, string>();
   for (const { file, doc } of contentDocs(source)) {
-    const id = typeof doc.id === 'string' ? doc.id : '(no id)';
+    const id = typeof doc.id === 'string' ? doc.id : `(no id in ${file})`;
     const visit = (node: unknown, path: string[]) => {
       if (!node || typeof node !== 'object') return;
       if (Array.isArray(node)) {
@@ -73,13 +93,17 @@ function readProtected(source?: (rel: string) => string | null): Map<string, str
       }
       for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
         const here = [...path, k];
-        if (PROTECTED.has(k)) found.set(`${file}#${id}::${here.join('.')}`, stable(v));
-        else visit(v, here);
+        if (PROTECTED.has(k)) {
+          const key = `${id}::${here.join('.')}`;
+          if (files.has(key)) throw new Error(`${key} is read from both ${files.get(key)} and ${file}; an id names one document`);
+          values.set(key, stable(v));
+          files.set(key, file);
+        } else visit(v, here);
       }
     };
     visit(doc, []);
   }
-  return found;
+  return { values, files };
 }
 
 
@@ -94,9 +118,9 @@ function readProtectedAtHead(): Map<string, string> | null {
       try {
         return execFileSync('git', ['show', `HEAD:${rel}`], { cwd: ROOT, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
       } catch {
-        return null; 
+        return null;
       }
-    });
+    }).values;
   } catch {
     return null;
   }
@@ -106,8 +130,10 @@ function readProtectedAtHead(): Map<string, string> | null {
 const argv = process.argv.slice(2);
 const wantsReseal = argv.includes('--reseal');
 const confirmed = argv.includes('--maintainer-asked-for-this');
+const noteAt = argv.indexOf('--note');
+const note = noteAt >= 0 ? argv[noteAt + 1]?.trim() || undefined : undefined;
 
-const current = readProtected();
+const { values: current, files: fileOf } = readProtected();
 
 if (wantsReseal && !confirmed) {
   console.log(`\n${R}${BOLD}Refusing to reseal.${X}`);
@@ -123,32 +149,40 @@ if (wantsReseal && confirmed) {
     : null;
 
   console.log(`\n${Y}${BOLD}Resealing the protected-field baseline.${X}`);
+  const accepted: string[] = [];
   if (previous) {
-    const changes: string[] = [];
     for (const [k, v] of current) {
       const was = previous.fields[k];
-      if (was === undefined) changes.push(`  ${G}+${X} ${k} = ${v}`);
-      else if (was !== v) changes.push(`  ${Y}~${X} ${k}: ${was} ${D}->${X} ${v}`);
+      if (was === undefined) accepted.push(`+ ${k} = ${v}`);
+      else if (was !== v) accepted.push(`~ ${k}: ${was} -> ${v}`);
     }
     for (const k of Object.keys(previous.fields)) {
-      if (!current.has(k)) changes.push(`  ${R}-${X} ${k} ${D}(was ${previous.fields[k]})${X}`);
+      if (!current.has(k)) accepted.push(`- ${k} (was ${previous.fields[k]})`);
     }
-    if (!changes.length) {
+    if (!accepted.length) {
       console.log(`${D}Nothing to accept: the tree already matches the baseline.${X}\n`);
       process.exit(0);
     }
-    console.log(`${D}Accepting ${changes.length} change(s):${X}\n`);
-    for (const c of changes) console.log(c);
+    console.log(`${D}Accepting ${accepted.length} change(s):${X}\n`);
+    const mark = { '+': G, '~': Y, '-': R } as Record<string, string>;
+    for (const a of accepted) console.log(`  ${mark[a[0]]}${a[0]}${X}${a.slice(1)}`);
   } else {
     console.log(`${D}No baseline existed. Sealing ${current.size} values as they stand.${X}`);
   }
+  if (note) console.log(`\n${D}Reason recorded:${X} ${note}`);
 
+  const { sealed_on: was_sealed_on, sealed_note: _, first_sealed_on, reseals, fields: __, ...kept } =
+    previous ?? ({} as Partial<Baseline>);
+  const on = today();
   const sealed: Baseline = {
-    sealed_on: today(),
+    sealed_on: on,
     sealed_note:
       'Written by scripts/check-protected.ts --reseal. Every value here is a calibration or an ' +
       'attestation. Do not edit this file to make a gate pass; that is the one thing it exists ' +
       'to prevent. See the header of scripts/check-protected.ts.',
+    ...(previous ? { first_sealed_on: first_sealed_on ?? was_sealed_on } : {}),
+    ...kept,
+    ...(previous ? { reseals: [...(reseals ?? []), { on, ...(note ? { note } : {}), accepted }] } : {}),
     fields: Object.fromEntries([...current.entries()].sort((a, b) => a[0].localeCompare(b[0])))
   };
   writeFileSync(BASELINE, JSON.stringify(sealed, null, 2) + '\n', 'utf-8');
@@ -202,7 +236,7 @@ const added: string[] = [];
 for (const [key, value] of current) {
   const was = baseline.fields[key];
   if (was === undefined) {
-    added.push(`${key} = ${value}`);
+    added.push(`${key} = ${value} ${D}(${fileOf.get(key)})${X}`);
   } else if (was !== value) {
     const atHead = head?.get(key);
     const when =
@@ -211,15 +245,15 @@ for (const [key, value] of current) {
       : `${D} (uncommitted in the working tree)${X}`;
     const detail = narrow(was, value);
     changed.push(detail
-      ? `${key}\n       ${BOLD}${detail}${X}${when}`
-      : `${key}\n       was ${BOLD}${was}${X}, tree says ${BOLD}${value}${X}${when}`);
+      ? `${key} ${D}(${fileOf.get(key)})${X}\n       ${BOLD}${detail}${X}${when}`
+      : `${key} ${D}(${fileOf.get(key)})${X}\n       was ${BOLD}${was}${X}, tree says ${BOLD}${value}${X}${when}`);
   }
 }
 for (const key of Object.keys(baseline.fields)) {
   if (!current.has(key)) removed.push(`${key} ${D}(was ${baseline.fields[key]})${X}`);
 }
 
-const protectedFiles = new Set([...current.keys()].map(k => k.split('#')[0])).size;
+const protectedFiles = new Set(fileOf.values()).size;
 
 if (added.length) {
   console.log(`${Y}${BOLD}NEW protected values (${added.length}) — not blocking${X}`);

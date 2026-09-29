@@ -1,14 +1,18 @@
 {
   "name": "spectra",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Personal Security Self-Audit Framework by FPSZero",
   "license": "AGPL-3.0-only AND CC-BY-SA-4.0",
   "private": true,
+  "imports": {
+    "#spectra-wiki/*": "./src/lib/wiki/node/*.ts"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "tsx scripts/check-internals.ts && vite build",
     "preview": "vite preview",
-    "validate": "tsx scripts/validate.ts && tsx scripts/check-internals.ts && tsx scripts/check-protected.ts && tsx scripts/check-prose.ts",
+    "validate": "tsx scripts/validate.ts && tsx scripts/check-internals.ts && tsx scripts/check-protected.ts && tsx scripts/check-prose.ts && tsx scripts/check-note-reads.ts",
+    "check:content": "tsx scripts/check-content.ts",
     "maintain": "tsx scripts/maintain.ts",
     "new:item": "tsx scripts/new-item.ts",
     "check:links": "tsx scripts/check-links.ts",
@@ -34,7 +38,8 @@
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "qrcode-generator": "^2.0.4"
+    "qrcode-generator": "^2.0.4",
+    "spectra": "file:../.."
   },
   "type": "module"
 }

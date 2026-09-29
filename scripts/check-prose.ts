@@ -3,6 +3,9 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { readControls } from '../src/lib/content/controls.ts';
+import { readResources } from '../src/lib/content/resources.ts';
+import { readLookups } from '../src/lib/content/lookups.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BASELINE = join(ROOT, 'scripts', 'prose-baseline.json');
@@ -72,7 +75,14 @@ const acquired: Hit[] = [];
 const already: Hit[] = [];
 
 for (const dir of LOADED) {
-  for (const { file, doc } of docsIn(dir)) {
+  const docs = dir === 'content/items'
+    ? readControls(ROOT).map(({ file, item }) => ({ file, doc: item }))
+    : dir === 'content/resources'
+      ? readResources(ROOT).map(({ file, item }) => ({ file, doc: item }))
+      : dir === 'content/lookups'
+        ? readLookups(ROOT).map(({ file, item }) => ({ file, doc: item }))
+        : docsIn(dir);
+  for (const { file, doc } of docs) {
     const id = typeof doc.id === 'string' ? doc.id : '(no id)';
     const visit = (node: unknown, path: string[]) => {
       if (typeof node === 'string') {
@@ -125,6 +135,26 @@ for (const rel of [
     .replace(/<!--[\s\S]*?-->/g, m => m.replace(/[^\n]/g, ' '))
     .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
     .replace(/(^|[^:])\/\/[^\n]*/gm, m => m.replace(/[^\n]/g, ' '));
+  for (const m of blanked.matchAll(EM_DASH)) {
+    const line = raw.slice(0, m.index ?? 0).split('\n').length;
+    srcHits.push({ key: `${rel}::line`, file: rel, id: '', path: `line ${line}`, context: snippet(raw, m.index ?? 0) });
+  }
+}
+
+
+function notesUnder(dir: string, acc: string[] = []): string[] {
+  if (!existsSync(join(ROOT, dir))) return acc;
+  for (const entry of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+    const rel = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) { if (!['wiki/_rules', 'wiki/controls', 'wiki/resources', 'wiki/lookups'].includes(rel)) notesUnder(rel, acc); }
+    else if (entry.name.endsWith('.md')) acc.push(rel);
+  }
+  return acc;
+}
+
+for (const rel of notesUnder('wiki')) {
+  const raw = readFileSync(join(ROOT, rel), 'utf-8');
+  const blanked = raw.replace(/%%[\s\S]*?%%/g, m => m.replace(/[^\n]/g, ' '));
   for (const m of blanked.matchAll(EM_DASH)) {
     const line = raw.slice(0, m.index ?? 0).split('\n').length;
     srcHits.push({ key: `${rel}::line`, file: rel, id: '', path: `line ${line}`, context: snippet(raw, m.index ?? 0) });

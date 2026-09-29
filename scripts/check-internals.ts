@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
 
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
+import { WIKI_FOLDERS } from '../src/lib/wiki/read.ts';
 
 const ROOT = process.cwd();
 const R = '\x1b[31m'; const G = '\x1b[32m'; const B = '\x1b[34m';
@@ -11,9 +12,12 @@ const ALLOWED_FILES = new Set([
   'src/routes/methodology/+page.svelte'
 ]);
 
+const ALLOWED_NOTES = new Set([
+  'wiki/pages/methodology.md'
+]);
+
 const ALLOWED_EXPRESSIONS: Record<string, RegExp[]> = {
-  'src/routes/graph/+page.svelte': [/^coveragePct$/, /Math\.round\(zoom \* 100\)/],
-  'src/lib/components/audit/QuizView.svelte': [/\bscore\b/]
+  'src/routes/graph/+page.svelte': [/^coveragePct$/, /Math\.round\(zoom \* 100\)/]
 };
 
 const ALLOWED_HTML: Record<string, RegExp[]> = {
@@ -175,9 +179,27 @@ for (const full of routeModules) {
   }
 }
 
+const CONTENT_NOTE_FOLDERS = ['controls', 'resources', 'lookups'];
+const notesUnder = (rel: string): string[] => {
+  const dir = join(ROOT, rel);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).flatMap(f => statSync(join(dir, f)).isDirectory() ? notesUnder(`${rel}/${f}`) : f.endsWith('.md') ? [`${rel}/${f}`] : []);
+};
+const notes = [...WIKI_FOLDERS, ...CONTENT_NOTE_FOLDERS].flatMap(folder => notesUnder(`wiki/${folder}`));
+for (const rel of notes) {
+  if (ALLOWED_NOTES.has(rel)) continue;
+  const source = readFileSync(join(ROOT, rel), 'utf8');
+  const blank = (m: string) => m.replace(/[^\n]/g, ' ');
+  const visible = source.replace(/^---\r?\n[\s\S]*?\r?\n---/, blank).replace(/%%[\s\S]*?%%/g, blank);
+  for (const { re, what } of INTERNAL_LITERALS) {
+    const m = re.exec(visible);
+    if (m) findings.push({ file: rel, line: lineOf(source, m.index ?? 0), what, snippet: m[0] });
+  }
+}
+
 console.log('');
 if (findings.length === 0) {
-  console.log(`${G}${BOLD}✓ I5 holds.${X} ${D}${files.length} components and ${routeModules.length} route modules checked; no engine internal renders outside ${[...ALLOWED_FILES].join(', ')}, and every {@html} is listed.${X}\n`);
+  console.log(`${G}${BOLD}✓ I5 holds.${X} ${D}${files.length} components and ${routeModules.length} route modules checked, and ${notes.length} notes; no engine internal renders outside ${[...ALLOWED_FILES, ...ALLOWED_NOTES].join(', ')}, and every {@html} is listed.${X}\n`);
   process.exit(0);
 }
 
@@ -191,5 +213,5 @@ for (const [file, list] of byFile) {
   console.log(`  ${D}${file}${X}`);
   for (const f of list) console.log(`    ${R}✗${X} line ${f.line}: ${f.what} — ${D}${f.snippet}${X}`);
 }
-console.log(`\n${D}Allowed surfaces: ${[...ALLOWED_FILES].join(', ')} and the /graph percentage.${X}\n`);
+console.log(`\n${D}Allowed surfaces: ${[...ALLOWED_FILES, ...ALLOWED_NOTES].join(', ')} and the /graph percentage.${X}\n`);
 process.exit(1);

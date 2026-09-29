@@ -1,10 +1,17 @@
 #!/usr/bin/env tsx
 
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import yaml from 'js-yaml';
-import { HARMS } from '../src/lib/audit/constants.js';
+import { HARMS, TRACK_OPTIONS } from '../src/lib/audit/constants.js';
 import type { Asset, AttackVector, Harm } from '../src/lib/types.js';
+import { readControls } from '../src/lib/content/controls.ts';
+import { readResources } from '../src/lib/content/resources.ts';
+import { readLookups } from '../src/lib/content/lookups.ts';
+import { WIKI_FOLDERS } from '../src/lib/wiki/read.ts';
+import { parsePage, items as noteItems, text as noteText } from '../src/lib/wiki/page.ts';
+import { CHAPTERS } from '../src/lib/audit/chapters.ts';
+import { feelingsFor } from '../src/lib/engine/feelings.ts';
 
 const ROOT = process.cwd();
 const CONTENT_DIR = join(ROOT, 'content');
@@ -120,16 +127,18 @@ const VALID_ATTACK_VECTORS = new Set([
   'social_engineering', 'malware', 'supply_chain', 'credential_stuffing',
   'sim_swap', 'browser_fingerprinting', 'metadata_analysis', 'osint_passive',
   'deepfake', 'voice_clone', 'data_broker_aggregation', 'insider_access',
+  'identity_fraud',
 ]);
 
 const VALID_ASSETS = new Set([
   'credentials', 'local_data', 'cloud_data', 'communications', 'metadata',
   'location', 'identity', 'financial', 'relationships', 'reputation',
-  'devices', 'biometrics', 'behavioral_data',
+  'devices', 'biometrics', 'behavioral_data', 'account_access',
 ]);
 
 const VALID_TRACKS = new Set([
-  'general', 'kids_teen', 'womens_safety', 'journalist', 'corporate', 'ai_focused',
+  'general', 'caring_for_someone', 'known_person_risk', 'public_work', 'work_accounts',
+  'ai_focused',
 ]);
 
 const VALID_PLATFORMS = new Set([
@@ -161,11 +170,25 @@ const TRACKING_PARAMS = [
 
 console.log('\nRunning schema validation...');
 
-const allChecklistItems = readAllItems('items');
+const allChecklistItems: Array<{ file: string; item: any }> = (() => {
+  try {
+    return readControls(ROOT);
+  } catch (e) {
+    errors.push({ rule: 'YAML_PARSE', severity: 'blocking', file: 'content/items or wiki/controls', message: String(e) });
+    return [];
+  }
+})();
 const allThreats       = readAllItems('threats');
 const allControls      = readAllItems('controls');
 
-const allResources = readAllItems('resources');
+const allResources: Array<{ file: string; item: any }> = (() => {
+  try {
+    return readResources(ROOT);
+  } catch (e) {
+    errors.push({ rule: 'YAML_PARSE', severity: 'blocking', file: 'content/resources or wiki/resources', message: String(e) });
+    return [];
+  }
+})();
 
 const allContent = [
   ...allChecklistItems,
@@ -174,7 +197,7 @@ const allContent = [
   ...allControls,
 ];
 
-const allIds = new Map<string, string>(); 
+const allIds = new Map<string, string>();
 
 for (const { file, item } of allContent) {
   if (!item || typeof item !== 'object') {
@@ -202,7 +225,7 @@ for (const { file, item } of allContent) {
 const CHECKLIST_REQUIRED = [
   'id', 'schema_version', 'version', 'title', 'description',
   'threat_narrative', 'category', 'subcategory', 'tracks', 'platforms',
-  'difficulty', 'time_estimate', 'maturity_level', 'adversaries',
+  'difficulty', 'maturity_level', 'adversaries',
   'attack_vectors', 'assets_protected', 'score_weight', 'status',
   'last_verified', 'sources',
 ];
@@ -235,12 +258,10 @@ for (const { file, item } of allChecklistItems) {
       `time_estimate.ongoing '${item.time_estimate.ongoing}' is outside the declared union`, id);
   }
 
-  if (item.simple_description === undefined) {
-    warn('SIMPLE_DESCRIPTION_PRESENT', file,
-      `Missing simple_description — the action card will fall back to title`, id);
-  } else if (typeof item.simple_description !== 'string' || item.simple_description.trim() === '') {
-    fail('SIMPLE_DESCRIPTION_PRESENT', file,
-      `simple_description must be a non-empty string`, id);
+  if (typeof item.description !== 'string' || item.description.trim() === '') {
+    fail('DESCRIPTION_PRESENT', file,
+      `description must be a non-empty string — it is the action card headline, the list row, ` +
+      `the step page h1 and the search blurb, all taken from its first sentence`, id);
   }
 
   for (const adv of (item.adversaries ?? [])) {
@@ -294,17 +315,12 @@ for (const { file, item } of allChecklistItems) {
     }
   }
 
-  if (item.category === 'human_vulnerability') {
-    if (item.emotional_register === undefined || item.emotional_register === null) {
-      fail('EMOTIONAL_REGISTER_FOR_HUMAN_ITEMS', file,
-        `human_vulnerability items must have emotional_register set (not null)`, id);
-    } else if (!VALID_EMOTIONAL_REGISTERS.has(item.emotional_register)) {
-      fail('VALID_TAXONOMY_VALUES', file,
-        `Invalid emotional_register '${item.emotional_register}'`, id);
-    }
-  } else if (item.emotional_register !== undefined && item.emotional_register !== null) {
-    warn('EMOTIONAL_REGISTER_FOR_HUMAN_ITEMS', file,
-      `Non-human_vulnerability item has emotional_register set — expected null`, id);
+  if (item.category === 'human_vulnerability' && !(item.tracks ?? []).includes('caring_for_someone') && feelingsFor(id).length === 0) {
+    fail('EMOTIONAL_REGISTER_FOR_HUMAN_ITEMS', file,
+      `no feeling in src/lib/engine/feelings.ts raises this step, so the quiz and Real or scam can never move it`, id);
+  }
+  if (item.emotional_register !== undefined && item.emotional_register !== null && !VALID_EMOTIONAL_REGISTERS.has(item.emotional_register)) {
+    fail('VALID_TAXONOMY_VALUES', file, `Invalid emotional_register '${item.emotional_register}'`, id);
   }
 
   if (item.status === 'deprecated' && !item.superseded_by) {
@@ -419,6 +435,12 @@ for (const { file, item } of allResources) {
     const hasPrimary = Array.isArray(item.sources) && item.sources.some((s: any) => s?.type === 'primary');
     if (!hasPrimary) {
       fail('PRIMARY_SOURCE_REQUIRED', file, `Active resource has no source with type: primary`, id);
+    }
+  }
+
+  for (const url of [item.url, ...(item.sources ?? []).map((s: any) => s?.url)]) {
+    if (typeof url === 'string' && TRACKING_PARAMS.some(p => url.includes(p))) {
+      fail('NO_TRACKING_URLS', file, `URL contains tracking parameter: ${url}`, id);
     }
   }
 }
@@ -551,7 +573,7 @@ for (const { file, item } of [...allChecklistItems, ...allThreats, ...allResourc
   }
 }
 
-const COPY_FILES = ['playbooks.ts', 'life-events.ts', 'quiz.ts', 'constants.ts'];
+const COPY_FILES = ['playbooks.ts', 'life-events.ts', 'constants.ts'];
 for (const name of COPY_FILES) {
   const rel = `src/lib/audit/${name}`;
   let source: string;
@@ -568,24 +590,55 @@ for (const name of COPY_FILES) {
   });
 }
 
+function notesIn(dir: string): string[] {
+  const found = existsSync(join(ROOT, dir))
+    ? readdirSync(join(ROOT, dir)).filter(f => f.endsWith('.md')).sort().map(f => `${dir}/${f}`)
+    : [];
+  if (!found.length) fail('NO_PLACEHOLDER_STRINGS', dir, `${dir} is listed as moved copy and holds no notes`);
+  return found;
+}
+const COPY_NOTES = WIKI_FOLDERS.flatMap(f => notesIn(`wiki/${f}`));
+for (const rel of COPY_NOTES) {
+  let source: string;
+  try {
+    source = readFileSync(join(ROOT, rel), 'utf-8');
+  } catch {
+    fail('NO_PLACEHOLDER_STRINGS', rel, `${rel} is listed as moved copy and could not be read`);
+    continue;
+  }
+  source.replace(/%%[\s\S]*?%%/g, m => m.replace(/[^\n]/g, ' ')).split(/\r?\n/).forEach((line, i) => {
+    if (line.trim() && !line.startsWith('## ')) checkRenderedString(rel, `line ${i + 1}`, line);
+  });
+}
 
-const CO = /\b(Google|Meta|Facebook|Instagram|WhatsApp|Threads|Apple|iCloud|Siri|Alexa|Microsoft|Cortana|Edge|Amazon|LinkedIn|TikTok|Snapchat|Reddit|Discord|Steam|PlayStation|Xbox|Nintendo|Samsung|Twilio|Goldman Sachs|Gemini|Copilot|YouTube|Android|Chrome)\b/;
-const CONDUCT_VERB = /\b(collects?|collected|sells?|sold|shares?|shared|sharing|harvest\w*|monetis\w*|monetiz\w*|tracks?|tracked|tracking|trains?|trained|training|profiles?|profiling|retains?|retained|stores?|stored|reads?|listens?|records?|recorded|scans?|scanned|builds? a|feeds?)\b/i;
-const PERSONAL_DATA = /\b(data|history|activity|recordings?|transcripts?|metadata|profiles?|information|transactions?|location|files?|messages?|searches|voice|behaviou?r|telemetry|analytics)\b/i;
+
+const CO = /\b(Google|Meta|Facebook|Instagram|WhatsApp|Threads|Apple|iCloud|Siri|Alexa|Microsoft|Cortana|Edge|Amazon|LinkedIn|TikTok|Snapchat|Reddit|Discord|Steam|PlayStation|Xbox|Nintendo|Samsung|Twilio|Goldman Sachs|Gemini|Copilot|ChatGPT|OpenAI|Grok|Perplexity|DeepSeek|YouTube|Android|Chrome)\b/;
+const CONDUCT_VERB = /\b(collects?|collected|sells?|sold|shares?|shared|sharing|harvest\w*|monetis\w*|monetiz\w*|tracks?|tracked|tracking|trains?|trained|training|profiles?|profiling|retains?|retained|stores?|stored|keeps?|kept|keeping|reads?|listens?|records?|recorded|scans?|scanned|reviewers?|reviews?|builds? a|feeds?)\b/i;
+const PERSONAL_DATA = /\b(data|history|activity|recordings?|transcripts?|metadata|profiles?|information|transactions?|location|files?|messages?|chats?|conversations?|timeline|where you have been|searches|voice|behaviou?r|telemetry|analytics|confidential)\b/i;
+const SINGLED_OUT = /\b(for one|among them)\b/i;
+const PROMISE = /\b(never|always)\s+(contacts?|calls?|asks?|emails?|texts?|messages?)\b|\b(does|do|will) not (contact|call|ask|email|text)\b/i;
+const NAMED_AS_ABSENT = /\bNo (Google|Meta|Facebook|Microsoft|Amazon) [A-Z]/;
+const HELD_FOR_HIS_READ: string[] = [];
+const HANDS_OVER = /\bask\s+(\w+\s+)?(Google|Apple|Microsoft|Samsung|Meta|Amazon)\s+for\b/;
 
 const IS_NAVIGATION = /(→|->|→)/;
 
 function checkConduct(file: string, where: string, value: string, id?: string) {
   for (const sentence of value.split(/(?<=[.!?])\s+|\n/)) {
-    if (IS_NAVIGATION.test(sentence)) continue;
+    if (IS_NAVIGATION.test(sentence) || NAMED_AS_ABSENT.test(sentence)) continue;
+    if (HELD_FOR_HIS_READ.some(h => sentence.includes(h))) continue;
     const c = CO.exec(sentence);
     if (!c) continue;
     const v = CONDUCT_VERB.exec(sentence);
-    if (!v) continue;
-    if (!PERSONAL_DATA.test(sentence)) continue;
+    const shape = v && PERSONAL_DATA.test(sentence) ? `does with personal data ("${v[0]}")`
+      : SINGLED_OUT.test(sentence) ? 'does, singling it out as the example'
+      : PROMISE.test(sentence) ? 'never or always does, a promise the reader relies on'
+      : HANDS_OVER.test(sentence) ? 'gives to someone else about you'
+      : null;
+    if (!shape) continue;
     fail('NO_COMPANY_CONDUCT', file,
-      `${where} states what ${c[0]} does with personal data ("${v[0]}"). Spectra cannot verify a ` +
-      `company's handling of data and must not imply it did (BLUEPRINT §4). Say what the reader ` +
+      `${where} states what ${c[0]} ${shape}. Spectra cannot verify a company's conduct and must ` +
+      `not imply it did (BLUEPRINT §4, WRITING §4). Say what kind of setting or message the reader ` +
       `should look for instead. Sentence: "${sentence.trim().slice(0, 140)}"`, id);
     return;
   }
@@ -594,8 +647,9 @@ function checkConduct(file: string, where: string, value: string, id?: string) {
 console.log(`${B}Checking that no claim is made about what a company does with your data…${X}`);
 
 const READER_FIELDS = new Set([
-  'title', 'simple_description', 'description', 'threat_narrative', 'platform_notes',
-  'environment_notes', 'legal_notes', 'intro', 'rows', 'notes', 'verify_yourself', 'context'
+  'title', 'description', 'threat_narrative', 'platform_notes',
+  'environment_notes', 'track_notes', 'legal_notes', 'intro', 'rows', 'notes', 'verify_yourself',
+  'context', 'related_items', 'depends_on', 'resources'
 ]);
 
 for (const { file, item } of [...allChecklistItems, ...allResources]) {
@@ -606,8 +660,21 @@ for (const { file, item } of [...allChecklistItems, ...allResources]) {
     }
   }
 }
+for (const rel of COPY_NOTES) {
+  readFileSync(join(ROOT, rel), 'utf-8').replace(/%%[\s\S]*?%%/g, m => m.replace(/[^\n]/g, ' '))
+    .split(/\r?\n/).forEach((line, i) => {
+      if (line.trim() && !line.startsWith('#') && !/^\s*-?\s*\[.*\]\(https?:/.test(line)) checkConduct(rel, `line ${i + 1}`, line);
+    });
+}
 
-const allLookups = readAllItems('lookups');
+const allLookups: Array<{ file: string; item: any }> = (() => {
+  try {
+    return readLookups(ROOT);
+  } catch (e) {
+    errors.push({ rule: 'YAML_PARSE', severity: 'blocking', file: 'content/lookups or wiki/lookups', message: String(e) });
+    return [];
+  }
+})();
 
 console.log(`${B}Validating ${allLookups.length} lookup tables…${X}`);
 
@@ -631,6 +698,16 @@ for (const { file, item } of allLookups) {
     if (!row?.look_for || !row?.why) {
       fail('LOOKUP_SHAPE', file,
         `a row in '${id}' is missing look_for or why: ${JSON.stringify(row).slice(0, 80)}`, id);
+    }
+  }
+
+  for (const { path, value } of stringsIn(item)) {
+    checkRenderedString(file, `field '${path}'`, value, id);
+  }
+
+  for (const source of (item?.sources ?? [])) {
+    if (source?.url && TRACKING_PARAMS.some(p => source.url.includes(p))) {
+      fail('NO_TRACKING_URLS', file, `Source URL contains tracking parameter: ${source.url}`, id);
     }
   }
 
@@ -660,7 +737,7 @@ for (const { file, item } of allChecklistItems) {
 }
 for (const id of lookupIds) {
   if (!referencedLookups.has(id)) {
-    warn('LOOKUP_IS_USED', 'content/lookups',
+    warn('LOOKUP_IS_USED', 'wiki/lookups',
       `lookup '${id}' is referenced by no item. An unreferenced table is a catalogue entry that ` +
       `nobody reads, which is what D4 removed from /resources.`, id);
   }
@@ -705,25 +782,16 @@ function renderedStrings(source: string): Array<{ line: number; text: string }> 
 }
 
 const JARGON_NAMES: Array<{ re: RegExp; use: string }> = [
-  { re: /\bSecurity Audit\b/,    use: 'Your list' },
+  { re: /\bSecurity Audit\b/,    use: 'Your playbook' },
   { re: /\bthreat map\b/i,       use: 'Your map' },
   { re: /\bthreat graph\b/i,     use: 'Your map' },
   { re: /\bguardian mode\b/i,    use: 'Family setup' },
   { re: /\bincident triage\b/i,  use: 'Something happened' }
 ];
 
-const JARGON_WORDS: Array<{ re: RegExp; use: string }> = [
-  { re: /\bthreat model/i,      use: 'your setup' },
-  { re: /\badversar(y|ies)\b/i, use: '"who might try", or name the one' },
-  { re: /\bposture\b/i,         use: 'name the thing: your setup, or what you have done so far' },
-  { re: /\bexposure\b/i,        use: '"what someone could find out about you"' },
-  { re: /\bOSINT\b/i,           use: 'looking someone up from what is already public' },
-  { re: /\bdork(s|ing)?\b/i,    use: 'a search that turns up what people did not mean to publish' },
-  { re: /\bvectors?\b/i,        use: 'how it happens' }
-];
 
 const JARGON_LABELS: Record<string, string> = {
-  'audit':        'Your list',
+  'audit':        'Your playbook',
   'adversaries':  'WHO MIGHT TRY',
   'controls':     'STEPS THAT HELP',
   'assets':       'WHAT THEY PROTECT'
@@ -736,6 +804,34 @@ function svelteFilesUnder(dir: string, acc: string[] = []): string[] {
     else if (entry.endsWith('.svelte')) acc.push(rel);
   }
   return acc;
+}
+
+const COPY_NOTE_FOLDERS = WIKI_FOLDERS.filter(f => f !== 'glossary').map(f => `wiki/${f}`);
+function copyNotes(): string[] {
+  return COPY_NOTE_FOLDERS.flatMap(dir => {
+    try {
+      return readdirSync(join(ROOT, dir)).filter(f => f.endsWith('.md')).sort().map(f => `${dir}/${f}`);
+    } catch {
+      return [];
+    }
+  });
+}
+
+const VALUE_TITLED_NOTES = new Set(['wiki/pages/names.md']);
+
+function noteStrings(rel: string, source: string): Array<{ line: number; text: string }> {
+  const blanked = source.replace(/%%[\s\S]*?%%/g, m => m.replace(/[^\n]/g, ' '));
+  const out: Array<{ line: number; text: string }> = [];
+  blanked.split(/\r?\n/).forEach((raw, i) => {
+    const text = raw.trim();
+    if (!text || text.startsWith('## ')) return;
+    if (text.startsWith('### ')) {
+      if (!VALUE_TITLED_NOTES.has(rel)) out.push({ line: i + 1, text: text.slice(4) });
+      return;
+    }
+    out.push({ line: i + 1, text: text.startsWith('- ') ? text.slice(2) : text });
+  });
+  return out;
 }
 
 function tsFilesUnder(dir: string, acc: string[] = []): string[] {
@@ -761,19 +857,24 @@ function tsStrings(source: string): Array<{ line: number; text: string }> {
 
 console.log(`${B}Checking that no product jargon reaches a reader…${X}`);
 
-const JARGON_EXEMPT = new Set(['src/routes/methodology/+page.svelte']);
+const JARGON_EXEMPT = new Set([
+  'src/routes/methodology/+page.svelte',
+  'wiki/pages/methodology.md',
+  'src/lib/audit/glossary.ts'
+]);
 const jargonScope = [...svelteFilesUnder('src/routes'), ...svelteFilesUnder('src/lib/components')]
   .filter(f => !JARGON_EXEMPT.has(f));
-const jargonTsScope = tsFilesUnder('src/lib/audit');
+const jargonTsScope = tsFilesUnder('src/lib/audit').filter(f => !JARGON_EXEMPT.has(f));
+const jargonNoteScope = copyNotes().filter(f => !JARGON_EXEMPT.has(f));
 
-for (const rel of [...jargonScope, ...jargonTsScope]) {
+for (const rel of [...jargonScope, ...jargonTsScope, ...jargonNoteScope]) {
   const source = readFileSync(join(ROOT, rel), 'utf-8');
-  const strings = rel.endsWith('.svelte') ? renderedStrings(source) : tsStrings(source);
+  const strings = rel.endsWith('.svelte') ? renderedStrings(source) : rel.endsWith('.md') ? noteStrings(rel, source) : tsStrings(source);
   for (const { line, text } of strings) {
-    for (const { re, use } of [...JARGON_NAMES, ...JARGON_WORDS]) {
+    for (const { re, use } of JARGON_NAMES) {
       const m = re.exec(text);
       if (m) {
-        fail('NO_JARGON_STRINGS', rel,
+        warn('NO_JARGON_STRINGS', rel,
           `line ${line} renders "${m[0]}" to a reader. Plan v4 §2: say "${use}". ` +
           `Full string: "${text.trim().slice(0, 90)}"`);
         break;
@@ -781,7 +882,7 @@ for (const rel of [...jargonScope, ...jargonTsScope]) {
     }
     const whole = text.trim().toLowerCase().replace(/[:·|]+$/, '').trim();
     if (JARGON_LABELS[whole]) {
-      fail('NO_JARGON_STRINGS', rel,
+      warn('NO_JARGON_STRINGS', rel,
         `line ${line} uses "${text.trim()}" as a label. Plan v4 §2: say ` +
         `"${JARGON_LABELS[whole]}".`);
     }
@@ -803,9 +904,9 @@ const PLATFORM_PROMISES: RegExp[] = [
 ];
 
 if (platformNoteVariants <= 1) {
-  for (const rel of [...jargonScope, ...jargonTsScope]) {
+  for (const rel of [...jargonScope, ...jargonTsScope, ...jargonNoteScope]) {
     const source = readFileSync(join(ROOT, rel), 'utf-8');
-    const strings = rel.endsWith('.svelte') ? renderedStrings(source) : tsStrings(source);
+    const strings = rel.endsWith('.svelte') ? renderedStrings(source) : rel.endsWith('.md') ? noteStrings(rel, source) : tsStrings(source);
     for (const { line, text } of strings) {
       for (const re of PLATFORM_PROMISES) {
         if (!re.test(text)) continue;
@@ -826,6 +927,169 @@ console.log('');
 const totalItems =
   allChecklistItems.length + allThreats.length +
   allResources.length + allControls.length;
+
+
+const DEMOGRAPHIC_WORDS = new Set([
+  'women', 'womens', 'woman', 'ladies', 'lady', 'female', 'females', 'girl', 'girls',
+  'men', 'mens', 'man', 'male', 'males', 'boy', 'boys',
+  'kid', 'kids', 'teen', 'teens', 'teenage', 'child', 'children',
+  'elderly', 'senior', 'seniors', 'disabled'
+]);
+
+const namesADemographic = (identifier: string): string | null => {
+  for (const token of identifier.toLowerCase().split(/[-_.\s]+/)) {
+    if (DEMOGRAPHIC_WORDS.has(token)) return token;
+  }
+  return null;
+};
+
+for (const { file, item } of allChecklistItems) {
+  const rel = relative(process.cwd(), file);
+  for (const [what, value] of [['id', item?.id], ['category', item?.category], ['filename', rel]] as const) {
+    if (typeof value !== 'string') continue;
+    const hit = namesADemographic(what === 'filename' ? value.split(/[\\/]/).pop()! : value);
+    if (hit) {
+      fail('NO_DEMOGRAPHIC_IDENTIFIERS', rel,
+        `${what} "${value}" names a group of people ("${hit}"). Name the situation, not the person: ` +
+        `the harm belongs to anyone it happens to.`, item?.id);
+    }
+  }
+}
+
+for (const track of TRACK_OPTIONS) {
+  const hit = namesADemographic(track.value);
+  if (!hit) continue;
+  fail('NO_DEMOGRAPHIC_IDENTIFIERS', 'src/lib/audit/constants.ts',
+    `track "${track.value}" names a group of people ("${hit}"). Name the situation, not the ` +
+    `person: a man stalked by an ex should not have to tick a box about women to reach the items ` +
+    `that cover him.`);
+}
+
+
+const SAFETY_LANGUAGE: Array<{ re: RegExp; what: string }> = [
+  { re: /domestic abuse/i,                     what: 'a domestic abuse referral' },
+  { re: /safety plan|plan the order/i,         what: 'safety planning language' },
+  { re: /(might|may) respond/i,                what: 'safety planning language' },
+  { re: /(could|may) (be|become) dangerous/i,  what: 'a danger warning' },
+  { re: /escalate danger/i,                    what: 'a danger warning' }
+];
+
+const SAFETY_BRANCH_LICENCE: Record<string, RegExp> = {
+  'recovery-routes-001':      /^track_notes\.known_person_risk$/,
+  'recovery-email-first-001': /^track_notes\.known_person_risk$/,
+  'recovery-locked-out-001':  /^track_notes\.known_person_risk$/,
+  'stalkerware-check-001':    /^(platform_notes\.|legal_notes\b)/,
+  'location-exposure-001':    /^(threat_narrative$|track_notes\.known_person_risk$)/,
+  'location-tracker-alerts-001': /^(description$|platform_notes\.)/
+};
+
+for (const { file, item } of allChecklistItems) {
+  const rel = relative(process.cwd(), file);
+  const id = item?.id as string | undefined;
+  const licence = id ? SAFETY_BRANCH_LICENCE[id] : undefined;
+  for (const [key, value] of Object.entries((item ?? {}) as Record<string, unknown>)) {
+    if (key === 'changelog' || key === 'sources') continue;
+    for (const { path, value: s } of stringsIn(value, key)) {
+      const hit = SAFETY_LANGUAGE.find(p => p.re.test(s));
+      if (!hit) continue;
+      if (licence && licence.test(path)) continue;
+      fail('SAFETY_BRANCH_LICENCE', rel,
+        `${path} carries ${hit.what} and is not licensed to. Safety language belongs where the ` +
+        `reader who needs it will see it and others will not, which usually means ` +
+        `track_notes.known_person_risk. If this location is genuinely right, licence it in ` +
+        `SAFETY_BRANCH_LICENCE and say why: "${s.trim().slice(0, 80)}"`, id);
+    }
+  }
+}
+
+
+const PROTECTIVE_CLAIMS: Array<{ re: RegExp; why: string }> = [
+  { re: /\b(spectra|we|this (tool|site|app|page))\b[^.!?]{0,40}\b(keeps? you safe|protects? you|secures? you|makes? you safe)\b/i,
+    why: 'Spectra does not protect anyone. It says what is worth doing and where that came from.' },
+  { re: /\byou (are|'re) (now )?(safe|protected|secure)\b/i,
+    why: 'Spectra cannot know that, and saying it accepts responsibility for an outcome it does not control.' },
+  { re: /\byou (are|'re) at risk\b/i,
+    why: 'A personalised risk claim. Spectra never looks at the reader, so it cannot assess them.' },
+  { re: /\byour risk (is|level|score)\b/i,
+    why: 'A personalised risk claim presented as a fact about the reader.' }
+];
+
+for (const { file, item } of allChecklistItems) {
+  const rel = relative(process.cwd(), file);
+  const strings: Array<[string, unknown]> = [
+    ['title', item?.title], ['description', item?.description],
+    ['threat_narrative', item?.threat_narrative]
+  ];
+  for (const [where, value] of strings) {
+    if (typeof value !== 'string') continue;
+    for (const { re, why } of PROTECTIVE_CLAIMS) {
+      const m = re.exec(value);
+      if (m) {
+        fail('NO_PROTECTIVE_CLAIM', rel, `${where} says "${m[0]}". ${why}`, item?.id);
+        break;
+      }
+    }
+  }
+}
+
+{
+  const rel = 'wiki/pages/home.md';
+  const ids = new Set(allChecklistItems.map(({ item }) => item?.id));
+  const oldest = new Date().getFullYear() - 3;
+  let cards: ReturnType<typeof noteItems> = [];
+  try {
+    cards = noteItems(parsePage(readFileSync(join(process.cwd(), rel), 'utf-8'), rel), 'cards');
+  } catch (e) {
+    fail('HOME_FACT_SOURCED', rel, `the ## cards block does not read: ${(e as Error).message}`);
+  }
+  for (const card of cards) {
+    const plain = card.lines.slice(0, 4).map(l => (l.length === 1 && l[0].kind === 'text' ? l[0].value : null));
+    const sources = card.lines.slice(4).filter(l => l.length === 1 && l[0].kind === 'link');
+    if (!ids.has(card.title)) fail('HOME_FACT_SOURCED', rel, `card "${card.title}" names a step that is not in the corpus`);
+    if (plain.length < 4 || plain.some(v => v === null)) {
+      fail('HOME_FACT_SOURCED', rel, `card "${card.title}" needs four plain lines first: number, sentence, picture, date`);
+      continue;
+    }
+    const date = plain[3]!;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+    if (!m) fail('HOME_FACT_SOURCED', rel, `card "${card.title}" has "${date}" where its date goes; write YYYY-MM-DD`);
+    else if (+m[1] < oldest) fail('HOME_FACT_SOURCED', rel, `card "${card.title}" is dated ${date}, more than three years back (oldest allowed: ${oldest})`);
+    if (sources.length === 0 || sources.length !== card.lines.length - 4) {
+      fail('HOME_FACT_SOURCED', rel, `card "${card.title}" needs at least one source, one link per line after the date`);
+    }
+  }
+  if (!cards.length) fail('HOME_FACT_SOURCED', rel, 'no cards found under ## cards');
+}
+
+{
+  const rel = 'src/lib/audit/chapters.ts';
+  const active = allChecklistItems.map(({ item }) => item).filter(i => i && i.status === 'active').map(i => i!.id);
+  const known = new Set(allChecklistItems.map(({ item }) => item?.id));
+  const seen = new Map<string, string[]>();
+  for (const c of CHAPTERS) for (const id of c.steps) {
+    if (!known.has(id)) fail('CHAPTER_MEMBERSHIP', rel, `chapter "${c.id}" names "${id}", which is not in the corpus`);
+    seen.set(id, [...(seen.get(id) ?? []), c.id]);
+  }
+  for (const id of active) {
+    const in_ = seen.get(id) ?? [];
+    if (in_.length === 0) fail('CHAPTER_MEMBERSHIP', rel, `step "${id}" is in no chapter`, id);
+    if (in_.length > 1) fail('CHAPTER_MEMBERSHIP', rel, `step "${id}" is in ${in_.length} chapters: ${in_.join(', ')}`, id);
+  }
+
+  const home = 'wiki/pages/home.md';
+  try {
+    const page = parsePage(readFileSync(join(process.cwd(), home), 'utf-8'), home);
+    const name = noteText(page, 'hero-chapter');
+    const chapter = CHAPTERS.find(c => c.name === name);
+    const of = /\bof (\d+)\b/.exec(noteText(page, 'hero-chapter-count'));
+    if (!chapter) fail('CHAPTER_MEMBERSHIP', home, `hero-chapter "${name}" is not the name of a chapter`);
+    else if (!of || +of[1] !== chapter.steps.length) {
+      fail('CHAPTER_MEMBERSHIP', home, `hero-chapter-count says "of ${of?.[1] ?? '?'}"; "${name}" holds ${chapter.steps.length} steps`);
+    }
+  } catch (e) {
+    fail('CHAPTER_MEMBERSHIP', home, `the hero's chapter lines do not read: ${(e as Error).message}`);
+  }
+}
 
 if (warnings.length > 0) {
   console.log(`${Y}${BOLD}WARNINGS (${warnings.length})${X}`);

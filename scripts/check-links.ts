@@ -3,6 +3,9 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import yaml from 'js-yaml';
+import { readControls } from '../src/lib/content/controls.ts';
+import { readResources } from '../src/lib/content/resources.ts';
+import { readLookups } from '../src/lib/content/lookups.ts';
 
 const CONTENT_DIR = join(process.cwd(), 'content');
 const TIMEOUT_MS = 10_000;
@@ -32,6 +35,10 @@ function* extractUrls(data: any): Generator<string> {
 
 function collectUrls(): string[] {
   const urls = new Set<string>();
+  const root = process.cwd();
+  for (const { item } of [...readControls(root), ...readResources(root), ...readLookups(root)]) {
+    for (const u of extractUrls(item)) urls.add(u);
+  }
   for (const file of walkYaml(CONTENT_DIR)) {
     const raw = readFileSync(file, 'utf-8').replace(/\r\n/g, '\n');
     for (const part of raw.split(/^---\s*$/m)) {
@@ -62,7 +69,12 @@ async function check(url: string): Promise<number | string> {
 
 async function main() {
   const urls = collectUrls();
-  console.log(`\nChecking ${urls.length} unique URLs in content/ …\n`);
+  if (process.argv.includes('--list')) {
+    for (const u of urls) console.log(u);
+    console.log(`${urls.length} unique URLs`);
+    return;
+  }
+  console.log(`\nChecking ${urls.length} unique URLs in content …\n`);
   const dead: Array<{ url: string; status: number | string }> = [];
 
   for (let i = 0; i < urls.length; i += CONCURRENCY) {

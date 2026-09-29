@@ -107,8 +107,8 @@ const STOPS: StopSpec[] = [
   {
     id: 'front',
     file: '01-front.jpg',
-    title: 'The front page asks one question',
-    blurb: 'No sign-up and no wall of a hundred items. Eight plain sentences and a button.',
+    title: 'The front page hands you a step',
+    blurb: 'No sign-up, and nothing to fill in first. One ordinary step, already open, and one line on what happens if you leave it.',
     arrange: async (page) => {
       await seed(page, null);
       await page.goto(BASE + '/', { waitUntil: 'networkidle' });
@@ -116,19 +116,19 @@ const STOPS: StopSpec[] = [
     },
     spots: [
       {
-        find: (p) => p.getByRole('button', { name: /Someone gets into your accounts/i }).first(),
-        label: 'The eight harms',
-        body: 'Tap as many as you like, or none at all. These are the eight things people are usually afraid of, and your taps decide the order of everything that follows.'
+        find: (p) => p.locator('a,button').filter({ hasText: /^Show me how$/ }).first(),
+        label: 'Show me how',
+        body: 'The step is already open, so there is nothing to pick before you get one. This takes you to how to do it.'
       },
       {
-        find: (p) => p.locator('a,button').filter({ hasText: /^Show me what to do$/ }).first(),
-        label: 'Show me what to do',
-        body: 'Takes you to your list. If you tapped nothing, you still get a sensible place to start.'
+        find: (p) => p.locator('summary').filter({ hasText: /Say what is going on/ }).first(),
+        label: 'Say what is going on',
+        body: 'Optional, and closed until you want it. Saying something reorders the list. Saying nothing still gets you the same list, in a sensible default order.'
       },
       {
         find: (p) => p.getByRole('button', { name: /Your setup/i }).first(),
         label: 'Your setup',
-        body: 'On every page. What you are worried about, how far you have got, and the code that moves your setup to another device.'
+        body: 'On every page. What you have told it, how far you have got, and the code that moves your setup to another device.'
       }
     ]
   },
@@ -220,7 +220,7 @@ const STOPS: StopSpec[] = [
       {
         find: (p) => p.locator('main h2').first(),
         label: 'The one thing to do next',
-        body: 'One step, not a list of thirty-two. Chosen from your answers, and written so you can act on it without looking anything up.'
+        body: 'One step, not the whole list at once. Chosen from your answers, and written so you can act on it without looking anything up.'
       },
       {
         find: (p) => p.getByRole('button', { name: /^Mark as done$/ }).first(),
@@ -253,7 +253,7 @@ const STOPS: StopSpec[] = [
     id: 'queue',
     file: '05-queue.jpg',
     title: 'The rest of the list is one tap away',
-    blurb: 'The front of the list holds one step because a wall of thirty-two is what makes people close the tab. The rest is right here, in the order the engine put them in.',
+    blurb: 'The front of the list holds one step because a wall of them is what makes people close the tab. The rest is right here, in the order the engine put them in.',
     arrange: async (page) => {
       await seed(page, null);
       await page.goto(BASE + '/audit', { waitUntil: 'networkidle' });
