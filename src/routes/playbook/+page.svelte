@@ -6,7 +6,7 @@
   import { scoreAssessment } from '$lib/engine/scoring.js';
   import { loadProfile, createDefaultProfile, computeAdversaries } from '$lib/engine/store.js';
   import { decodeFingerprint } from '$lib/engine/fingerprint.js';
-  import { noteBlocks, getActiveTrackNotes, leadSentence, lineParts } from '$lib/audit/helpers.js';
+  import { noteBlocks, getActiveTrackNotes, lineParts } from '$lib/audit/helpers.js';
   import note from '#spectra-wiki/page/print';
   import { text, link, pieces, rows } from '$lib/wiki/page.js';
 
@@ -213,7 +213,7 @@
                   <div class="min-w-0 flex-1">
                     <p class="playbook-line text-body font-medium leading-snug">
                       <span class="text-dim tabular-nums mr-1">{i + 1}.</span>
-                      {leadSentence(step)}
+                      {step.title}
                     </p>
                     {#if withDetail}
                       {#each howFor(step) as block}

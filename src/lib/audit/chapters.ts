@@ -12,12 +12,13 @@ export interface Chapter {
 
 const DECIDED: ReadonlyArray<Pick<Chapter, 'id' | 'steps' | 'story'>> = [
   { id: 'lock-your-accounts', story: ['auth-2fa-001'], steps: ['auth-password-manager-001', 'auth-2fa-001', 'recovery-email-first-001',
-    'auth-backup-codes-001', 'recovery-routes-001', 'incident-breach-monitor-001', 'auth-sim-pin-001'] },
+    'auth-backup-codes-001', 'recovery-routes-001', 'incident-breach-monitor-001', 'auth-sim-pin-001',
+    'money-card-alerts-001', 'auth-old-accounts-001', 'auth-email-alias-001'] },
   { id: 'spot-a-scam', story: ['human-urgency-001', 'human-verify-001'], steps: ['human-urgency-001', 'human-verify-001', 'human-fake-shop-001', 'human-qr-code-001',
-    'human-investment-scam-001'] },
-  { id: 'ai-and-fakes', story: ['ai-voice-clone-001'], steps: ['ai-phishing-detect-001', 'ai-voice-clone-001', 'ai-chatbot-privacy-001'] },
+    'human-investment-scam-001', 'human-job-scam-001', 'human-marketplace-scam-001', 'human-tech-support-scam-001'] },
+  { id: 'ai-and-fakes', story: ['ai-voice-clone-001'], steps: ['ai-phishing-detect-001', 'ai-voice-clone-001', 'ai-chatbot-privacy-001', 'ai-deepfake-video-001'] },
   { id: 'protect-your-phone', story: ['device-screenlock-001', 'device-encrypt-001'], steps: ['device-updates-001', 'device-screenlock-001', 'device-encrypt-001',
-    'data-permissions-001', 'stalkerware-check-001', 'data-backup-001'] },
+    'data-permissions-001', 'stalkerware-check-001', 'data-backup-001', 'device-browser-extensions-001'] },
   { id: 'who-can-find-you', story: ['data-broker-optout-001'], steps: ['location-exposure-001', 'data-social-visibility-001', 'osint-self-001',
     'data-broker-optout-001', 'physical-travel-001',
     'location-tracker-alerts-001'] },
@@ -27,7 +28,10 @@ const DECIDED: ReadonlyArray<Pick<Chapter, 'id' | 'steps' | 'story'>> = [
     'impersonation-report-001', 'harassment-document-001', 'harassment-plan-001', 'image-abuse-001',
     'image-threat-001'] },
   { id: 'looking-after-someone', story: ['guardian-manipulation-001'], steps: ['guardian-passwords-001', 'guardian-manipulation-001',
-    'guardian-oversharing-001', 'guardian-social-privacy-001', 'guardian-location-001'] }
+    'guardian-oversharing-001', 'guardian-social-privacy-001', 'guardian-location-001', 'guardian-trusted-contact-001',
+    'guardian-gaming-chat-001'] },
+  { id: 'smart-home', story: ['home-router-001'], steps: ['home-router-001', 'home-camera-001', 'home-speaker-001', 'home-tv-001',
+    'home-car-001'] }
 ];
 
 const names = inNote('wiki/pages/chapters.md', () => {

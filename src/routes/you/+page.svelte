@@ -12,6 +12,8 @@
   import { settle } from '$lib/nav/trail.js';
   import BackLink from '$lib/components/BackLink.svelte';
   import SetupPanel from '$lib/components/SetupPanel.svelte';
+  import HarmPicker from '$lib/components/HarmPicker.svelte';
+  import { page } from '$app/stores';
   import you from '#spectra-wiki/page/you';
   import chrome from '#spectra-wiki/page/header-and-footer';
   import { text, fill, link, named } from '$lib/wiki/page.js';
@@ -23,8 +25,8 @@
   let profile: UserProfile | null = null;
   let result: AssessmentResult | null = null;
   let ready = false;
-  type Opened = { past: boolean; protect: boolean; setup: boolean; more: boolean };
-  let opened: Opened = { past: true, protect: true, setup: true, more: true };
+  type Opened = { going: boolean; past: boolean; protect: boolean; setup: boolean; more: boolean };
+  let opened: Opened = { going: true, past: true, protect: true, setup: true, more: true };
   let restored = false;
   export const snapshot: Snapshot<Opened> = {
     capture: () => ({ ...opened }),
@@ -39,13 +41,16 @@
 
   onMount(() => {
     const wide = matchMedia('(min-width: 640px)').matches;
-    if (!restored) opened = { past: wide, protect: wide, setup: wide, more: wide };
+    if (!restored) opened = { going: wide, past: wide, protect: wide, setup: wide, more: wide };
     let first = true;
     const stop = profileVersion.subscribe(() => {
       if (first) { first = false; return; }
       void read();
     });
-    void read().then(async () => { ready = true; await tick(); settle(); });
+    void read().then(async () => {
+      if (!restored && profile?.harms?.length) opened.going = true;
+      ready = true; await tick(); settle();
+    });
     return stop;
   });
 
@@ -61,6 +66,14 @@
   $: past = Object.entries(signals).filter(([, v]) => v > NO_SIGNAL).sort((a, b) => b[1] - a[1]).map(([f]) => f);
 
   $: harms = harmBreakdown(result);
+
+  let goingEl: HTMLDetailsElement;
+  let editHandled = '';
+  $: if (ready && goingEl && $page.url.searchParams.get('edit') === 'harms' && editHandled !== $page.url.href) {
+    editHandled = $page.url.href;
+    opened.going = true;
+    tick().then(() => requestAnimationFrame(() => goingEl?.scrollIntoView({ behavior: 'smooth', block: 'start' })));
+  }
 
   const date = (iso: string) =>
     new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
@@ -105,6 +118,16 @@
   </section>
 
   {#if ready}
+  <details class="panel p-5 sm:p-6 mt-4 group scroll-mt-20" bind:open={opened.going} bind:this={goingEl}
+           data-you-section="going" data-hydrated="true">
+    <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+      <h2 class="text-lg font-semibold text-bright">{text(you, 'going-heading')}</h2>
+      <span class="text-dim sm:hidden transition-transform group-open:rotate-90" aria-hidden="true">›</span>
+    </summary>
+    <p class="mt-3 text-sm text-dim">{text(you, 'going-lead')}</p>
+    <HarmPicker openLabel={text(you, 'going-open')} />
+  </details>
+
   <details class="panel p-5 sm:p-6 mt-4 group" bind:open={opened.past} data-you-section="past">
     <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
       <h2 class="text-lg font-semibold text-bright">{text(you, 'past-heading')}</h2>

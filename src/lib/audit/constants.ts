@@ -60,7 +60,6 @@ export const EMOTIONAL_REGISTER_LABELS: Record<string, string> =
 
 export const tierDot: Record<string, string>   = { common: 'bg-teal', elevated: 'bg-teal', high: 'bg-dim' };
 
-export const maturityLabels       = byLevel('step-levels');
 export const maturityColors       = ['', 'text-teal-light', 'text-teal-light', 'text-teal-light', 'text-teal-light', 'text-bright'];
 export const maturityBandLabels   = byLevel('progress-bands');
 export const maturityDescriptions = byLevel('progress-band-lines');

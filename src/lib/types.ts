@@ -248,6 +248,7 @@ export interface ChecklistItem {
   controls_implemented: string[];
   score_weight: number;
   threat_model_multipliers?: Partial<Record<AdversaryType, number>>;
+  multiplier_reasons?: Partial<Record<AdversaryType, string>>;
   compensating_controls?: CompensatingControl[];
   depends_on?: Dependency[];
   related_items?: RelatedItem[];

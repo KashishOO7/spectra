@@ -10,7 +10,7 @@
     leadSentence, diffLabel, difficultyDots, categoryLabel, platformDisplay,
     getActiveEnvNotes, getActiveTrackNotes, safeHref, platformTabLabel, noteBlocks
   } from '$lib/audit/helpers.js';
-  import { tick } from 'svelte';
+  import { tick, onMount } from 'svelte';
   import { coverageOf, coverageLine, COVERED_MEANS } from '$lib/engine/coverage.js';
   import Glossed from '$lib/components/Glossed.svelte';
   import NoteLines from '$lib/components/NoteLines.svelte';
@@ -89,6 +89,9 @@
       block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
     }));
   }
+  onMount(() => {
+    if (asking) void tick().then(() => askPanel?.scrollIntoView({ block: 'start', behavior: 'auto' }));
+  });
   $: queueItems = displayItems.filter(i => (asking || !actionItem || i.id !== actionItem.id) && !isSkipped(i.id));
 
   const resourcesFor = (item: ChecklistItem) =>
@@ -233,19 +236,19 @@
     </div>
 
     {#if mode === 'normal'}
-    <nav class="flex flex-wrap items-center gap-2" aria-label={text(listNote, 'other-views')}>
+    <nav class="flex flex-wrap items-center gap-2 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:-mx-4 max-sm:px-4 max-sm:pb-1 [scrollbar-width:none]" aria-label={text(listNote, 'other-views')}>
       <a href={viewMap.href}
          class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
-                border-border text-dim hover:text-body hover:border-muted transition-colors">{viewMap.text}</a>
+                border-border text-dim hover:text-body hover:border-muted transition-colors max-sm:rounded-full max-sm:px-4 max-sm:flex-none max-sm:text-body max-sm:bg-surface">{viewMap.text}</a>
       <a href={viewTimeline.href}
          class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
-                border-border text-dim hover:text-body hover:border-muted transition-colors">{viewTimeline.text}</a>
+                border-border text-dim hover:text-body hover:border-muted transition-colors max-sm:rounded-full max-sm:px-4 max-sm:flex-none max-sm:text-body max-sm:bg-surface">{viewTimeline.text}</a>
       <a href={viewPrint.href}
          class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
-                border-border text-dim hover:text-body hover:border-muted transition-colors">{viewPrint.text}</a>
+                border-border text-dim hover:text-body hover:border-muted transition-colors max-sm:rounded-full max-sm:px-4 max-sm:flex-none max-sm:text-body max-sm:bg-surface">{viewPrint.text}</a>
       <a href={viewGuides.href}
          class="text-sm px-3 py-1.5 min-h-[44px] sm:min-h-0 inline-flex items-center rounded border
-                border-border text-dim hover:text-body hover:border-muted transition-colors">{viewGuides.text}</a>
+                border-border text-dim hover:text-body hover:border-muted transition-colors max-sm:rounded-full max-sm:px-4 max-sm:flex-none max-sm:text-body max-sm:bg-surface">{viewGuides.text}</a>
     </nav>
     {/if}
   </div>
@@ -274,11 +277,12 @@
     </div>
 
     <h2 class="font-sans text-lg font-semibold text-white leading-snug mb-4" data-sentence>
-      {leadSentence(actionItem)}
+      {actionItem.title}
     </h2>
+    <p class="text-sm text-body leading-relaxed -mt-2 mb-3">{leadSentence(actionItem)}</p>
 
     <button type="button" on:click={() => toggleDetails(actionItem.id)}
-      class="text-sm text-muted hover:text-body transition-colors mb-5 py-1 min-h-[24px]">
+      class="text-sm text-muted hover:text-body transition-colors mb-5 py-1 min-h-[24px] max-sm:min-h-[44px]">
       {detailItems.has(actionItem.id) ? text(listNote, 'hide-detail') : text(listNote, 'more-detail')}
     </button>
     <GlossScope step={actionItem.id}>
@@ -378,13 +382,13 @@
 
     <div class="flex flex-wrap items-center gap-2 mt-4 text-sm">
       <button type="button" on:click={() => whyOpen = !whyOpen}
-        class="px-3 py-1.5 min-h-[32px] inline-flex items-center rounded-full border border-border
+        class="px-3 py-1.5 min-h-[32px] max-sm:min-h-[44px] inline-flex items-center rounded-full border border-border
                text-dim hover:text-body hover:border-muted transition-colors">{text(listNote, 'why-this-one')}</button>
       <button type="button" on:click={() => toggleSnooze(actionItem.id)}
-        class="px-3 py-1.5 min-h-[32px] inline-flex items-center rounded-full border border-border
+        class="px-3 py-1.5 min-h-[32px] max-sm:min-h-[44px] inline-flex items-center rounded-full border border-border
                text-dim hover:text-body hover:border-muted transition-colors">{text(listNote, 'not-now')}</button>
       <button type="button" on:click={() => toggleSkip(actionItem.id)}
-        class="px-3 py-1.5 min-h-[32px] inline-flex items-center rounded-full border border-border
+        class="px-3 py-1.5 min-h-[32px] max-sm:min-h-[44px] inline-flex items-center rounded-full border border-border
                text-dim hover:text-body hover:border-muted transition-colors">{text(listNote, 'not-for-me')}</button>
     </div>
 
@@ -430,16 +434,19 @@
   {#if mode !== 'incident' && chapterTiles.length && !asking}
   <section class="mb-4" aria-labelledby="chapters-heading">
     <h2 id="chapters-heading" class="text-lg font-semibold text-bright mb-3">{text(listNote, 'chapters-heading')}</h2>
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 max-sm:gap-0 max-sm:rounded-2xl max-sm:border max-sm:border-border max-sm:bg-surface max-sm:overflow-hidden">
       {#each chapterTiles as c (c.chapter.id)}
         <a href="/chapter/{c.chapter.id}" data-chapter-tile={c.chapter.id}
-           class="panel p-4 block hover:border-teal transition-colors">
-          <span class="w-9 h-9 rounded-xl bg-teal-dim text-teal-light grid place-items-center mb-3"><ChapterIcon id={c.chapter.id} /></span>
+           class="panel p-4 block hover:border-teal transition-colors max-sm:flex max-sm:items-center max-sm:gap-3 max-sm:rounded-none max-sm:border-0 max-sm:border-t max-sm:first:border-t-0 max-sm:shadow-none max-sm:min-h-[68px] max-sm:py-3">
+          <span class="w-9 h-9 rounded-xl bg-teal-dim text-teal-light grid place-items-center mb-3 max-sm:mb-0 flex-none"><ChapterIcon id={c.chapter.id} /></span>
+          <span class="block flex-1 min-w-0">
           <span class="block text-base font-semibold text-bright leading-snug">{c.chapter.name}</span>
           <span class="block text-sm text-dim mt-0.5">{fill(listNote, 'chapter-count', { done: c.done, total: c.total })}</span>
-          <span class="mt-2.5 grid gap-1" style="grid-template-columns: repeat({c.total}, 1fr)" aria-hidden="true">
+          <span class="mt-2.5 max-sm:mt-2 grid gap-1" style="grid-template-columns: repeat({c.total}, 1fr)" aria-hidden="true">
             {#each c.steps as step}<i class="block h-1.5 rounded-full {step.is_implemented && !step.is_skipped ? 'bg-teal' : 'bg-viz-off'}"></i>{/each}
           </span>
+          </span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="sm:hidden text-dim flex-none" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
         </a>
       {/each}
     </div>
@@ -600,7 +607,7 @@
                 <button type="button" on:click|stopPropagation={() => toggleSkip(item.id)}
                   class="text-sm transition-colors
                          {skipped ? 'text-teal-light hover:text-teal' : 'text-muted hover:text-dim'}">
-                  {skipped ? text(listNote, 'undo') : text(listNote, 'doesnt-apply')}
+                  {skipped ? text(listNote, 'put-back') : text(listNote, 'doesnt-apply')}
                 </button>
                 <button type="button" on:click={() => toggleExpand(item.id)}
                   class="text-sm transition-colors
@@ -861,7 +868,7 @@
             <div class="flex flex-col gap-1">
               {#if item.changelog?.length}
                 <p class="text-xs text-muted">
-                  v{item.changelog[0].version} · {item.changelog[0].date}
+                  Updated {item.changelog[0].date}
                   {#if item.changelog[0].author}&nbsp;· {item.changelog[0].author.replace(/^github:/, '')}{/if}
                 </p>
               {/if}

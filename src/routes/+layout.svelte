@@ -9,14 +9,21 @@
   import SetupPanel from '$lib/components/SetupPanel.svelte';
   import SharedSetupBar from '$lib/components/SharedSetupBar.svelte';
   import chrome from '#spectra-wiki/page/header-and-footer';
-  import { text, lines, links as noteLinks, link } from '$lib/wiki/page.js';
+  import { text, lines, links as noteLinks, link, items, labels } from '$lib/wiki/page.js';
 
   const nav = noteLinks(chrome, 'nav');
   const sideDoor = link(chrome, 'side-door');
   const [footerDisclaimer] = lines(chrome, 'footer-disclaimer');
   const footerSource = link(chrome, 'footer-source');
-  const footerPages = noteLinks(chrome, 'footer-pages');
-  const footerLegal = noteLinks(chrome, 'footer-legal');
+  const footerGroups = items(chrome, 'footer-groups').map(g => ({
+    title: g.title,
+    links: g.lines.map(line => {
+      const [p] = line;
+      if (line.length !== 1 || p.kind !== 'link') throw new Error(`wiki: footer-groups / "${g.title}" is read as a list of links`);
+      return { text: p.value, href: p.href };
+    })
+  }));
+  const footerFacts = labels(chrome, 'footer-facts', 4);
 
   let setupOpen = false;
   let opener: HTMLElement | null = null;
@@ -239,33 +246,52 @@
 </main>
 
 <footer class="no-print pb-bar border-t border-border mt-16">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col gap-8">
-    <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-      <a href="/" class="flex items-center gap-2.5 min-h-[44px] self-start">
-        <svg width="22" height="22" viewBox="0 0 28 28" fill="none" aria-hidden="true" class="text-teal">
-          <path d="M14 3.5a10.5 10.5 0 0 0 0 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-          <path d="M14 3.5a10.5 10.5 0 0 1 0 21" stroke="currentColor" stroke-width="2.6"
-                stroke-linecap="round" stroke-dasharray="1 4.4" opacity="0.85"/>
-        </svg>
-        <span class="text-base font-bold text-bright">{text(chrome, 'brand')}</span>
-      </a>
-      <ul class="grid grid-cols-2 gap-x-8 gap-y-1 sm:flex sm:gap-x-6 text-sm">
-        {#each footerPages as l}
-          <li><a href={l.href} class="min-h-[44px] inline-flex items-center text-body hover:text-bright transition-colors duration-150">{l.text}</a></li>
-        {/each}
-      </ul>
-    </div>
-    <div class="flex flex-col gap-2 text-sm text-body border-t border-border pt-6">
-      <p>{#each footerDisclaimer as p}{#if p.kind === 'link'}<a href={p.href} class="link-inline hover:text-bright ml-1">{p.value}</a>{:else}{p.value}{/if}{/each}</p>
-      <p>{text(chrome, 'footer-data')}</p>
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
-        <a href={footerSource.href} target="_blank" rel="noopener noreferrer"
-           class="link-inline hover:text-bright min-h-[44px] inline-flex items-center">{footerSource.text}</a>
-        {#each footerLegal as l}
-          <a href={l.href} class="hover:text-bright transition-colors duration-150 min-h-[44px] inline-flex items-center">{l.text}</a>
-        {/each}
-        <span class="text-dim">{text(chrome, 'footer-licence')}</span>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
+    <div class="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+      <div class="lg:col-span-5" data-footer-col="brand">
+        <a href="/" class="inline-flex items-center gap-2.5 min-h-[44px] -my-2.5">
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none" aria-hidden="true" class="text-teal">
+            <path d="M14 3.5a10.5 10.5 0 0 0 0 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M14 3.5a10.5 10.5 0 0 1 0 21" stroke="currentColor" stroke-width="2.6"
+                  stroke-linecap="round" stroke-dasharray="1 4.4" opacity="0.85"/>
+          </svg>
+          <span class="text-base font-bold text-bright">{text(chrome, 'brand')}</span>
+        </a>
+        <ul class="grid gap-y-3 gap-x-8 mt-5 sm:grid-cols-2 sm:max-w-[520px]" data-footer-facts>
+          {#each footerFacts as title, i}
+            <li class="flex items-center gap-2 text-sm font-medium text-bright">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                   stroke-linecap="round" stroke-linejoin="round" class="text-teal shrink-0" aria-hidden="true">
+                {#if i === 0}<path d="M5 4.5h11.5a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h11.5"/>
+                {:else if i === 1}<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+                {:else if i === 2}<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6z"/>
+                {:else}<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>{/if}
+              </svg>
+              {title}
+            </li>
+          {/each}
+        </ul>
       </div>
+      <div class="grid grid-cols-2 gap-x-6 gap-y-5 text-sm sm:grid-cols-3 lg:col-span-7 lg:gap-x-8" data-footer-col="pages">
+        {#each footerGroups as g, gi}
+          <div class={gi === 1 ? 'row-span-2 sm:row-span-1' : gi === 2 ? 'col-start-1 sm:col-start-auto' : ''}>
+            <h2 class="text-sm font-semibold text-bright leading-6">{g.title}</h2>
+            <ul class="mt-1 lg:mt-2">
+              {#each g.links as l}
+                <li><a href={l.href} class="min-h-[44px] lg:min-h-[32px] inline-flex items-center text-body hover:text-bright transition-colors duration-150">{l.text}</a></li>
+              {/each}
+              {#if gi === footerGroups.length - 1}
+                <li><a href={footerSource.href} target="_blank" rel="noopener noreferrer"
+                       class="link-inline hover:text-bright min-h-[44px] lg:min-h-[32px] inline-flex items-center whitespace-nowrap">{footerSource.text}</a></li>
+              {/if}
+            </ul>
+          </div>
+        {/each}
+      </div>
+    </div>
+    <div class="mt-8 py-4 border-t border-border flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:justify-between sm:gap-x-6 text-sm text-dim" data-footer-fine>
+      <p>{#each footerDisclaimer as p}{#if p.kind === 'link'}<a href={p.href} class="link-inline hover:text-bright ml-1">{p.value}</a>{:else}{p.value}{/if}{/each}</p>
+      <p>{#each text(chrome, 'footer-licence').split(' · ') as part, i}{#if i}{' · '}{/if}<span class="whitespace-nowrap">{part}</span>{/each}</p>
     </div>
   </div>
 </footer>

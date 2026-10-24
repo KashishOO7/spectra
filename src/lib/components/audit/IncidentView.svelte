@@ -6,6 +6,7 @@
   import { text } from '$lib/wiki/page.js';
   import Glossed from '$lib/components/Glossed.svelte';
   import GlossScope from '$lib/components/GlossScope.svelte';
+  import AskBox from '$lib/components/AskBox.svelte';
 
 
   export let incidentScenario: string | null;
@@ -21,9 +22,10 @@
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
 
   {#if !incidentScenario}
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-white mb-3">{text(note, 'heading')}</h1>
-      <p class="text-body">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-white mb-4">{text(note, 'heading')}</h1>
+      <AskBox where="incident" />
+      <p class="text-body mt-5">
         {text(note, 'lead')}
       </p>
     </div>

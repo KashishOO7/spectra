@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types.js';
   import type { Platform, UserProfile } from '$lib/types.js';
-  import { platformDisplay, safeHref, noteBlocks, leadSentence } from '$lib/audit/helpers.js';
+  import { platformDisplay, safeHref, noteBlocks, leadSentence, truncSentences } from '$lib/audit/helpers.js';
   import NoteLines from '$lib/components/NoteLines.svelte';
   import { TRACK_OPTIONS, ENVIRONMENT_OPTIONS } from '$lib/audit/constants.js';
   import Glossed from '$lib/components/Glossed.svelte';
@@ -23,6 +23,8 @@
 
   $: item = data.item;
   $: lead = leadSentence(item);
+  $: opening = truncSentences(item.description ?? '', 2) || lead;
+  $: whatRest = item.description?.startsWith(opening) ? item.description.slice(opening.length).trim() : (item.description ?? '');
   $: platformNotes = Object.entries(item.platform_notes ?? {}) as [Platform, string][];
   $: universal = platformNotes.length === 1 && platformNotes[0][0] === 'all';
 
@@ -115,14 +117,15 @@
 
   <div class="mb-6">
     <div class="flex flex-wrap items-center gap-2 mb-3">
-      <a href="/chapter/{data.chapter.id}" data-chapter-crumb class="inline-flex items-center min-h-[24px] text-sm font-semibold text-teal-light link-inline mr-1">{data.chapter.name}</a>
+      <a href="/chapter/{data.chapter.id}" data-chapter-crumb class="inline-flex items-center min-h-[24px] max-sm:min-h-[44px] text-sm font-semibold text-teal-light link-inline mr-1">{data.chapter.name}</a>
       {#if item.maturity_level === 1}
         <span class="pill-teal text-xs">{text(note, 'essential')}</span>
       {/if}
       {#if item.sensitive}<span class="pill-ink text-xs">{text(note, 'sensitive')}</span>{/if}
     </div>
 
-    <h1 class="text-2xl font-semibold text-white" data-sentence>{lead}</h1>
+    <h1 class="text-2xl font-semibold text-white" data-sentence>{item.title}</h1>
+    <p class="text-base text-body leading-relaxed mt-3 max-w-[68ch]"><Glossed text={opening} /></p>
   </div>
 
   {#if data.chapter.story}<div class="mb-8"><ChapterStory chapter={data.chapter.id} /></div>{/if}
@@ -166,7 +169,7 @@
       </div>
       {#if parts.rest.length}
         <details class="mt-6 pt-5 border-t border-border" data-fold="how-more">
-          <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'how-more')}</summary>
+          <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'how-more')}</summary>
           {#each parts.rest as block, b}
             <div class="max-w-[68ch] {b > 0 ? 'mt-6 pt-6 border-t border-border' : 'mt-4'}">
               {#if block.heading}<h3 class="text-lg font-semibold text-bright mb-2" data-sentence>{block.heading}</h3>{/if}
@@ -180,137 +183,148 @@
   {/if}
 
 
-  <div class="panel p-5 mb-8" data-mark>
+  <div class="panel p-5 mb-8 max-sm:sticky max-sm:bottom-[calc(4rem+env(safe-area-inset-bottom))] max-sm:z-40 max-sm:-mx-4 max-sm:px-4 max-sm:py-3 max-sm:rounded-none max-sm:border-x-0 max-sm:shadow-[0_-6px_16px_rgb(0_0_0/0.07)]" data-mark>
     {#if isSkipped}
       <p class="text-base text-body">{text(note, 'set-aside')}</p>
-      <button type="button" class="btn-ghost mt-3" on:click={toggleSkip}>{text(note, 'bring-back')}</button>
+      <button type="button" class="btn-ghost mt-3" on:click={toggleSkip}>{text(note, 'put-back')}</button>
     {:else}
       {#if waiting && !isDone}
         <p class="text-sm text-dim mb-3">{fill(note, 'blocked', { title: waiting.title ?? '', reason: waiting.reason ?? '' })}</p>
       {/if}
-      <div class="flex flex-wrap items-center gap-3">
-        <button type="button" class={isDone ? 'btn-ghost' : 'btn-primary'} disabled={busy || (!!waiting && !isDone)} on:click={toggleDone}>
+      <div class="flex flex-wrap max-sm:flex-nowrap items-center gap-3">
+        <button type="button" class="{isDone ? 'btn-ghost' : 'btn-primary'} max-sm:flex-1 max-sm:justify-center max-sm:min-h-[48px]" disabled={busy || (!!waiting && !isDone)} on:click={toggleDone}>
           {isDone ? text(note, 'undo') : text(note, 'mark-done')}
         </button>
         {#if isDone}<span class="text-sm font-semibold text-teal-light">{text(note, 'done')}</span>{/if}
         {#if !isDone}
           <button type="button" on:click={toggleSnooze} aria-pressed={isSnoozed}
-            class="px-3 py-1.5 min-h-[36px] inline-flex items-center rounded-full border border-border text-sm text-dim hover:text-body hover:border-muted transition-colors">{text(note, 'not-now')}</button>
+            class="px-3 py-1.5 min-h-[36px] max-sm:min-h-[44px] inline-flex items-center rounded-full border border-border text-sm text-dim hover:text-body hover:border-muted transition-colors">{text(note, 'not-now')}</button>
           <button type="button" on:click={toggleSkip}
-            class="px-3 py-1.5 min-h-[36px] inline-flex items-center rounded-full border border-border text-sm text-dim hover:text-body hover:border-muted transition-colors">{text(note, 'not-for-me')}</button>
+            class="max-sm:hidden px-3 py-1.5 min-h-[36px] max-sm:min-h-[44px] inline-flex items-center rounded-full border border-border text-sm text-dim hover:text-body hover:border-muted transition-colors">{text(note, 'not-for-me')}</button>
         {/if}
       </div>
       {#if isSnoozed && !isDone}<p class="text-sm text-dim mt-3">{text(note, 'snoozed')}</p>{/if}
     {/if}
   </div>
+  {#if !isSkipped && !isDone}
+    <button type="button" on:click={toggleSkip}
+      class="sm:hidden -mt-5 mb-8 px-3 min-h-[44px] inline-flex items-center rounded-full border border-border text-sm text-dim">{text(note, 'not-for-me')}</button>
+  {/if}
 
   <details class="panel p-5 mb-3" data-fold="why">
-    <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'why')}</summary>
+    <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'why')}</summary>
     <p class="mt-3 text-base text-body leading-relaxed max-w-[68ch]"><Glossed text={item.threat_narrative} /></p>
   </details>
 
-  {#if data.guides.length > 0}
-  <details class="panel p-5 mb-3" data-fold="where">
-    <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'where-to-find')}</summary>
-    <div class="mt-3 space-y-1.5">
-      {#each data.guides as guide}
-        <p class="text-sm">
-          <a href={safeHref(guide.url)} target="_blank" rel="noopener noreferrer"
-             class="text-teal-light link-inline">{guide.title} ↗</a>
-          <span class="text-dim"> {guide.context}</span>
-        </p>
-      {/each}
-    </div>
-  </details>
-  {/if}
-
-  <details class="panel p-5 mb-3" data-fold="more">
-    <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'more')}</summary>
-    <div class="mt-4 space-y-4">
-      <div>
-        <p class="text-sm text-muted mb-1">{text(note, 'description')}</p>
-        <p class="text-sm text-body leading-relaxed"><Glossed text={item.description} /></p>
-      </div>
-      {#if item.platforms?.length}
-      <div>
-        <p class="text-sm text-muted mb-1">{text(note, 'applies-to')}</p>
-        <div class="flex flex-wrap gap-1.5">
-          {#each item.platforms as p}<span class="pill-dim text-xs">{platformDisplay(p)}</span>{/each}
-        </div>
-      </div>
-      {/if}
-      {#each [[text(note, 'situation'), situationNotes], [text(note, 'place'), placeNotes]] as [heading, notes]}
-        {#if notes.length}
-        <div>
-          <p class="text-sm text-muted mb-1">{heading}</p>
-          <div class="space-y-2">
-            {#each notes as [name, body]}
-              <div class="bg-surface-2 border border-border rounded-xl p-4">
-                <p class="label-section mb-1.5">{name}</p>
-                {#each noteBlocks(body) as block}
-                  {#if block.heading}
-                    <p class="text-sm font-semibold text-bright mt-3 first:mt-0 mb-1">{block.heading}</p>
-                  {/if}
-                  <NoteLines lines={block.lines} />
-                {/each}
-              </div>
-            {/each}
-          </div>
-        </div>
-        {/if}
-      {/each}
-      {#if item.legal_notes?.length}
-      <div>
-        <p class="text-sm text-muted mb-1">{text(note, 'legal')}</p>
-        {#each item.legal_notes as legal}
-          <p class="text-sm text-body leading-relaxed">
-            {#if legal.jurisdiction !== 'global'}<span class="text-dim">{legal.jurisdiction}:</span> {/if}<Glossed text={legal.note} />
+  <details class="panel p-5 mb-3" data-fold="rest">
+    <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'more-about')}</summary>
+    <div class="mt-4">
+    {#if data.guides.length > 0}
+    <details class="border-t border-border py-4 first:border-t-0 first:pt-0" data-fold="where">
+      <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'where-to-find')}</summary>
+      <div class="mt-3 space-y-1.5">
+        {#each data.guides as guide}
+          <p class="text-sm">
+            <a href={safeHref(guide.url)} target="_blank" rel="noopener noreferrer"
+               class="text-teal-light link-inline">{guide.title} ↗</a>
+            <span class="text-dim"> {guide.context}</span>
           </p>
         {/each}
       </div>
-      {/if}
-    </div>
-  </details>
+    </details>
+    {/if}
 
-  {#if data.related.length > 0}
-  <details class="panel p-5 mb-3" data-fold="related">
-    <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'related')}</summary>
-    <div class="mt-3 space-y-2">
-      {#each data.related as rel}
-        <a href="/checklist/{rel.id}"
-           class="block p-3 rounded-xl border border-border hover:border-teal transition-colors">
-          <span class="text-sm text-body">{rel.title}</span>
-          {#if rel.note}<span class="block text-sm text-dim mt-0.5">{rel.note}</span>{/if}
-        </a>
-      {/each}
-    </div>
-  </details>
-  {/if}
+    <details class="border-t border-border py-4 first:border-t-0 first:pt-0" data-fold="more">
+      <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'more')}</summary>
+      <div class="mt-4 space-y-4">
+        {#if whatRest}
+        <div>
+          <p class="text-sm text-muted mb-1">{text(note, 'description')}</p>
+          <p class="text-sm text-body leading-relaxed"><Glossed text={whatRest} /></p>
+        </div>
+        {/if}
+        {#if item.platforms?.length}
+        <div>
+          <p class="text-sm text-muted mb-1">{text(note, 'applies-to')}</p>
+          <div class="flex flex-wrap gap-1.5">
+            {#each item.platforms as p}<span class="pill-dim text-xs">{platformDisplay(p)}</span>{/each}
+          </div>
+        </div>
+        {/if}
+        {#each [[text(note, 'situation'), situationNotes], [text(note, 'place'), placeNotes]] as [heading, notes]}
+          {#if notes.length}
+          <div>
+            <p class="text-sm text-muted mb-1">{heading}</p>
+            <div class="space-y-2">
+              {#each notes as [name, body]}
+                <div class="bg-surface-2 border border-border rounded-xl p-4">
+                  <p class="label-section mb-1.5">{name}</p>
+                  {#each noteBlocks(body) as block}
+                    {#if block.heading}
+                      <p class="text-sm font-semibold text-bright mt-3 first:mt-0 mb-1">{block.heading}</p>
+                    {/if}
+                    <NoteLines lines={block.lines} />
+                  {/each}
+                </div>
+              {/each}
+            </div>
+          </div>
+          {/if}
+        {/each}
+        {#if item.legal_notes?.length}
+        <div>
+          <p class="text-sm text-muted mb-1">{text(note, 'legal')}</p>
+          {#each item.legal_notes as legal}
+            <p class="text-sm text-body leading-relaxed">
+              {#if legal.jurisdiction !== 'global'}<span class="text-dim">{legal.jurisdiction}:</span> {/if}<Glossed text={legal.note} />
+            </p>
+          {/each}
+        </div>
+        {/if}
+      </div>
+    </details>
 
-  {#if item.sources?.length}
-  <details class="panel p-5 mb-3" data-fold="sources">
-    <summary class="label-mono cursor-pointer text-dim hover:text-body transition-colors">{text(note, 'sources')}</summary>
-    <ul class="mt-3 space-y-2">
-      {#each item.sources as source}
-        <li>
-          <a href={safeHref(source.url)} target="_blank" rel="noopener noreferrer"
-             class="text-sm text-dim hover:text-teal-light link-inline">
-            {source.title}
-            <span class="text-muted">· {source.type.replace(/_/g, ' ')}</span>
+    {#if data.related.length > 0}
+    <details class="border-t border-border py-4 first:border-t-0 first:pt-0" data-fold="related">
+      <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'related')}</summary>
+      <div class="mt-3 space-y-2">
+        {#each data.related as rel}
+          <a href="/checklist/{rel.id}"
+             class="block p-3 rounded-xl border border-border hover:border-teal transition-colors">
+            <span class="text-sm text-body">{rel.title}</span>
+            {#if rel.note}<span class="block text-sm text-dim mt-0.5">{rel.note}</span>{/if}
           </a>
-        </li>
-      {/each}
-    </ul>
+        {/each}
+      </div>
+    </details>
+    {/if}
+
+    {#if item.sources?.length}
+    <details class="border-t border-border py-4 first:border-t-0 first:pt-0" data-fold="sources">
+      <summary class="label-mono cursor-pointer max-sm:py-2.5 text-dim hover:text-body transition-colors">{text(note, 'sources')}</summary>
+      <ul class="mt-3 space-y-2">
+        {#each item.sources as source}
+          <li>
+            <a href={safeHref(source.url)} target="_blank" rel="noopener noreferrer"
+               class="text-sm text-dim hover:text-teal-light link-inline">
+              {source.title}
+              <span class="text-muted">· {source.type.replace(/_/g, ' ')}</span>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </details>
+    {/if}
+    </div>
   </details>
-  {/if}
 
   <nav class="mt-8 grid gap-3 sm:grid-cols-2" aria-label={text(note, 'order-label')}>
     {#if data.prev}
-      <a href="/checklist/{data.prev.id}" data-prev class="panel p-4 block hover:border-teal transition-colors">
+      <a href="/checklist/{data.prev.id}" data-prev class="panel p-4 block hover:border-teal transition-colors max-sm:hidden">
         <span class="block text-sm text-dim">← {text(note, 'previous')}</span>
         <span class="block mt-1 text-base font-semibold text-bright leading-snug">{data.prev.title}</span>
       </a>
-    {:else}<span></span>{/if}
+    {:else}<span class="max-sm:hidden"></span>{/if}
     {#if data.next}
       <a href="/checklist/{data.next.id}" data-next class="panel p-4 block sm:text-right hover:border-teal transition-colors">
         <span class="block text-sm text-dim">{text(note, 'next')} →</span>

@@ -4,6 +4,7 @@
   import { goto, afterNavigate } from '$app/navigation';
   import type { Snapshot } from '@sveltejs/kit';
   import { settle } from '$lib/nav/trail.js';
+  import { takeAsk } from '$lib/nav/ask.js';
   import type { PageData } from './$types.js';
   import type {
     UserProfile, AssessmentResult, ChecklistItem, ContentGraph,
@@ -163,6 +164,8 @@
     }
 
     loading = false;
+    const asked = takeAsk();
+    if (asked) searchQuery = asked;
     await tick();
     settle();
 

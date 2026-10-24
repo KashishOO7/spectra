@@ -2,7 +2,7 @@
 import type { ContentGraph, ChecklistItem, Harm, Lookup } from '../types.js';
 import { HARMS } from '../audit/constants.js';
 import { INCIDENT_PLAYBOOKS } from '../audit/playbooks.js';
-import { leadSentence } from '../audit/helpers.js';
+import { leadSentence, truncSentences } from '../audit/helpers.js';
 import { tokenize, expand, stem, sameWord, NEGATIONS, SYNONYM_INDEX } from './vocabulary.js';
 
 export type RouteKind = 'item' | 'lookup' | 'playbook' | 'harm';
@@ -66,11 +66,15 @@ function doc(kind: RouteKind, id: string, title: string, blurb: string, weight: 
   return { kind, id, title, blurb, terms, about, parts, weight };
 }
 
+
 function itemDoc(item: ChecklistItem): Doc {
   const about = new Map<string, number>();
   add(about, item.title, W_STRONG);
   const lead = leadSentence(item);
-  add(about, lead, W_STRONG);
+  add(about, lead, W_WEAK);
+  add(about, truncSentences(item.description ?? '', 2).slice(lead.length), W_WEAK);
+  const action = (truncSentences(item.description ?? '', 3).match(/(?:^|[.!?]\s+)(So,? [^.!?]*[.!?])/) ?? [])[1];
+  add(about, action ?? lead, W_MEDIUM);
   add(about, item.category, W_MEDIUM);
   add(about, item.subcategory, W_MEDIUM);
   add(about, (item.attack_vectors ?? []).join(' '), W_MEDIUM);
@@ -126,7 +130,8 @@ function playbookDocs(): Doc[] {
 const PLAYBOOK_ALSO: Record<string, string> = {
   account_hacked: 'account hacked',
   data_breach: 'data breach notification',
-  device_stolen: 'device stolen',
+  device_stolen: 'device stolen laptop',
+  paid_scammer: 'scammed money lost fraud',
   phishing_clicked: 'phishing link clicked',
   stalkerware: 'monitoring suspected'
 };

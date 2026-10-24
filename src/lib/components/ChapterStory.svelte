@@ -14,11 +14,11 @@
 </script>
 
 <div data-story role="group" aria-label={text(chapters, 'story-label')}
-     class="story grid grid-flow-col auto-cols-[84%] gap-3 overflow-x-auto snap-x snap-mandatory pb-1
-            sm:grid-flow-row sm:grid-cols-3 sm:auto-cols-auto sm:overflow-visible">
+     class="story grid gap-3 max-sm:gap-0 sm:grid-cols-3">
   {#each lines as line, i}
-    <figure class="snap-start m-0 rounded-2xl border border-border bg-surface overflow-hidden">
-      <div class="relative h-32 grid place-items-center bg-surface-2 border-b border-border text-viz">
+    <figure class="m-0 rounded-2xl border border-border bg-surface overflow-hidden max-sm:flex max-sm:items-start max-sm:gap-3 max-sm:py-2.5 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:overflow-visible">
+      <span class="sm:hidden flex-none mt-0.5 w-7 h-7 rounded-full bg-teal text-sm font-semibold grid place-items-center num" aria-hidden="true">{i + 1}</span>
+      <div class="relative h-32 grid place-items-center bg-surface-2 border-b border-border text-viz max-sm:hidden">
         <span class="absolute top-2.5 left-2.5 w-6 h-6 rounded-full bg-teal text-xs font-semibold grid place-items-center num" aria-hidden="true">{i + 1}</span>
         <svg width="160" height="110" viewBox="0 0 160 110" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -153,7 +153,29 @@
               <path d="M124 38a44 44 0 0 1 0 34" stroke-dasharray="3 6"/><path d="M130 66l-6 7-7-5"/>
               <path d="M36 38a44 44 0 0 0 0 34" opacity="0.35"/>
             {/if}
-          {:else}
+          {:else if chapter === 'smart-home'}
+            {#if i === 0}
+              <rect x="26" y="34" width="58" height="30" rx="6" class="s"/>
+              <circle cx="70" cy="49" r="8"/><circle cx="70" cy="49" r="3" class="on" stroke="none"/>
+              <path d="M42 64v16M32 80h20"/>
+              <path d="M88 49h22" stroke-dasharray="3 6"/><path d="M94 43l-6 6 6 6"/>
+              <circle cx="128" cy="40" r="9" class="on" stroke="none"/>
+              <path d="M112 74c0-12 7-19 16-19s16 7 16 19z" class="on" stroke="none"/>
+            {:else if i === 1}
+              <rect x="14" y="40" width="42" height="22" rx="5" class="s"/><circle cx="44" cy="51" r="5"/>
+              <rect x="104" y="30" width="44" height="30" rx="3" class="s"/>
+              <path d="M98 66h56l-5 6h-46z" class="on" stroke="none"/>
+              <path d="M18 94h124" class="line"/><path d="M34 62v32M126 72v22"/>
+              <path d="M60 51h34" stroke-dasharray="3 6"/><path d="M90 45l6 6-6 6"/>
+            {:else}
+              <rect x="14" y="40" width="42" height="22" rx="5" class="s"/><circle cx="44" cy="51" r="5"/>
+              <rect x="104" y="30" width="44" height="30" rx="3" class="s"/>
+              <path d="M98 66h56l-5 6h-46z" class="on" stroke="none"/>
+              <path d="M14 94h54M92 94h54" class="line"/><path d="M34 62v32M126 72v22"/>
+              <rect x="76" y="22" width="8" height="78" rx="3" class="on" stroke="none"/>
+              <path d="M60 51h10" stroke-dasharray="3 6"/>
+            {/if}
+          {:else if chapter === 'looking-after-someone'}
             {#if i === 0}
               <path d="M34 42h52a14 14 0 0 1 0 28c-6 0-9-6-14-6h-24c-5 0-8 6-14 6a14 14 0 0 1 0-28z" class="s"/>
               <path d="M40 50v12M34 56h12"/><circle cx="78" cy="52" r="2.5" class="on" stroke="none"/><circle cx="84" cy="60" r="2.5" class="on" stroke="none"/>
@@ -175,7 +197,7 @@
           {/if}
         </svg>
       </div>
-      <figcaption class="px-3.5 pt-3 pb-3.5 text-sm font-semibold text-bright leading-snug">{line}</figcaption>
+      <figcaption class="px-3.5 pt-3 pb-3.5 text-sm font-semibold text-bright leading-snug max-sm:p-0 max-sm:text-base max-sm:font-normal max-sm:text-body max-sm:leading-relaxed">{line}</figcaption>
     </figure>
   {/each}
 </div>

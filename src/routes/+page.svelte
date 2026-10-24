@@ -1,27 +1,20 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount } from 'svelte';
   import type { PageData } from './$types.js';
-  import type { Harm } from '$lib/types.js';
-  import { HARMS } from '$lib/audit/constants.js';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { loadProfile, saveProfile, createDefaultProfile } from '$lib/engine/store.js';
+  import { loadProfile } from '$lib/engine/store.js';
   import home from '#spectra-wiki/page/home';
-  import { text, fill, links, items, plainLines } from '$lib/wiki/page.js';
+  import { text, fill, lines, items, plainLines } from '$lib/wiki/page.js';
   import FactPicture from '$lib/components/FactPicture.svelte';
 
   const title = text(home, 'title');
   const description = text(home, 'description');
-  const explainLinks = links(home, 'explain-links');
-
-  const harms = Object.keys(HARMS) as Harm[];
 
   export let data: PageData;
 
   const cards = items(home, 'cards').map(c => {
     const [figure, says, alt] = c.lines.slice(0, 3).map(l => (l[0] as { value: string }).value);
     const step = data.cards.find(s => s.id === c.title)!;
-    return { id: c.title, figure, says, alt, title: step.title, why: step.why };
+    return { id: c.title, figure, says, alt, title: step.title, why: step.why, what: step.what };
   });
   const bars = plainLines(home, 'ai-bars').map(l => {
     const m = /^(\d+) (.+)$/.exec(l);
@@ -35,7 +28,6 @@
   const count = /^(\d+) of (\d+)\b/.exec(text(home, 'hero-chapter-count'));
   if (!count) throw new Error('wiki/pages/home.md hero-chapter-count: not "n of m"');
   const chapter = { done: +count[1], total: +count[2] };
-  const trust = items(home, 'trust').map(t => ({ title: t.title, line: (t.lines[0][0] as { value: string }).value }));
 
   let flipped: Record<string, boolean> = {};
   const flip = (id: string) => (flipped = { ...flipped, [id]: !flipped[id] });
@@ -62,36 +54,7 @@
   let returning = false;
   let continueHref = '/audit';
 
-  let selected: Harm[] = [];
-  let starting = false;
-
-  let tailorEl: HTMLDetailsElement;
-  let tailorOpen = false;
-
-  let hydrated = false;
-
-  async function toggle(harm: Harm) {
-    selected = selected.includes(harm)
-      ? selected.filter(h => h !== harm)
-      : [...selected, harm];
-    try {
-      const stored = await loadProfile();
-      if (selected.length === 0) {
-        if (stored?.harms) {
-          delete stored.harms;
-          await saveProfile(stored);
-        }
-        return;
-      }
-      const profile = stored ?? createDefaultProfile();
-      profile.harms = [...selected];
-      await saveProfile(profile);
-    } catch {
-    }
-  }
-
   onMount(async () => {
-    hydrated = true;
     measure();
     try {
       const profile = await loadProfile();
@@ -101,53 +64,9 @@
         !!profile.harms?.length || !!profile.last_open);
       const last = profile?.last_open?.id;
       if (last && !profile?.implemented?.[last] && !profile?.skipped?.[last]) continueHref = `/checklist/${last}`;
-      if (profile?.harms?.length) {
-        selected = [...profile.harms];
-        if (tailorEl) tailorEl.open = true;
-        tailorOpen = true;
-      }
     } catch {
     }
   });
-
-  $: if (hydrated && tailorEl && $page.url.searchParams.get('edit') === 'harms' && !tailorEl.open) {
-    tailorEl.open = true;
-    tailorOpen = true;
-    tick().then(() => requestAnimationFrame(() => {
-      tailorEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }));
-  }
-
-  async function start(e: MouseEvent) {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    e.preventDefault();
-    if (starting) return;
-    starting = true;
-    try {
-      const stored = await loadProfile();
-
-      if (selected.length === 0 && !stored?.harms?.length) {
-        await goto('/audit');
-        return;
-      }
-
-      if (selected.length === 0) {
-        delete stored!.harms;
-        await saveProfile(stored!);
-        await goto('/audit');
-        return;
-      }
-
-      const profile = stored ?? createDefaultProfile();
-      profile.harms = [...selected];
-      await saveProfile(profile);
-      await goto('/audit?from=harms');
-    } catch {
-      await goto('/audit');
-    } finally {
-      starting = false;
-    }
-  }
 </script>
 
 <svelte:head>
@@ -160,15 +79,16 @@
   <div class="hero max-w-6xl mx-auto">
    <div>
     <h1 class="text-3xl font-bold text-white mb-5" data-page-title>{text(home, 'heading')}</h1>
-    <p class="text-lg text-body mb-8 max-w-[34ch]">{text(home, 'who-for')}</p>
+    <p class="text-lg text-bright mb-4 max-w-[40ch]">{text(home, 'lead')}</p>
+    <p class="hidden sm:block text-lg text-body mb-6 max-w-[40ch]">{#each lines(home, 'who-for')[0] as p}{#if p.kind === 'link'}<a href={p.href} class="link-inline text-teal-light">{p.value}</a>{:else}{p.value}{/if}{/each}</p>
     <div class="flex flex-wrap items-center gap-3 min-h-[48px]" data-doors>
       {#if returning}
-        <a href={continueHref} class="btn-primary">{text(home, 'continue')}</a>
+        <a href={continueHref} class="btn-primary max-sm:w-full max-sm:min-h-[52px]">{text(home, 'continue')}</a>
       {:else}
-        <a href="/start" class="btn-primary">{text(home, 'start-door')}</a>
+        <a href="/start" class="btn-primary max-sm:w-full max-sm:min-h-[52px]">{text(home, 'start-door')}</a>
       {/if}
-      <a href="/real-or-scam" class="btn-ghost">{text(home, 'game-door')}</a>
-      <a href="/quiz" class="btn-ghost">{text(home, 'quiz-door')}</a>
+      <a href="/real-or-scam" class="btn-ghost max-sm:w-full max-sm:min-h-[52px]">{text(home, 'game-door')}</a>
+      <a href="/quiz" class="btn-ghost max-sm:border-0 max-sm:bg-transparent max-sm:px-0 max-sm:min-h-[44px] max-sm:text-teal-light">{text(home, 'quiz-door')} <span class="sm:hidden" aria-hidden="true">→</span></a>
     </div>
     <p class="mt-6 text-sm text-body inline-flex items-center gap-2">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
@@ -177,10 +97,17 @@
       </svg>
       {text(home, 'promise')}
     </p>
+    <div class="sm:hidden mt-6 rounded-2xl bg-teal-dim px-4 py-4" data-help-box>
+      <p class="text-base font-semibold text-bright">{text(home, 'help-box-heading')}</p>
+      <p class="text-sm text-body mt-1">{text(home, 'help-box-lead')}</p>
+      <a href="/incident" class="inline-flex items-center min-h-[44px] font-semibold text-teal-light">{text(home, 'help-box-link')}</a>
+    </div>
    </div>
 
+    <div class="hidden min-[900px]:block">
     <div class="stack" role="img" aria-label={text(home, 'hero-cards-alt')}>
       <div class="panel hc s1" data-hero-card>
+        <span class="sticker pill-ink" data-hero-sticker>{text(home, 'hero-sticker')}</span>
         <div class="flex items-start justify-between gap-3 mb-2">
           <span class="text-sm text-dim">{text(home, 'hero-scam-from')}</span>
           <span data-scam-tag data-hero-tag class="pill bg-red-dim text-red-light">{text(home, 'hero-scam')}</span>
@@ -189,6 +116,7 @@
         <p class="mt-2.5 text-sm text-dim">{text(home, 'hero-scam-why')}</p>
       </div>
       <div class="panel hc s2" data-hero-card>
+        <span class="sticker pill-ink" data-hero-sticker>{text(home, 'hero-sticker')}</span>
         <div class="flex items-start justify-between gap-3 mb-2">
           <span class="text-sm text-dim">{text(home, 'hero-step-label')}</span>
           <span data-hero-tag class="pill-teal">{text(home, 'hero-step-tag')}</span>
@@ -200,9 +128,10 @@
           </span>
           <p class="text-base font-semibold text-bright leading-snug">{twoStep.title}</p>
         </div>
-        <p class="mt-2.5 text-sm text-body" data-figure><span class="font-semibold text-bright">{twoStep.figure}</span> {twoStep.says}</p>
+        <p class="mt-2.5 text-sm text-body" data-step-what>{twoStep.what}</p>
       </div>
       <div class="panel hc s3" data-hero-card>
+        <span class="sticker pill-ink" data-hero-sticker>{text(home, 'hero-sticker')}</span>
         <div class="flex items-start justify-between gap-3 mb-2">
           <span class="text-sm text-dim">{text(home, 'hero-chapter-label')}</span>
           <span data-hero-tag class="pill-teal tabular-nums">{text(home, 'hero-chapter-count')}</span>
@@ -215,6 +144,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </section>
 
@@ -222,9 +152,25 @@
   <div class="max-w-6xl mx-auto border-t border-border pt-14 sm:pt-20">
     <div class="sec-head mb-8 sm:mb-10">
       <h2 id="cards-heading" class="text-2xl font-bold text-bright">{text(home, 'cards-heading')}</h2>
-      <p class="text-lg text-body">{text(home, 'cards-lead')}</p>
+      <p class="hidden sm:block text-lg text-body">{text(home, 'cards-lead')}</p>
+      <p class="sm:hidden text-base text-body">{text(home, 'cards-lead-phone')}</p>
     </div>
 
+    <ul class="sm:hidden panel p-0 overflow-hidden divide-y divide-border" data-fact-rows>
+      {#each cards as c (c.id)}
+        <li>
+          <a href="/checklist/{c.id}" class="flex items-center gap-3 px-4 py-3.5 min-h-[64px]">
+            <span class="flex-1 min-w-0">
+              <span class="block text-xl font-bold text-bright">{c.figure}</span>
+              <span class="block text-sm text-body mt-0.5">{c.says}</span>
+            </span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-dim flex-none" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </a>
+        </li>
+      {/each}
+    </ul>
+
+    <div class="max-sm:hidden">
     <div bind:this={row} on:scroll={measure} data-cards
          class="cards grid grid-flow-col gap-5 overflow-x-auto snap-x snap-mandatory pb-2">
       {#each cards as c (c.id)}
@@ -271,79 +217,7 @@
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
       </button>
     </div>
-  </div>
-</section>
-
-<section class="px-4 sm:px-6 pb-16">
-  <div class="max-w-3xl mx-auto">
-    <p class="text-base text-bright font-medium text-center">{text(home, 'same-list')}</p>
-
-    <details class="mt-2" bind:this={tailorEl} data-hydrated={hydrated ? 'true' : null}
-             on:toggle={() => (tailorOpen = tailorEl.open)}>
-      <summary class="text-base font-semibold text-body hover:text-bright transition-colors
-                      cursor-pointer list-none min-h-[48px] flex items-center justify-center gap-2 select-none">
-        {text(home, 'say-what')}
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-             class="transition-transform duration-150 {tailorOpen ? 'rotate-180' : ''}">
-          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </summary>
-
-      <ul class="mt-4 space-y-2">
-        {#each harms as harm}
-          {@const isOn = selected.includes(harm)}
-          <li>
-            <button type="button"
-              aria-pressed={isOn}
-              on:click={() => toggle(harm)}
-              class="w-full min-h-[56px] text-left px-4 py-3.5 rounded-xl border flex items-center gap-3.5
-                     transition-colors duration-150 group
-                     {isOn ? 'border-teal bg-teal-dim' : 'border-border bg-surface hover:border-muted'}">
-              <span class="flex-shrink-0 w-[18px] h-[18px] flex items-center justify-center" aria-hidden="true">
-                {#if isOn}
-                  <svg width="18" height="18" viewBox="0 0 14 14" fill="none" class="text-teal">
-                    <circle cx="7" cy="7" r="6" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
-                    <path d="M4 7L6 9L10 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                {:else}
-                  <span class="w-[15px] h-[15px] rounded-full border border-muted block group-hover:border-dim transition-colors"></span>
-                {/if}
-              </span>
-              <span class="text-base {isOn ? 'text-white font-medium' : 'text-bright'}">{harm}</span>
-            </button>
-          </li>
-        {/each}
-      </ul>
-
-      <div class="mt-6 text-center">
-        <a href="/audit" on:click={start} class="btn-primary">{text(home, 'show-my-list')}</a>
-      </div>
-    </details>
-  </div>
-</section>
-
-<section class="px-4 sm:px-6 border-t border-border">
-  <div class="max-w-6xl mx-auto pt-12">
-    <ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {#each trust as t, i}
-        <li>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-               stroke-linecap="round" stroke-linejoin="round" class="text-teal mb-3" aria-hidden="true">
-            {#if i === 0}<path d="M5 4.5h11.5a2 2 0 0 1 2 2V20H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h11.5"/>
-            {:else if i === 1}<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
-            {:else if i === 2}<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6z"/>
-            {:else}<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>{/if}
-          </svg>
-          <p class="text-base font-semibold text-bright">{t.title}</p>
-          <p class="text-sm text-body mt-1">{t.line}</p>
-        </li>
-      {/each}
-    </ul>
-    <p class="mt-10 flex flex-wrap items-center justify-center gap-x-6 text-base">
-      {#each explainLinks as l}
-        <a href={l.href} class="text-body hover:text-bright transition-colors min-h-[48px] inline-flex items-center">{l.text}</a>
-      {/each}
-    </p>
+    </div>
   </div>
 </section>
 
@@ -367,7 +241,8 @@
   @media (min-width: 900px) { .hero { grid-template-columns: 1.08fr 0.92fr; gap: 3.5rem; } }
 
   .stack { display: flex; flex-direction: column; gap: 14px; }
-  .hc { width: min(400px, 90%); padding: 18px 20px; }
+  .hc { position: relative; width: min(400px, 90%); padding: 18px 20px; }
+  .sticker { position: absolute; top: -11px; left: 16px; rotate: -4deg; box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
   .s1 { align-self: flex-start; margin-left: 2%; rotate: -2.2deg; }
   .s2 { align-self: flex-end; rotate: 1.6deg; }
   .s3 { align-self: flex-start; margin-left: 8%; rotate: -0.8deg; }

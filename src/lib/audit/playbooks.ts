@@ -36,6 +36,12 @@ const DECIDED: Decided[] = [
     relatedItemIds: ['device-screenlock-001', 'device-encrypt-001', 'device-updates-001']
   },
   {
+    id: 'paid_scammer',
+    icon: '◇',
+    severity: 'critical',
+    relatedItemIds: ['money-scam-first-hour-001', 'recovery-email-first-001', 'human-urgency-001', 'auth-2fa-001']
+  },
+  {
     id: 'phishing_clicked',
     icon: '◆',
     severity: 'high',

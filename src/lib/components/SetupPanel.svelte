@@ -7,7 +7,6 @@
   import { LIFE_EVENTS } from '$lib/audit/life-events.js';
   import type { LifeEvent } from '$lib/audit/life-events.js';
   import { ADVERSARY_OPTIONS, TRACK_OPTIONS, OFFERED_TRACKS, tierDot } from '$lib/audit/constants.js';
-  import { leadSentence } from '$lib/audit/helpers.js';
   import {
     loadProfile, saveProfile, exportProfile, importProfile, clearAllData,
     applyLifeEvent, revertLifeEvent, createDefaultProfile, derivedAdversaries,
@@ -129,7 +128,7 @@
   async function changeHarms() {
     onClose();
     await tick();
-    await goto('/?edit=harms', { noScroll: true });
+    await goto('/you?edit=harms', { noScroll: true });
   }
 
   async function seeEverything() {
@@ -419,7 +418,7 @@
       </p>
       <ul class="space-y-1.5">
         {#each result.reverify_items as item}
-          <li class="text-sm text-dim leading-snug">{leadSentence(item)}</li>
+          <li class="text-sm text-dim leading-snug">{item.title}</li>
         {/each}
       </ul>
     </section>

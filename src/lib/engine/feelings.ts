@@ -4,10 +4,10 @@ import type { SEQuizResult } from '../types.js';
 
 export const FEELING_STEPS: Readonly<Record<string, readonly string[]>> = {
   urgency: ['human-urgency-001', 'human-qr-code-001'],
-  fear: ['human-urgency-001'],
-  scarcity: ['human-fake-shop-001', 'human-urgency-001'],
+  fear: ['human-urgency-001', 'human-tech-support-scam-001'],
+  scarcity: ['human-fake-shop-001', 'human-urgency-001', 'human-marketplace-scam-001'],
   authority: ['ai-phishing-detect-001', 'human-verify-001'],
-  reciprocity: ['ai-phishing-detect-001'],
+  reciprocity: ['ai-phishing-detect-001', 'human-job-scam-001'],
   trust_exploitation: ['human-verify-001', 'human-investment-scam-001'],
   social_proof: ['human-verify-001', 'human-investment-scam-001']
 };

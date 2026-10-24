@@ -17,6 +17,7 @@ const PAGES: Array<[path: string, changefreq: string, priority: string]> = [
   ['/methodology', 'monthly', '0.9'],
   ['/resources', 'weekly', '0.8'],
   ['/how-it-works', 'monthly', '0.6'],
+  ['/faq', 'monthly', '0.8'],
   ['/graph', 'weekly', '0.7'],
   ['/about', 'monthly', '0.7'],
   ['/timeline', 'monthly', '0.5'],

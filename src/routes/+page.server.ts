@@ -14,7 +14,7 @@ export const load: PageServerLoad = () => {
   const cards = items(home, 'cards').map(card => {
     const item = graph.items.get(card.title);
     if (!item) throw new Error(`wiki/pages/home.md: card "${card.title}" names a step that is not in the corpus`);
-    return { id: item.id, title: item.title, why: opening(item.threat_narrative) };
+    return { id: item.id, title: item.title, why: opening(item.threat_narrative), what: opening(item.description) };
   });
   return { cards };
 };

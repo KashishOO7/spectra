@@ -44,7 +44,12 @@ export const V2_ITEM_IDS: readonly string[] = Object.freeze([
   'recovery-routes-001', 'recovery-email-first-001', 'recovery-locked-out-001',
   'money-scam-first-hour-001', 'impersonation-report-001', 'harassment-document-001',
   'human-fake-shop-001', 'human-qr-code-001', 'auth-sim-pin-001', 'ai-chatbot-privacy-001',
-  'human-investment-scam-001', 'location-tracker-alerts-001', 'image-threat-001'
+  'human-investment-scam-001', 'location-tracker-alerts-001', 'image-threat-001',
+  'human-job-scam-001', 'money-card-alerts-001', 'auth-old-accounts-001',
+  'human-marketplace-scam-001', 'auth-email-alias-001', 'device-browser-extensions-001',
+  'human-tech-support-scam-001', 'ai-deepfake-video-001', 'guardian-trusted-contact-001',
+  'guardian-gaming-chat-001', 'home-router-001', 'home-camera-001', 'home-speaker-001', 'home-tv-001',
+  'home-car-001'
 ]);
 
 const liveId = (frozen: string): string => ITEM_RENAMES[frozen] ?? frozen;

@@ -1,7 +1,7 @@
 {
   "name": "Spectra",
   "short_name": "Spectra",
-  "description": "A free checklist for your own safety, online and offline. Plain steps with sources, ordered for you. No account, and what you tap stays in your browser.",
+  "description": "Spectra is a free security playbook: guided steps for your accounts, money, devices and privacy, so you know what to do first, before something goes wrong and right after it does. No account, and what you tap stays in your browser.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
