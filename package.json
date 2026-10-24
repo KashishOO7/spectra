@@ -1,7 +1,7 @@
 {
   "name": "spectra",
   "version": "2.0.0",
-  "description": "Personal Security Self-Audit Framework by FPSZero",
+  "description": "A free security playbook by FPS Zero",
   "license": "AGPL-3.0-only AND CC-BY-SA-4.0",
   "private": true,
   "imports": {
@@ -38,8 +38,7 @@
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "qrcode-generator": "^2.0.4",
-    "spectra": "file:../.."
+    "qrcode-generator": "^2.0.4"
   },
   "type": "module"
 }

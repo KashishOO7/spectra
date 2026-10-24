@@ -50,6 +50,9 @@ weights consistent. The rubric is a consistency guide, **not** a mechanical form
 weights are estimation set by hand to 0.5 granularity, not the arithmetic output of
 `impact × prevalence`.
 
+**Effort is not an axis.** How long a step takes or how little it costs never moves its weight,
+and a weight's reason never cites it.
+
 **Impact (1 to 5).** Severity if the threat this control mitigates succeeds.
 
 | 1 | 2 | 3 | 4 | 5 |

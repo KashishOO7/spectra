@@ -1,6 +1,6 @@
 # Spectra
 
-### Most security advice is a hundred-item wall. This asks what you're worried about, then hands you a short list.
+### Spectra is a free security playbook: guided steps for your accounts, money, devices and privacy, so you know what to do first, before something goes wrong and right after it does.
 
 [![CI](https://github.com/KashishOO7/spectra/actions/workflows/ci.yml/badge.svg)](https://github.com/KashishOO7/spectra/actions/workflows/ci.yml)
 [![Code: AGPL-3.0](https://img.shields.io/badge/code-AGPL--3.0-blue)](LICENSE)
@@ -60,7 +60,7 @@ flowchart TD
     L1["WHO YOU ARE<br/>you pick, or skip<br/>· rarely changes ·"]
     L2["WHAT CAN HAPPEN<br/>10 harms<br/>· NEVER CHANGES ·"]
     L3["HOW IT HAPPENS<br/>17 attack vectors<br/>· changes with technology ·"]
-    L4["WHAT YOU DO<br/>45 steps<br/>· grows forever ·"]
+    L4["WHAT YOU DO<br/>60 steps<br/>· grows forever ·"]
 
     L1 --- L2 --- L3 --- L4
 
@@ -147,7 +147,7 @@ list, by a factor from 1.0 to 1.4; it never moves a step later and never changes
 ### Why the plain-sentence search cannot lie to you
 
 It downloads nothing and generates nothing. It ranks sentences that already exist, so its entire
-output space is steps a person wrote, a source backs and twenty-six validators passed. **A fabricated
+output space is steps a person wrote, a source backs and twenty-seven validators passed. **A fabricated
 recommendation is impossible by construction rather than unlikely by supervision**, and an engine
 test asserts every id it returns resolves to something real.
 
@@ -191,8 +191,8 @@ Most of the failure modes here are editorial, not technical, so most of the gate
 
 | Gate | What it refuses to let through |
 |---|---|
-| **Twenty-six blocking validators, on the content** | An item that resolves to no harm. A claim about what a company does with your data. A country-specific helpline. A tracking parameter in a source URL. A step with no primary source. Prose gates, run in CI, not just a linter over code. |
-| **`check-internals.ts`, invariant I5** | Any engine internal reaching a user screen. No multiplier, no raw score, no `+9pts`, no internal date, on any of 33 components. The one page allowed to show them is named in the script. |
+| **Twenty-seven blocking validators, on the content** | An item that resolves to no harm. A claim about what a company does with your data. A country-specific helpline. A tracking parameter in a source URL. A step with no primary source. Prose gates, run in CI, not just a linter over code. |
+| **`check-internals.ts`, invariant I5** | Any engine internal reaching a user screen. No multiplier, no raw score, no `+9pts`, no internal date, on any of 36 components. The one page allowed to show them is named in the script. |
 | **CI, on every push and pull request** | Both gates above run, plus `npm run check` and a full build, before anything deploys. A broken item cannot reach the site by being merged on a busy day. |
 
 **Nothing names a tool you have to go and get.** That is not a style preference, it is
@@ -231,7 +231,7 @@ The last three are run locally rather than on a cron.
 ```
 spectra/
 ├── wiki/                   # CC BY-SA 4.0 · every word the site shows, one note each
-│   ├── controls/           # the 45 checklist steps, one note each, by category
+│   ├── controls/           # the 60 checklist steps, one note each, by category
 │   ├── resources/          # the guides our steps point at
 │   ├── lookups/            # vocabulary many steps share, authored once, printed in each
 │   ├── pages/              # each page's own words, and the names of every list option
@@ -263,8 +263,8 @@ spectra/
 
 | | |
 |---|---|
-| **Steps** | 45, all active |
-| **By situation** | 37 general · 9 someone I know · 9 public work · 5 caring for someone · 2 work accounts · 2 AI-focused *(overlapping)* |
+| **Steps** | 60, all active |
+| **By situation** | 50 general · 9 someone I know · 9 public work · 7 caring for someone · 2 work accounts · 3 AI-focused *(overlapping)* |
 | **Also** | 8 guides · 3 lookups |
 | **Taxonomy** | 10 categories · 10 actor types · 17 attack vectors · 14 assets · 6 tracks · 11 platforms · 10 emotional registers |
 
