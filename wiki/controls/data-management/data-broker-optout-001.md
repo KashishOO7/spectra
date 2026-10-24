@@ -40,6 +40,11 @@ threat_model_multipliers:
   data_broker: 2
   intimate_partner: 2
   opportunistic: 1.2
+multiplier_reasons:
+  targeted_individual: 'Broker listings give a home address to anyone who wants to find you, which is why this step exists.'
+  data_broker: 'This step exists to take your details out of broker databases.'
+  intimate_partner: 'An ex looking for a new address often finds it on a broker site.'
+  opportunistic: 'Scammers buy broker lists to aim their messages, so a rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -104,6 +109,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:@KashishOO7
 changelog:
+  - version: 2.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.1.0
     date: '2026-04-01'
     changes: Added environment_notes for has_data_protection_rights flag.
@@ -118,7 +127,7 @@ changelog:
 A search for your name and town can bring up a people-search site showing your home address, your phone number and the names of your relatives, often for free. Stalkers, scammers and identity thieves can start from that one page.
 
 ## What
-Ask people-search sites to remove the page that shows your address, phone number and relatives' names. These sites collect details about people from public records, other websites and other companies, and show them to anyone who searches a name. Which of these sites list you depends on the country you live in, so search your own name to find them. Removing your page is free, and it usually has to be done again later, because the sites keep collecting new records and a removed page can reappear.
+A people-search site can show your address, phone number and relatives' names to anyone who types in your name. So ask those sites to remove the page about you. People-search sites collect details about people from public records, other websites and other companies. Which of these sites list you depends on the country you live in, so search your own name to find them. Removing your page is free, and it usually has to be done again later, because the sites keep collecting new records and a removed page can reappear.
 ## How
 ### all
 Do this
@@ -129,14 +138,14 @@ If you cannot find one, search the site's name with the words opt out, and use o
 Open the page about you and copy its web address. Then fill in the site's opt-out form. Many forms ask for the web address of your page, and an email address or phone number to confirm the request.
 
 Before you send a request
-The site's own opt-out is free, and you do not need to make an account or buy anything to use it.
+The site's own opt-out is usually free, and most do not ask you to make an account or buy anything to use it.
 Send a request only to a site that already lists you, so you do not give your details to a site that did not have them.
 Some sites will not remove you without a copy of your ID. The copy tells the site more about you than it may already have, so you can decide to leave that site out, though your page there then stays up.
 If you send one, cover the ID number, your photo and your signature with strips of paper before you take the photo. Many IDs repeat the number in two or three lines of letters, numbers and < signs along the bottom, or in a barcode on the back, so cover those too.
 A black box drawn over a PDF with a markup tool can often be moved off again after the file is saved, so paper over the card itself is safer.
 Write across the copy the site's name, the date, and that it is only for removing your page, so the copy is harder to use for anything else.
 A paid removal service sends these requests for you and repeats them, which saves you the work, but it can only reach the sites it covers.
-In a 2024 Consumer Reports test that tried to remove 32 volunteers' details from 13 people-search sites, requests sent by hand had removed more after four months than any of the seven paid services tested.
+In a Consumer Reports test that tried to remove 32 volunteers' details from 13 people-search sites, requests sent by hand had removed more after four months than any of the seven paid services tested.
 
 Test it
 Search your name and town again a few weeks after you send the requests. If a page about you is still there, or a new site lists you, send an opt-out to that site. After that, search again about twice a year, or more often if someone is trying to find you, because removed pages can come back.

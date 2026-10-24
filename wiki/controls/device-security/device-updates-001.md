@@ -37,7 +37,12 @@ threat_model_multipliers:
   opportunistic: 1.3
   criminal_org: 1.4
   targeted_individual: 1.2
-  ai_automated: 1.2
+  ai_automated: 1
+multiplier_reasons:
+  opportunistic: 'Harmful software spread in bulk uses known holes that updates close.'
+  criminal_org: 'Groups that lock up files and demand money get in through holes that updates have already fixed.'
+  targeted_individual: 'A skilled person after you may use a known hole, but most get in other ways, so a smaller rise.'
+  ai_automated: 'This kind is scam messages, copied voices and faked video, which do not use software holes, so no rise. Was 1.2 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items: []
@@ -64,6 +69,10 @@ tags:
 created_at: '2025-01-01'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.0.0
     date: '2025-01-01'
     changes: Initial item.
@@ -71,9 +80,9 @@ changelog:
 ---
 
 ## Why
-Some security updates fix flaws that attackers are already using, and the maker says so when it releases the update. A device that has not installed the update still has the flaw, and flaws like these are one of the ways ransomware gets onto computers.
+Some security updates fix flaws that attackers are already using, and the maker says so when it releases the update. Say your phone shows an update and you tap "later" for months: if it fixed one of those flaws, your phone still has it, and the flaw has been announced. A device that has not installed the update still has the flaw, and flaws like these are one of the ways ransomware gets onto computers.
 ## What
-Turn on automatic updates for your phone and your computer. When an update fixes a security flaw, the maker publishes what it fixed, so from that day attackers know the flaw exists. With automatic updates on, the device installs the fix without you having to remember to.
+When a maker releases a security update, it publishes what the update fixed, so attackers know the flaw exists from that day. So turn on automatic updates for your phone and your computer: the device then installs the fix without you having to remember to.
 ## How
 ### all
 Do this
@@ -81,12 +90,12 @@ Turn on automatic updates everywhere: phone, computer, browser and apps.
 
 Where to look
 - iPhone: search Settings for Software Update, tap Automatic Updates and turn on Automatically Install. The phone then installs updates overnight while it is charging and on Wi-Fi.
-- Android: search Settings for Software update. Most updates install on their own. If there is a switch to download them automatically, such as Auto download over Wi-Fi, turn it on, and restart the phone when an update asks.
+- Android: search Settings for Software update. Many phones install updates on their own; others wait for you to tap Install. If there is a switch to download them automatically, such as Auto download over Wi-Fi, turn it on, and restart the phone when an update asks.
 - Windows: updates install on their own. Open Windows Update in Settings, check that updates are not paused, and restart when it asks, because an update finishes only after the restart.
 - Mac: search for Software Update, click the info button next to Automatic Updates, and turn on every option there.
 - Apps: on iPhone, App Updates in the App Store settings is on unless you turned it off. On Android, set Auto-update apps in the Play Store's settings. On a Mac, turn on Automatic Updates in the App Store's settings.
 - Browser: most browsers update themselves when you close them and open them again, so close yours fully now and then. If it shows an update or relaunch button, click it.
-If your mobile data is limited, choose Update over Wi-Fi only in the Play Store's Auto-update apps. An iPhone installs its automatic updates over Wi-Fi.
+If your mobile data is limited, choose Update over Wi-Fi only in the Play Store's Auto-update apps.
 
 Test it
 Open the update screen and check for updates. It should say the device is up to date. If it offers an update instead, install it, then check that the automatic setting is still on.

@@ -11,10 +11,6 @@ sources:
 ---
 
 
-
-
-
-
 # How to judge a tool before you trust it
 Spectra does not tell you which app to install, because a company can be sold or change its terms after a recommendation is written, and the recommendation would not show it. These are the things to check instead, whichever tool you are looking at.
 

@@ -2,7 +2,7 @@
 id: ai-chatbot-privacy-001
 schema_version: 1.0.0
 version: 1.0.0
-title: Keep private details out of what you type into AI chat apps
+title: Keep private details out of AI chat apps
 category: ai_threats
 subcategory: ai_data_exposure
 tracks:
@@ -32,6 +32,9 @@ score_weight: 5.5
 threat_model_multipliers:
   data_broker: 1.3
   opportunistic: 1.1
+multiplier_reasons:
+  data_broker: 'What you type into an AI chat app may be kept and used for training or advertising, so keeping details out matters more where data is collected and sold.'
+  opportunistic: 'A chat history can be read if the account is broken into, so a small rise only.'
 compensating_controls: []
 depends_on: []
 related_items: []
@@ -64,6 +67,10 @@ tags:
 created_at: '2026-09-29'
 created_by: github:KashishOO7
 changelog:
+  - version: 1.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.0.0
     date: '2026-09-29'
     changes: Initial item, phase 7 of NEXT §15.4, from Google's, OpenAI's and Microsoft's own privacy pages.
@@ -71,20 +78,20 @@ changelog:
 ---
 
 ## Why
-What you type into an AI chat app is kept by the company that runs the app, and at some companies people who work there, or for them, read some chats to check the answers and look for misuse. Many apps also use your chats to train their AI models unless you turn that off. At least one maker's own help page, listed under this step, asks people not to type anything confidential.
+What you type into an AI chat app is kept by the company that runs the app. Say you paste a bank statement into one to ask what a charge is: the statement, with your account details, is now held by that company. At some companies people who work there, or for them, read some chats to check the answers and look for misuse. Many apps also use your chats to train their AI models unless you turn that off. At least one maker's own help page, listed under this step, asks people not to type anything confidential.
 ## What
-Do not type passwords, card numbers or other private details into an AI chat app. Then turn off the setting that lets the company use your chats to train its models.
+What you type into an AI chat app is kept by the company that runs it, and may be read or used to train its AI. So do not type passwords, card numbers or other private details into one, and turn off the app's setting that lets the company use your chats to train its models.
 ## How
 ### all
 Do this
 Before you paste something into an AI chat app, take out anything private: passwords and codes, card and bank numbers, ID numbers, health details, and other people's names and messages. Then turn off training on your chats in the app's settings.
 
 Turn off training
-Open the app's settings and look for a switch about using your chats to train or improve its models, often under Data controls, Privacy or Activity. Turn the switch off. From then on your new chats are not used for training.
+Open the app's settings and look for a switch about using your chats to train or improve its models, often under Data controls, Privacy or Activity. Turn the switch off. From then on, the company says your new chats are not used for training.
 In some apps the same switch also stops your new chats being saved to your history, so you cannot go back to them later.
 
-A chat that is not kept
-Some apps offer a temporary chat, which is not saved to your history and not used for training, though the company may still keep a copy for days or weeks to check for misuse.
+A temporary chat
+Where an app offers a temporary chat, use it for anything you would rather not have saved. A temporary chat is not saved to your history and not used for training, though the company may still keep a copy for days or weeks to check for misuse.
 
 With these off
 Everything you type still goes to the company that runs the app, and at some companies people who work there can still see some chats. Keep private details out of your chats either way.

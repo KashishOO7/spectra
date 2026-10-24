@@ -31,6 +31,10 @@ threat_model_multipliers:
   criminal_org: 1.5
   targeted_individual: 1.5
   opportunistic: 1.4
+multiplier_reasons:
+  criminal_org: 'Threats to share intimate images for money are mostly run by organised groups. Held at 1.5, so it stays below two-factor authentication for account worries.'
+  targeted_individual: 'A person who has an image of you can make the same threat, so the same rise.'
+  opportunistic: 'Emails claiming to have recorded you are sent in bulk to scare people into paying, so a rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -69,9 +73,9 @@ changelog:
 ---
 
 ## Why
-Some blackmailers start with a friendly chat on a dating site, social media, a messaging app or a game. They move you to a private app, then get a nude picture from you or record you on a video call, and threaten to send it to your family, friends or colleagues unless you pay. Paying rarely ends it, because whoever is blackmailing you then asks for more. Some make the threat with a fake image or video, or claim they have got into your phone or account.
+Some blackmailers start with a friendly chat on a dating site, social media, a messaging app or a game. They move you to a private app, then get a nude picture from you or record you on a video call, and threaten to send it to your family, friends or colleagues unless you pay or send more. Paying rarely ends it, because whoever is blackmailing you then asks for more. Some make the threat with a fake image or video, or claim they have got into your phone or account.
 ## What
-If someone threatens to share an intimate image of you unless you pay, stop replying, do not pay, keep a record of the threats and tell someone you trust. You are not to blame, the person threatening you is, and blackmailers usually give up once they see you will not pay.
+If someone threatens to share an intimate image of you unless you pay or send more, stop replying, do not pay, keep a record of the threats and tell someone you trust. You are not to blame, the person threatening you is, and blackmailers usually give up once they see you will not pay.
 ## How
 ### all
 Before you start
@@ -92,14 +96,14 @@ Do not send the picture or video itself to anyone, even to report it.
 
 Then report and block
 Report the account on each app where they contacted you, then block them, and ask your friends to block them too.
-If you need a break, switch your account off for a while instead of deleting it.
-If they said they got into one of your accounts, change that account's password.
+If you need a break, switch your account off for a while instead of deleting it, and sign back in when you are ready. Some apps delete an account left switched off for too long, so check how long yours allows.
+If they said they got into one of your accounts, change that account's password and turn on two-factor authentication for it. If they quote an old password of yours as proof that they got in, they most likely got it from a data breach rather than from your device, so change it on every account where you still use it.
 
 If the image is shared
-The step linked below explains how to stop an intimate image being uploaded to many platforms without sending it to anyone, and what to do if it is posted. It has a separate route for images taken when you were under 18.
+The step linked below explains how to stop an intimate image being uploaded to the platforms that take part without sending it to anyone, and what to do if it is posted. It has a separate route for images taken when you were under 18.
 
 If you already paid
-Contact your bank, or the money transfer service you used, straight away. A transfer can sometimes be cancelled if you act quickly.
+Contact your bank, or the money transfer service you used, straight away. A transfer can sometimes be cancelled if you act quickly. For a gift card, call the company named on the card, and for cryptocurrency, contact the exchange you sent it from.
 
 Where to get help
-If you are in danger, contact your local police.
+If you are in danger now, call your local emergency number. You can report the blackmail to the police even if you are not in danger.

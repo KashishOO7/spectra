@@ -2,7 +2,7 @@
 id: ai-voice-clone-001
 schema_version: 1.0.0
 version: 1.2.0
-title: Agree a safe word with your family for calls asking for money or help
+title: Agree a safe word with your family
 category: ai_threats
 subcategory: voice_clone_defense
 tracks:
@@ -35,10 +35,15 @@ assets_protected:
 controls_implemented: []
 score_weight: 7.5
 threat_model_multipliers:
-  targeted_individual: 1.6
+  targeted_individual: 1.5
   criminal_org: 1.5
   ai_automated: 2
-  foreign_government: 1.8
+  foreign_government: 1
+multiplier_reasons:
+  targeted_individual: 'A person after you could clone the voice of someone in your family, though most of these calls come from groups, so a rise below the reason the step exists. Was 1.6 until 2026-10-19.'
+  criminal_org: 'Groups run fake emergency calls in the voice of a relative to get money sent fast, and the safe word stops the payment.'
+  ai_automated: 'This step exists because AI can copy a voice from a few seconds of audio.'
+  foreign_government: 'A family safe word is not what protects anyone from a foreign government, so no rise. Was 1.8 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -70,6 +75,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 1.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.1.0
     date: '2026-03-04'
     changes: Clarified in-person/E2EE transmission requirement for the safe word.
@@ -79,9 +88,9 @@ lookups:
 ---
 
 ## Why
-Scammers can copy the voice of someone you love from a short clip of them talking, such as a video posted online. They call as that person in a crisis, in an accident, arrested or held for ransom, and ask for money straight away. The call can sound exactly like them, and the number on your screen can be faked too, so neither proves who is calling.
+Scammers can copy the voice of someone you love from a short clip of them talking, such as a video posted online. They call as that person in a crisis, in an accident, arrested or held for ransom, and ask for money straight away. Say a call comes at night and sounds like your daughter, crying, saying she has had an accident and needs money now. The call can sound exactly like them, and the number on your screen can be faked too, so neither proves who is calling.
 ## What
-Agree a secret word with your family, and ask for it whenever a caller who sounds like family asks for money or help. If they cannot say it, hang up and call them back on the number you already have for them.
+A caller who sounds exactly like someone in your family can be a copy of their voice. So agree a secret word with your family, and ask for it whenever a caller who sounds like family asks for money or help. If they cannot say it, hang up and call your relative back on the number you already have for them.
 ## How
 ### all
 Do this
@@ -95,5 +104,6 @@ When to use it
 Any call where someone sounds like family and needs money or help right now.
 Ask them to say the word. Never say it first, and never ask "is it still such and such", because that hands the word straight to whoever is on the line.
 A real relative can tell you the word. A copied voice cannot.
-If they cannot say it, that on its own does not prove they are fake, because a frightened person forgets things. Hang up anyway and ring them back on the number you already have for them.
+If they cannot say it, that on its own does not prove they are fake, because a frightened person forgets things. Hang up anyway and call your relative back on the number you already have for them.
 If you cannot reach them, contact another family member or one of their friends.
+Send no money until you have spoken to your relative yourself.

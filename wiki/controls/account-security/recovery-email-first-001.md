@@ -2,7 +2,7 @@
 id: recovery-email-first-001
 schema_version: 1.0.0
 version: 1.1.0
-title: Give your main email address the strongest protection you have
+title: Protect your main email address
 category: account_security
 subcategory: recovery
 tracks:
@@ -32,6 +32,9 @@ score_weight: 7.5
 threat_model_multipliers:
   opportunistic: 1
   criminal_org: 1
+multiplier_reasons:
+  opportunistic: 'Email resets most other accounts, so it matters for everyone about equally.'
+  criminal_org: 'Whoever gets the email gets the resets, whoever they are, so no rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -70,6 +73,10 @@ tags:
 created_at: '2026-09-06'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.1.0
     date: '2026-09-07'
     changes: Added the branch for a reader whose account may already be reachable by somebody they know. The research is explicit that ordinary account-change advice can be unsafe for that reader.
@@ -81,9 +88,9 @@ changelog:
 ---
 
 ## Why
-Most accounts let you reset a forgotten password with a link sent to your email, and many send their sign-in codes there too. So anyone who can read your email can take over every account that uses that address.
+Every time you press "forgot password" on most accounts, the reset link goes to your email, and many accounts send their sign-in codes there too. So anyone who gets into your email can take over most accounts that use that address. For example, someone who gets into your email can press "forgot password" on your shopping and social media accounts, and the reset links arrive in the inbox they are already reading.
 ## What
-Protect the email address your other accounts send password resets to, with a password you use nowhere else and two-factor authentication. Most accounts let you reset a forgotten password through that address, and many send sign-in codes to it, so whoever can read it can get into those accounts.
+If one email resets all your accounts, someone who gets into that email gets into everything. So protect that email first, with a password you use nowhere else and two-factor authentication. For example, if your bank, your shopping account and your social media all send their reset links to the same inbox, whoever gets into that inbox can reset all three.
 ## How
 ### all
 Do this
@@ -94,19 +101,19 @@ Give it a password you use nowhere else, because a password used on another site
 Turn on two-factor authentication for it, if you have not.
 Save its one-time recovery codes somewhere off the phone, because this is the account you can least afford to be locked out of.
 
-Then reduce what depends on it
-Where an account offers one-time recovery codes instead of email, take them. That moves the account off the address and onto something you hold. Keep them with your other backup codes, because they are then your only way back in.
+A second way back in
+If one email resets all your accounts, someone who gets into that email gets into everything. So make fewer accounts depend on it, starting with the accounts you would most hate to lose. For example, if your bank account offers printed recovery codes, print the list and keep it with your other backup codes: then you can get back in with a code, and the bank no longer relies on your email.
 You will not be able to do this everywhere, and that is fine. Doing it for the two or three accounts you would most hate to lose is most of the benefit.
 
 A note on old addresses
-An old address that accounts still reset through is only as safe as that old email account, and you will not see a reset someone else asks for. Move those accounts to an address you read, or start reading the old one.
+Say your shopping account still resets through an old email you never open. If someone breaks into that old email, they can reset the shopping account, and you will never see the reset message. So move the account to an email you read, or start checking the old one.
 
 
 Test it
-List the accounts you would hate to lose. For each, ask where a reset message would land. If the answer is the same address every time, you have found the one this step is about.
+Pick an account you would hate to lose, press forgot password on its sign-in page, and see which inbox the reset message arrives in. Do the same for each other account you would hate to lose. If it is the same address every time, that is the address to protect first.
 ## By situation
 ### known_person_risk
 Before you change anything
 A password change and a new second step both change what somebody with existing access can reach. If that somebody is a person you know, think through how they might respond first, and plan for it rather than doing it tonight.
 A domestic abuse service handles this every day and will help you decide the order.
-If you think your accounts are being read already, make the changes from a device that person has never had access to.
+If you think someone can already see your email or other accounts, make these password and sign-in changes from a device they have never had access to.

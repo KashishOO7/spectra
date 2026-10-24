@@ -34,6 +34,9 @@ score_weight: 5.5
 threat_model_multipliers:
   targeted_individual: 1
   opportunistic: 1
+multiplier_reasons:
+  targeted_individual: 'Reporting a fake account works the same whoever made it, so no rise.'
+  opportunistic: 'The same steps apply to a fake account made by a bulk scammer, so no rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -76,13 +79,13 @@ changelog:
 ---
 
 ## Why
-Someone can open an account with your name and your photo and use it to talk to your friends, family or colleagues as if they were you. It may be done to embarrass you, damage your reputation or turn other people against you.
+Someone can open an account with your name and your photo and use it to talk to your friends, family or colleagues as if they were you. It may be done to ask your contacts for money, embarrass you, damage your reputation or turn other people against you.
 ## What
-Take screenshots of the fake account before you report it, then report it through the app or website it is on. A removed account takes its posts with it, so the screenshots are your record of what it said.
+Take screenshots of the fake account before you report it, then report it through the app or website it is on. A removed account takes its posts with it, so the screenshots are your record of what was posted.
 ## How
 ### all
 Screenshot it first
-Capture the profile, the name, the picture and anything it has posted, before you report anything. A removed account takes its contents with it, and you may need to show somebody later what it said.
+Capture the profile, the name, the picture and everything posted from it, before you report anything. A removed account takes its contents with it, and you may need to show somebody later what was posted.
 
 Then report it to the service it is on
 Report the account through the app or website it is on, and ask friends who have seen it to report it too.
@@ -92,7 +95,7 @@ Do not send your own identity documents
 Send a copy of your ID only if the app or website asks for it in its own report form. Do not send it to anyone who contacts you about the fake account.
 
 Say something on your real account
-Post on your real account that the other one is not you, so the people it is talking to know.
+Post on your real account that the other one is not you, so the people it is talking to know not to trust it or send it money or codes.
 If it has named your employer, your family or a friend, tell them directly.
 
 Then check what else carries your name

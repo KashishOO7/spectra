@@ -5,13 +5,13 @@ Spectra
 by fpszero
 
 ## nav
-- [Your playbook](/audit)
+- [Playbook](/audit)
 
 ## nav-label
 Main
 
 ## side-door
-- [Something happened](/incident)
+- [Get help](/incident)
 
 ## your-setup
 You
@@ -29,7 +29,7 @@ Switch to light theme
 ### home
 Home
 ### list
-Your playbook
+Playbook
 ### incident
 Something happened
 ### resources
@@ -51,7 +51,7 @@ Real or scam
 ### how-it-works
 How it works
 ### methodology
-Under the hood
+Method and sources
 ### about
 About
 ### step
@@ -76,13 +76,16 @@ Print
 Home
 
 ## crumb-list
-Your playbook
+Playbook
 
 ## footer-disclaimer
-Educational purposes only. Not legal or professional security advice. [Full disclaimer](/about#disclaimer)
+Educational purposes only. Not legal or professional security advice.
 
-## footer-data
-Your data stays in your browser
+## footer-facts
+Sources you can open
+No account
+Free, with no adverts
+Open source
 
 ## footer-source
 - [Open source on GitHub](https://github.com/KashishOO7/spectra)
@@ -90,12 +93,14 @@ Your data stays in your browser
 ## footer-licence
 Spectra v2.0.0 · AGPL-3.0 · CC BY-SA 4.0 (content)
 
-## footer-pages
+## footer-groups
+### Help
+- [FAQ](/faq)
 - [Guides](/resources)
+### About Spectra
 - [How it works](/how-it-works)
-- [Under the hood](/methodology)
+- [Method and sources](/methodology)
 - [About](/about)
-
-## footer-legal
+### Legal
 - [Disclaimer](/about#disclaimer)
 - [Privacy](/about#privacy)

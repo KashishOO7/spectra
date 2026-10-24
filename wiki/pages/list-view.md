@@ -6,16 +6,16 @@ Family setup
 Showing the steps for looking after someone, and for when someone they know may be a risk, beside the steps everyone needs. This is a view only. Your own playbook is unchanged, and leaving this view brings it back.
 
 ## incident-heading
-Biggest gaps first
+Most urgent first
 
 ## incident-lead
-The most urgent steps come first. Start at the top.
+Start with the step at the top.
 
 ## playbooks
 ← Playbooks
 
 ## pulse-heading
-Security Pulse
+Worth re-checking
 
 ## pulse-lead
 {count} of your finished steps changed after you did them, so check them again.
@@ -51,7 +51,7 @@ Family setup
 · {count} skipped
 
 ## progress-stored
-· all data stored locally
+· saved in this browser
 
 ## other-views
 Other views of your playbook
@@ -120,10 +120,10 @@ Not now
 Doesn't apply to me
 
 ## why-strong
-It protects against some of the most serious harm that the steps on this list cover.
+This step protects against some of the most serious harms in your playbook.
 
 ## why-basic
-It is one of the basics that helps almost everyone.
+This step is one of the basics that help almost everyone.
 
 ## why-picked
 You picked {label} in your setup.
@@ -165,10 +165,10 @@ in {category}
 matching "{query}"
 
 ## mark-incomplete
-Mark incomplete
+Mark as not done
 
 ## mark-complete
-Mark complete
+Mark as done
 
 ## needs-review
 Worth a re-read
@@ -198,7 +198,7 @@ A stronger control reduces urgency here
 {reason}
 
 ## essential
-Essential
+One of the basics
 
 ## platforms-less
 less
@@ -210,10 +210,8 @@ less
 Confirm updated steps
 
 ## bring-back
-Bring back
+Move back up
 
-## undo
-Undo
 
 ## doesnt-apply
 Doesn't apply
@@ -288,7 +286,7 @@ Choose what to cover
 Spectra does not cover that.
 
 ## refused-lead
-Spectra is a short list of things worth doing, not an answer to everything. Try saying it another way, or clear the box to see the whole list.
+No step matches that. Try other words, or clear the box to see every step.
 
 ## clear-filters
 Show all steps

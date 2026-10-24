@@ -38,8 +38,12 @@ controls_implemented: []
 score_weight: 7.5
 threat_model_multipliers:
   targeted_individual: 1.8
-  opportunistic: 1.2
+  opportunistic: 1
   ai_automated: 1.5
+multiplier_reasons:
+  targeted_individual: 'A plan for targeted harassment exists for exactly this person.'
+  opportunistic: 'Bulk scammers do not harass one person, so no rise. Was 1.2 until 2026-10-19.'
+  ai_automated: 'AI can flood you with messages and faked images, so a rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -92,7 +96,7 @@ changelog:
 When many people target you online at once, it can move fast: many accounts, your home address or employer posted, messages sent to people you know. Deciding in advance what you will do means you act straight away instead of working it out while it happens. A plan does not stop harassment, but it keeps the evidence and gets you help sooner.
 
 ## What
-Decide now what you would do if many people targeted you online at once. It often follows the same pattern: many accounts at once, posts written to spread, your address posted, messages sent to your work. Write down who you would tell and what you would save, while you are calm.
+Decide now what you would do if many people targeted you online at once. Targeted harassment often follows the same pattern: many accounts at once, posts written to spread, your address posted, messages sent to your work. Write down who you would tell and what you would save, while you are calm.
 ## How
 ### all
 Before you start
@@ -103,14 +107,15 @@ Do this
 Decide what you will do now, so you are not deciding it while it is happening.
 
 Your plan, in order
-1. Record first. A dated folder of screenshots is enough.
-2. Lock your accounts. These campaigns often come with attempts to get into your accounts, so check that two-factor authentication is on for your email and social media.
-3. Report it as coordinated harassment when several accounts are involved, not as a single incident.
+1. Record first. A dated folder of screenshots, with the link to each post, is enough to start.
+2. Lock your accounts. These campaigns often come with attempts to get into your accounts, so check that two-factor authentication is on for your email and social media, and that you have saved their backup codes.
+3. When several accounts are involved, report it as coordinated harassment where the platform offers that, not as a single incident.
 4. Do not reply. Replying usually brings more of it.
+5. If your home address or phone number is posted, report the post to the platform as private information, which many platforms remove, and tell the people you live with.
 
 Where to get help
 If you are in danger now, call your local emergency number, and tell someone you trust what is happening.
-PEN America's Online Harassment Field Manual explains how to prepare for and respond to online harassment, in several languages: onlineharassmentfieldmanual.pen.org
+PEN America's Online Harassment Field Manual explains how to prepare for and respond to online harassment: onlineharassmentfieldmanual.pen.org
 If you are a journalist, the Coalition Against Online Violence has a help hub: onlineviolenceresponsehub.org
 ## Law
 ### global

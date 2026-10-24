@@ -52,7 +52,18 @@ threat_model_multipliers:
   data_broker: 1.8
   domestic_government: 1.2
   foreign_government: 1
-  ai_automated: 1.5
+  ai_automated: 1
+multiplier_reasons:
+  opportunistic: 'Apps asking for more than they need are common for everyone.'
+  targeted_individual: 'A person after you could learn where you are from an app that shares it, so a rise.'
+  criminal_org: 'Harmful apps sold by groups ask for camera and microphone, so a small rise.'
+  intimate_partner: 'A partner can use an app on your phone that already has location or microphone access, so removing access helps.'
+  employer: 'Work apps on a personal phone can ask for more than they need.'
+  isp_network: 'Your internet provider does not see app permissions, so this step does little against it.'
+  data_broker: 'Apps with location access are a main source of the location data brokers buy and sell.'
+  domestic_government: 'Location data from apps can be bought or requested, so a small rise.'
+  foreign_government: 'No particular rise; a foreign service has better ways in.'
+  ai_automated: 'Copied voices and faces come from public recordings and photos, not from app permissions, so no rise. Was 1.5 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -96,6 +107,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 1.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.0.0
     date: '2026-02-25'
     changes: Initial item.
@@ -105,9 +120,9 @@ lookups:
 ---
 
 ## Why
-An app you allow to use your camera, microphone, location, contacts or photos can use them whenever that permission lets it, and some apps ask for more than they need to work. Taking back what an app does not need limits what it can collect about you.
+An app you allow to use your camera, microphone, location, contacts or photos can use them whenever that permission lets it, and some apps ask for more than they need to work. Say a torch app asks for your location and your contacts: it can use both whenever the permission lets it, though a torch needs neither. Taking back what an app does not need limits what it can collect about you.
 ## What
-Go through the apps on your phone and turn off camera, microphone, location, contacts and photo access for any app that does not need it to do its job. Your phone can also show you which apps used them recently.
+An app you allow to use your camera, microphone or location can use it whenever the permission lets it, even if it does not need it to work. So go through the apps on your phone and turn off camera, microphone, location, contacts and photo access for any app that does not need it to do its job. Your phone can also show you which apps used them recently.
 ## How
 ### all
 Do this

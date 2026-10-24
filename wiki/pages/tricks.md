@@ -1,5 +1,4 @@
 
-
 ## title
 Which tricks work on you | Spectra
 
@@ -75,7 +74,7 @@ Do it again
 Your phone rings, and the screen shows your bank's name. The caller says they are from the bank's fraud team. They know your name and your address, and they say someone is trying to take money from your account. To stop it, they ask you to read out the code your bank has just sent you by text.
 Read them the code. They knew your details, so they must be the bank.
 Ask them to prove they are from the bank before you give the code.
-Hang up, and call the number on the back of your card.
+Hang up, and call the number on the back of your card, from another phone if you can.
 A scammer can make any name or number show on your phone when they call, including your bank's, and may already know things about you, such as your name. If you ask for proof, they can only give you more details like these, which a scammer can have too. A code your bank sends you is for you to type in yourself, and anyone who asks you to tell them the code is a scammer. The number on the back of your card is your bank's own number, so calling it is how you reach the real fraud team.
 
 ### urgency
@@ -104,7 +103,7 @@ A website you have never heard of sells the phone you want for half the usual pr
 Buy it now, before the price ends.
 Buy it, but pay by card rather than by bank transfer.
 Leave it, and read reviews of the website on other websites before you decide.
-A countdown and a low stock count are there to make you pay before you have checked the website. Fake shopping websites copy the look of real ones and take your money without sending anything. Paying by card can make it easier to get your money back than a bank transfer does, but it does not make the website real.
+A countdown and a low stock count are there to make you pay before you have checked the website. Fake shopping websites copy the look of real ones and take your money without sending anything. In many countries, paying by card can make it easier to get your money back than a bank transfer does, but it does not make the website real.
 
 ### reciprocity
 Someone you play an online game with has been friendly for weeks and given you free items. Now they send you a link to a website where you can collect a bigger gift, if you sign in with your game account.

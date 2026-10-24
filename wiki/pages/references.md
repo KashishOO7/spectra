@@ -2,4 +2,4 @@
 References and standards | Spectra
 
 ## moved
-The references are on the Under the hood page now. [Under the hood](/methodology#references)
+The references are on the Method and sources page now. [Method and sources](/methodology#references)

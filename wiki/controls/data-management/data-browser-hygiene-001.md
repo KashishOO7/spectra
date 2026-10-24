@@ -37,8 +37,14 @@ threat_model_multipliers:
   opportunistic: 1.2
   data_broker: 2
   criminal_org: 1.3
-  targeted_individual: 1.5
-  ai_automated: 1.4
+  targeted_individual: 1
+  ai_automated: 1
+multiplier_reasons:
+  opportunistic: 'Blocking trackers also blocks some harmful ads, so a small rise.'
+  data_broker: 'Trackers that follow you from site to site are how brokers build a profile of you, which is why this step exists.'
+  criminal_org: 'Content blockers stop some ads that carry harmful software, so a rise.'
+  targeted_individual: 'Browser trackers serve advertising companies, not one person, so no rise. Was 1.5 until 2026-10-19.'
+  ai_automated: 'Blocking trackers does little against AI attacks, so no rise. Was 1.4 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -68,6 +74,10 @@ sources:
     title: 'Firefox Help: Enhanced Tracking Protection in Firefox for desktop'
     type: supporting
     accessed: '2026-09-27'
+  - url: https://support.apple.com/guide/iphone/iphb01fc3c85/ios
+    title: Browse the web privately in Safari on iPhone - Apple Support
+    type: supporting
+    accessed: '2026-10-18'
 emotional_register: null
 tags:
   - privacy_preserving
@@ -75,6 +85,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Tiered browser recommendations. Prioritized Firefox+uBlock and Mullvad Browser.
@@ -84,16 +98,16 @@ lookups:
 ---
 
 ## Why
-When you open a website, its advertising code and hidden trackers can make your browser contact dozens of other companies, and each one learns something about you, such as your settings and your time zone. Those companies link your visits into a profile, using cookies or browser fingerprinting, which recognises your browser by its settings even without cookies.
+When you open a website, its advertising code and hidden trackers can make your browser contact dozens of other companies, and each one learns something about you, such as your settings and your time zone. Say you open a news article: before you have read a line, your browser has told dozens of other companies that you were there. Those companies link your visits into a profile, using cookies or browser fingerprinting, which recognises your browser by its settings even without cookies.
 ## What
-Your browser can block the trackers that tell other companies which sites you visit. How much a browser blocks by default differs from one to another, and most let you turn that protection up. A content blocker added to the browser blocks many trackers on top of that. To choose a browser or a blocker, see the guides.
+When you open a website, trackers tell other companies which sites you visit. So turn your browser's tracking protection up, and add a content blocker. How much a browser blocks by default differs from one to another, and most let you turn that protection up. A content blocker added to the browser blocks many trackers on top of that. To choose a browser or a blocker, see the guides.
 ## How
 ### all
 Do this
 Turn your browser's tracking protection up to its strictest setting, then add a content blocker.
 
 Where to look
-Open the browser's settings and look under Privacy. Browsers call it tracking protection, tracking prevention, prevent cross-site tracking, or blocking third-party cookies. Choose the strictest setting offered.
+Open the browser's settings and look under Privacy. Browsers call it tracking protection, tracking prevention, prevent cross-site tracking, or blocking third-party cookies. Choose the strictest setting offered. For Safari on an iPhone, the setting is in the phone's Settings app, under Safari.
 
 Adding a content blocker
 A content blocker is a small add-on you install into the browser itself, from the browser's own add-ons or extensions page. On a computer, open the browser's menu and look for Extensions or Add-ons. On a phone, only some browsers allow add-ons at all.

@@ -42,7 +42,14 @@ threat_model_multipliers:
   foreign_government: 2
   criminal_org: 1.4
   targeted_individual: 1.5
-  intimate_partner: 1.2
+  intimate_partner: 1
+multiplier_reasons:
+  isp_network: 'Text messages can be read on their way, and end-to-end encryption stops the network reading them.'
+  domestic_government: 'Messages the provider cannot read cannot be handed over, which is why this step matters most here.'
+  foreign_government: 'Encrypted messages cannot be read when intercepted on the way, which is the main defence.'
+  criminal_org: 'Fraud groups that take over a phone number get its texts, and an encrypted app with its registration PIN set keeps your messages out of their reach, so a rise.'
+  targeted_individual: 'A person with access to your network cannot read encrypted messages, so a rise.'
+  intimate_partner: 'A partner usually reads messages on the phone itself, which end-to-end encryption does not stop, so no rise. Was 1.2 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items: []
@@ -73,6 +80,10 @@ sources:
     title: What do I do if my phone is lost or stolen? - Signal Support
     type: supporting
     accessed: '2026-09-27'
+  - url: https://support.signal.org/hc/en-us/articles/360007060632
+    title: What is a safety number and why do I see that it changed? - Signal Support
+    type: supporting
+    accessed: '2026-10-18'
 emotional_register: null
 tags:
   - e2ee
@@ -80,6 +91,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:@KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Added Tiered structure (Signal vs SimpleX/Session) for threat models requiring strict anonymity. Updated EFF/Privacy Guides sourcing.
@@ -89,9 +104,9 @@ lookups:
 ---
 
 ## Why
-A text message sent as SMS is not encrypted at all. Your mobile network can read it and hand it over when the police or a court ask, and anyone with access to SS7 can intercept it. An app that encrypts your messages end to end stops all of that, but it can still keep a record of who you talk to, when and how often. That record is called metadata, and some apps keep much less of it than others.
+A text message sent as SMS is not encrypted end to end. Say you text a friend about a doctor's visit: your mobile network can read it and hand it over when the police or a court ask, and anyone with access to SS7 can intercept it. An app that encrypts your messages end to end stops all of that on the way, but it can still keep a record of who you talk to, when and how often. That record is called metadata, and some apps keep much less of it than others.
 ## What
-Use an app that encrypts your messages end to end, because SMS text messages can be read on their way to the other person. Each message is scrambled on your device and unscrambled only on the devices of the people you are writing to, so the company running the app, your internet provider and anyone else on the network cannot read it on the way. SMS has no encryption at all, and some messaging apps encrypt only when you switch it on, or only when everyone in the chat uses the same kind of phone. To choose an app, see the guides.
+SMS text messages can be read on their way to the other person. So use an app that encrypts your messages end to end: each message is scrambled on your device and unscrambled only on the devices of the people you are writing to, so the company running the app, your internet provider and anyone else on the network cannot read it on the way. SMS has no end-to-end encryption, and some messaging apps encrypt only when you switch it on, or only when everyone in the chat uses the same kind of phone. To choose an app, see the guides.
 ## How
 ### all
 Do this
@@ -99,20 +114,21 @@ Move your everyday messages to an app that encrypts them end to end, and ask the
 
 What to look for
 Encryption on by default, for every chat, not something you switch on each time.
-Published code, so that people outside the company can check what the app really does. Its website will say so, usually with the words open source.
-What it keeps besides your messages: who you talked to, when, and how often. This record is called metadata, and encrypting the messages does not hide it. The app's privacy policy says what it keeps.
+Published code, so that people outside the company can check what the app's code does. Its website usually says so, with the words open source.
+What it records besides the messages themselves: who you talked to, when, and how often. This record is called metadata, and encrypting the messages does not hide it. The app's privacy policy says what it keeps.
 If giving a phone number is a problem for you, some apps do not ask for one.
 
 Worth knowing
 Encryption protects a message on its way. Anyone holding an unlocked phone at either end can still read it. Some of these apps can also delete messages after a time you choose, called disappearing messages. That leaves less on either phone for someone who picks it up later, though the person you write to can still photograph the screen first.
 Look for it in the chat's settings. Disappearing messages are gone for you too, so do not use them in a chat you may need as a record.
 If your chats are backed up to a cloud account, that copy is not always end-to-end encrypted, so the company that keeps it may be able to read it.
-Look in the backup settings for an option that encrypts the backup end to end, or turn the chat backup off. With the backup off, a lost or broken phone takes your chats with it, so use the encrypted backup where the app offers one.
+Look in the backup settings for an option that encrypts the backup end to end, or turn the chat backup off. With the backup off, a lost or broken phone takes your chats with it, so use the encrypted backup where the app offers one. It usually asks you to set a password or key, and without it the backup cannot be opened, so keep it in your password manager or another safe place.
 
 Test it
-Open a chat, tap the other person's name at the top or open the chat's details, and look for the safety number, security code or Verify encryption. Most apps that encrypt end to end have one.
+Open a chat, then open the other person's name at the top or the chat's details, and look for the safety number, security code or Verify encryption. Most apps that encrypt end to end have one.
 Read out what it shows and have the other person read out theirs, in person or on a call.
 If the two match, your app is using that person's real encryption key, and no one has swapped in their own. Matching is the test, not simply finding the screen. If they do not match, stop using that chat for anything private until you know why.
+If the app later tells you the safety number has changed, that usually means the other person has a new phone or reinstalled the app. Ask them in person or on a call, not in that chat, then compare the numbers again.
 ## Where
 ### res-guide-messaging-001
 lists recommended end-to-end encrypted messaging apps.
@@ -124,7 +140,7 @@ So where these apps are restricted or watched, using one can be noticed in itsel
 
 Before you switch
 Think about whether being seen to use one could put you at more risk than it protects you from. That depends on where you are, and you are the only person who can judge it.
-If it could, there is still a safer first step: turn off the cloud backup of your chats in the app you already use, and delete old conversations you no longer need. Before you delete, save anything you may need later, such as proof of threats, somewhere else.
+If it could, there is still a safer first step: turn off the cloud backup of your chats in the app you already use, and delete the copy already stored in the cloud, since turning the backup off may leave it there. Delete old conversations you no longer need. A lost phone then takes those chats with it. Before you delete, save anything you may need later, such as proof of threats, somewhere else.
 ### govt_monitors_traffic
 What is still visible
 Your internet provider can see which apps you connect to and when, but not what you send or who you send it to. The app's company may keep a record of who you talk to and when, and a government can ask it for that record.

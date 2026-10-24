@@ -12,16 +12,16 @@ Close Your setup
 Who you're protecting yourself from
 
 ## nothing-picked
-Nothing picked yet, so you're seeing the basics.
+Nothing picked yet, so your steps are in the order that suits most people.
 
 ## change-worries
-Change what worries you
+Change which steps come first
 
 ## add-someone
 Add someone specific
 
 ## add-someone-lead
-Spectra works out who is likely from what worries you. Add anyone it has not.
+The risks you picked already decide which kinds of people your steps protect you from. If someone you worry about is missing, add them here.
 
 ## situation-heading
 Your situation
@@ -36,7 +36,7 @@ Change this
 What's in your playbook
 
 ## list-count
-{count} things in your playbook
+{count} steps in your playbook
 
 ## see-everything
 See everything, in detail
@@ -60,7 +60,7 @@ One thing you've marked done has changed. Worth a re-read.
 {count} things you've marked done have changed. Worth a re-read.
 
 ## life-open
-Something changed in my life
+Add a change in your life
 
 ## adds
 Adds {names}
@@ -69,7 +69,7 @@ Adds {names}
 Applied ✓
 
 ## sensitive-confirm
-This adds the steps for when someone you know may be a risk to you, and changes the order of your playbook. Your journey will not name it: its entry says “Your setup updated”. Your situation and “Something changed in my life” still show it until you undo it here, and a copy you save or a link you send carries it too.
+This adds the steps for when someone you know may be a risk to you, and changes the order of your playbook. Your journey will not name it: its entry says “Your setup updated”. Your situation and “Add a change in your life” still show it until you undo it here, and a copy you save or a link you send carries it too.
 
 ## apply
 Apply
@@ -123,7 +123,7 @@ This file looks like a copy from Spectra, but part of it is missing, so nothing 
 Move this to another device
 
 ## move-lead
-Your setup fits in seven characters, short enough to read down a phone or write on paper. The link and the QR code carry your progress too. Neither carries your notes or Your journey.
+A seven-character code carries your setup, short enough to read out over the phone or write on paper. It leaves out which steps you have done; the link and the QR code carry both. None of them carries your notes, your quiz answers or Your journey.
 
 ## show-code
 Show my setup code
@@ -200,7 +200,7 @@ service worker
 the database (another tab has it open)
 
 ## clear-confirm
-This clears everything Spectra stored on this device. It cannot be undone. It does not clear your browser history.
+This clears everything Spectra stored in this browser. It cannot be undone. It does not clear your browser history.
 
 ## start-over
 Start over

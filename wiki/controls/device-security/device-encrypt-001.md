@@ -43,11 +43,18 @@ controls_implemented: []
 score_weight: 9.5
 threat_model_multipliers:
   opportunistic: 1
-  targeted_individual: 1.6
-  intimate_partner: 2
+  targeted_individual: 1.5
+  intimate_partner: 1
   domestic_government: 1.8
   foreign_government: 2
   criminal_org: 1.2
+multiplier_reasons:
+  opportunistic: 'A lost or stolen device is about the same risk for anyone.'
+  targeted_individual: 'A person after you who takes the device wants what is on it, and encryption keeps it unreadable while the device is locked. Was 1.6 until 2026-10-19.'
+  intimate_partner: 'A partner usually reaches the phone unlocked or knows the PIN, and encryption does not help then; the screen lock step does. Was 2.0 until 2026-10-19.'
+  domestic_government: 'A seized device that is encrypted cannot be read without the password.'
+  foreign_government: 'Devices are taken or copied at borders and in hotels, and encryption is what keeps a copy unreadable.'
+  criminal_org: 'Thieves who sell devices and the data on them are stopped by encryption, so a small rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -76,6 +83,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:@KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Refined platform notes for explicit local key storage advice. Added Anonymous Planet sourcing.
@@ -83,9 +94,9 @@ changelog:
 ---
 
 ## Why
-An unencrypted laptop left in a car or seized at a border exposes everything stored on it. Nobody needs your password to read it: they can bypass the operating system by booting the laptop from a USB drive, or take its drive out and connect it to another computer, and copy your files. Full-disk encryption blocks physical access as an attack vector, because without your password the drive holds only scrambled data. The protection holds while the laptop is switched off. Once it is on and you have logged in, anyone at the keyboard can read your files.
+Say an unencrypted laptop is stolen from a car, or seized at a border. Nobody needs your password to read it: they can start it from a USB drive instead of its own system, or take its drive out and connect it to another computer, and copy your files. Full-disk encryption scrambles the drive, so without your password the thief has only scrambled data. The protection holds while the laptop is switched off. Once it is on and you have logged in, anyone at the keyboard can read your files. So turn encryption on before a laptop goes missing, because once it is gone you cannot turn it on.
 ## What
-Full-disk encryption scrambles everything on the drive, so no one can read what is on a lost or stolen device without your password. Most phones do this already once a screen lock is set. On a computer it may be on already, it may be a setting you switch on, or it may not be offered at all, so check. Save the recovery key somewhere you can reach without that computer, because without it the encryption locks you out too.
+If someone steals your laptop, they can read your files unless the drive is encrypted. So turn on full-disk encryption, which scrambles everything on the drive, so no one can read what is on a lost or stolen device without your password. Most phones do this already once a screen lock is set. On a computer it may be on already, it may be a setting you switch on, or it may not be offered at all, so check. Save the recovery key somewhere you can reach without that computer, because without it the encryption locks you out too.
 ## How
 ### all
 Do this
@@ -99,7 +110,7 @@ What to look for
 
 The recovery key
 Save the recovery key somewhere you can reach without that computer: in your password manager, or on paper kept away from the computer.
-- Windows: if you signed in with a Microsoft account, the key was saved to that account, and you can see it from another device at aka.ms/myrecoverykey. If someone else set up the computer, the key may be in their account instead.
+- Windows: if the computer turned on Device encryption itself and you signed in with a Microsoft account, the key was saved to that account, and you can see it from another device at aka.ms/myrecoverykey. If someone else set up the computer, the key may be in their account instead.
 - Mac: FileVault asks whether your iCloud account or a recovery key should unlock the disk if you forget your password. If you choose the key, save it as above.
 
 Test it
@@ -114,7 +125,7 @@ has a guide to encrypting Windows, Mac and Linux computers, including what to do
 ## Where you are
 ### border_device_inspection
 What encryption covers here, and what it does not
-Encryption protects what is on a device that is taken from you. It protects nothing on a device you have been made to unlock.
+Encryption protects what is on a device that is taken from you while it is switched off. It protects nothing on a device you have been made to unlock.
 In many countries officers at a crossing can require you to unlock, and what happens if you refuse differs by country and by whether you are a citizen of it.
 
 What actually helps

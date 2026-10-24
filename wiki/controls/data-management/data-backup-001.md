@@ -37,11 +37,19 @@ score_weight: 7
 threat_model_multipliers:
   opportunistic: 0.8
   targeted_individual: 1.2
-  criminal_org: 1
+  criminal_org: 1.5
   domestic_government: 1.6
   foreign_government: 1.8
   data_broker: 1.1
   ai_automated: 0.7
+multiplier_reasons:
+  opportunistic: 'A backup the provider cannot read matters a little less against bulk attacks, which want money, not your files.'
+  targeted_individual: 'A person after you who breaks into your cloud account cannot read an encrypted backup.'
+  criminal_org: 'Groups that lock up files and demand money are beaten by having a backup, and this step also says to keep one copy offline. Was 1.0 until 2026-10-19.'
+  domestic_government: 'A provider can be ordered to hand over what it can read, so a backup only you can read matters more.'
+  foreign_government: 'Foreign services that reach a provider get nothing from a backup only you can read.'
+  data_broker: 'A provider that reads your files can share what it learns, so a small rise.'
+  ai_automated: 'AI attacks rarely aim at backups, so it matters less.'
 compensating_controls: []
 depends_on:
   - id: device-encrypt-001
@@ -71,6 +79,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-01'
     changes: |
@@ -91,22 +103,22 @@ lookups:
 ---
 
 ## Why
-With many cloud storage services you have to trust the company not to look at your files, because it holds the key that unlocks them. Anyone who gets the company's copy, through a break-in or a legal demand, can then read it too. A service that encrypts your files on your own device before they upload never has that key.
+With many cloud storage services you have to trust the company not to look at your files, because it holds the key that unlocks them. Say you keep your tax papers in a cloud drive like that: anyone who gets the company's copy, through a break-in or a legal demand, can read them too. A service that encrypts your files on your own device before they upload never has that key, so that is the kind to back up to.
 ## What
-Back up your files somewhere the service itself cannot read them. A backup is only as private as whoever holds the key, and with many services that is the company, not you. Some services encrypt your files on your own device before they upload, so the company stores copies it cannot read. If yours does not, you can encrypt a folder yourself before it syncs.
+If a backup service holds the key to your files, anyone who gets its copy can read them. So back up your files somewhere the service itself cannot read them. Some services encrypt your files on your own device before they upload, so the company stores copies it cannot read. If yours does not, you can encrypt a folder yourself before it syncs.
 ## How
 ### all
 Do this
 Back up your files somewhere the provider cannot read them.
 
 What to look for
-Wording like end-to-end encrypted, or zero-knowledge. Both mean the provider holds no key to your files.
+Wording like end-to-end encrypted, or zero-knowledge, which should mean the provider holds no key to your files. Check that it covers all your files, not only one folder.
 A backup only you can open is lost with its password. Keep that password, and any recovery key the service gives you, where you can reach them without this device.
 If you want to keep the storage you already pay for, encrypt the files yourself before they go up.
 A tool that does this gives you a folder that looks ordinary on your own machine and is unreadable to everyone else. You save into that folder, and the scrambled copy is what gets uploaded. The guide below lists current ones.
 
 Also
-Keep one copy somewhere not connected to the internet. A drive in a drawer survives things a cloud account does not.
+Keep one copy somewhere not connected to the internet. A drive in a drawer survives things a cloud account does not, such as a locked account or files deleted by mistake. Turn on the drive's encryption, or anyone who takes it can read it.
 
 Test it
 Look up what the provider does if you forget your password. Search its help pages for forgotten password or password reset.

@@ -2,7 +2,7 @@
 id: auth-backup-codes-001
 schema_version: 1.0.0
 version: 1.1.0
-title: Save your backup codes somewhere you can reach them
+title: Save your backup codes
 category: account_security
 subcategory: recovery
 tracks:
@@ -30,6 +30,8 @@ controls_implemented: []
 score_weight: 5
 threat_model_multipliers:
   opportunistic: 1
+multiplier_reasons:
+  opportunistic: 'This step is about getting back in after losing a phone, not about stopping an attacker, so no kind of attacker raises it.'
 compensating_controls: []
 depends_on:
   - id: auth-2fa-001
@@ -62,6 +64,10 @@ tags:
 created_at: '2025-01-01'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.0.0
     date: '2025-01-01'
     changes: Initial item.
@@ -69,9 +75,9 @@ changelog:
 ---
 
 ## Why
-If the phone that makes your codes is lost or broken, two-factor authentication can lock you out of your own accounts, and some accounts have no other way back in. Backup codes are the way in that does not need that phone.
+If the phone that makes your sign-in codes is lost or broken, two-factor authentication can lock you out of your own accounts, and some accounts have no other way back in. For example, say your phone falls in a lake: the code you need to sign in to your email was made on that phone. Backup codes are the way in that does not need that phone.
 ## What
-Save your backup codes where you can reach them without your phone. They are one-time codes an account gives you when you turn on two-factor authentication, and each one lets you sign in once in place of the code from your phone. If that phone is lost or broken, they are how you sign in again.
+If you lose the phone that makes your codes, you can be locked out of your own accounts. So save your backup codes somewhere you can reach without your phone. For example, print your email's backup codes and keep them with your passport: if your phone falls in a lake, you type one in and get back into your email. Backup codes are one-time codes an account gives you when you turn on two-factor authentication, and each one lets you sign in once in place of the code from your phone.
 ## How
 ### all
 Do this
@@ -86,9 +92,9 @@ When you are down to the last one or two, go back to that same screen and genera
 No one who calls or messages you ever needs a backup code. Type one only on the account's own sign-in page.
 
 Where to put them
+Do not keep your backup codes in your email, or in a note on the phone that makes your codes: losing that phone or that inbox is the day you need them.
 Keep the codes for your email and your password manager on paper, with your important documents, because you need those two to get into everything else.
 Codes for your other accounts can go in your password manager's notes.
-Do not keep them in your email, or in a note on the phone that makes your codes: losing that phone or that inbox is when you need them.
 
 Test it
 Imagine your phone is gone right now. Could you still get into your email? If not, print your email's backup codes now.

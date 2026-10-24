@@ -20,4 +20,4 @@ Reloading usually fixes it. Nothing is kept on a server, so nothing of yours is 
 - [Back to the start →](/)
 
 ## list
-- [Your playbook →](/audit)
+- [Playbook →](/audit)

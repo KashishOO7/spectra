@@ -35,6 +35,10 @@ threat_model_multipliers:
   opportunistic: 1.2
   targeted_individual: 1.3
   criminal_org: 1.1
+multiplier_reasons:
+  opportunistic: 'Children reuse simple passwords that bulk attempts guess, so a rise.'
+  targeted_individual: 'A person after a child may try to get into their accounts, so a rise.'
+  criminal_org: 'Groups take over the gaming accounts of children to sell them, so a small rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -76,9 +80,9 @@ lookups:
 ---
 
 ## Why
-If your child uses one password everywhere, anyone who learns it, from a friend they told or a website that leaked it, can get into every account that uses it, including their email and games.
+If your child uses one password everywhere, anyone who learns it, from a friend they told or a website that leaked it, can get into every account that uses it and asks for nothing more than the password, including their email and games.
 ## What
-Sit with your child and give each of their accounts its own password, kept in a password manager so they do not have to remember them.
+Sit with your child and give each of their accounts its own password, kept in a password manager so they do not have to remember most of them.
 ## How
 ### all
 Do this
@@ -91,11 +95,11 @@ Sit with them for the first few. After that they carry on, because it is easier 
 
 What to teach
 Let the password manager make each password, so no two are the same.
-For the one password they have to remember, the one that opens their email or the password manager, use a passphrase of six random words.
+For the few passwords they have to remember, such as the one for their email and the one that opens a separate password manager, use a passphrase of six random words. Write them down and keep them somewhere safe at home. Some password managers cannot reset a forgotten password, and everything saved in the manager is then lost.
 A password is not something to share with friends.
 
 Test it
-Ask them what happens if their game account leaks.
+Ask your child what happens if their game account leaks.
 If the answer is that someone would have their email too, there is still work to do.
 ## Where
 ### res-guide-passwords-001

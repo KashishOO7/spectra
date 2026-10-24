@@ -38,6 +38,10 @@ threat_model_multipliers:
   targeted_individual: 1.8
   intimate_partner: 2
   ai_automated: 1.6
+multiplier_reasons:
+  targeted_individual: 'Sharing an intimate image without consent is aimed at one person, so this step matters most here.'
+  intimate_partner: 'Most intimate images shared without consent come from a partner or ex, which is why this step exists.'
+  ai_automated: 'AI can make a fake intimate image of anyone from ordinary photos, and this step covers what to do when one is shared.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -103,19 +107,19 @@ Before you start
 You have done nothing wrong, and there are people whose whole job is this.
 
 Do this
-You can have intimate images blocked across many platforms without sending anyone the image.
+You can ask the platforms that take part to find and remove an intimate image, without sending anyone the image.
 
 How that works
-StopNCII.org turns the picture into a digital fingerprint, called a hash, on your own device, and sends only the hash.
-Platforms that work with it use the hash to find and block matching uploads.
-The picture itself never leaves your phone.
-You can do it before anything is shared, as well as afterwards.
+For images taken when you were 18 or over, StopNCII.org turns the picture into a digital fingerprint, called a hash, on your own device, and sends only the hash.
+Platforms that take part use the hash to find matching uploads, then review them under their own rules on intimate images.
+The picture itself never leaves your device.
+If you still have the image on your device, you can do it before anything is shared, as well as afterwards.
 For images taken when you were under 18, takeitdown.ncmec.org does the same thing.
 
 Also
-Search engines run their own removal request, separate from the platforms, so a picture can be taken out of search results while it is still on a site. Search the engine's own name together with remove personal information, and use only a result on that search engine's own web address.
+Search engines run their own removal request, separate from the platforms, so a picture can be taken out of search results while it is still on a site. Search the engine's own name together with remove intimate images, and use only a result on that search engine's own web address.
+If the image was taken when you were under 18, do not download, screenshot, send or share it, even to report it. Keep the web address instead.
 Before you report anything already posted, keep a dated record of it: the web address, the account that posted it and the date. Reporting often makes the post disappear, and the proof of what was there goes with it.
-If the image was taken when you were under 18, do not download, send or share it, even to report it. Keep the web address instead.
 
 Where to get help
 If you are in danger or being threatened, contact your local police, and tell someone you trust.

@@ -3,19 +3,19 @@
 Your map | Spectra
 
 ## description
-A map of who might try to reach parts of your life, the steps that stand in the way, and what those steps protect. Built from what you tapped.
+A map of who might try to reach parts of your life, the steps that stand in the way, and what those steps protect. Built from what you chose.
 
 ## heading
 Your map
 
 ## orientation
-Left to right: who might try, the steps that help, and what those steps protect. Tap anything to see what to do.
+Left to right: who might try, the steps that help, and what those steps protect. Click or tap anything to see what to do.
 
 ## orientation-list
-Who might try, each with the steps that help against them, and then what those steps protect. Tap a step to see what to do.
+Who might try, each with the steps that help against them, and then what those steps protect. Click or tap a step to see what to do.
 
 ## showing-tapped
-Showing what you tapped
+Showing what you chose
 
 ## showing-everything
 Showing everything
@@ -45,7 +45,7 @@ Reset view
 - [Go to your playbook →](/audit)
 
 ## because-tapped
-Here because you tapped: {harms}.
+Here because you chose: {harms}.
 
 ## steps-done
 steps done
@@ -75,7 +75,7 @@ Loading your setup…
 No steps to show
 
 ## no-items-lead
-Nothing you tapped has steps in your setup yet.
+None of the risks you chose has steps in your setup yet.
 
 ## full-screen-label
 Your map, full screen
@@ -123,7 +123,7 @@ not done
 Filter:
 
 ## footer
-This map is built from what you tapped. All data is stored locally in your browser.
+This map is built from your progress and your choices, saved in this browser.
 
 ## close-item
 Close this step
@@ -138,7 +138,7 @@ Skipped
 Not yet done
 
 ## essential
-Essential
+One of the basics
 
 ## protect-count
 {covered} of {total} done

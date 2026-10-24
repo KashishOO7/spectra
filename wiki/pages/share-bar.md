@@ -6,25 +6,25 @@ A shared setup was found in this link
 This link carries a setup
 
 ## picks
-It picks {picked} of {total} things to worry about.
+Whoever made this link picked {picked} of the {total} risks.
 
 ## picks-done-one
-It picks {picked} of {total} things to worry about, and marks {done} step already done.
+Whoever made this link picked {picked} of the {total} risks and marked {done} step as done.
 
 ## picks-done-many
-It picks {picked} of {total} things to worry about, and marks {done} steps already done.
+Whoever made this link picked {picked} of the {total} risks and marked {done} steps as done.
 
 ## done-one
-It marks {done} step already done.
+Whoever made this link marked {done} step as done.
 
 ## done-many
-It marks {done} steps already done.
+Whoever made this link marked {done} steps as done.
 
 ## sets
-It sets which steps apply to you.
+Whoever made this link chose which steps apply to you.
 
 ## replaces
-Using it replaces what is on this device.
+Using this setup replaces the risks you picked and the steps you marked done on this device.
 
 ## nothing-sent
 Nothing was sent anywhere. The setup travelled inside the link itself.

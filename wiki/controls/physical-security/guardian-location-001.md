@@ -35,6 +35,10 @@ threat_model_multipliers:
   opportunistic: 1
   targeted_individual: 1.6
   intimate_partner: 1.4
+multiplier_reasons:
+  opportunistic: 'About the same for anyone.'
+  targeted_individual: 'An app that shows where a child is can show it to the wrong adult.'
+  intimate_partner: 'A former partner can follow the location of a child to find the parent, so a rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -73,6 +77,10 @@ sources:
     title: 'Manage your Location Sharing settings - Google Account Help'
     type: primary
     accessed: '2026-09-27'
+  - url: https://support.google.com/android/answer/16766047?hl=en
+    title: Set up parental controls on an Android device - Android Help
+    type: supporting
+    accessed: '2026-10-18'
 emotional_register: null
 tags:
   - free
@@ -102,10 +110,10 @@ Do this
 Check which apps can see where your child is. Turn off the ones that do not need it.
 
 What to change
-Set games and social apps to Never. Set the few that need it, like maps, to While using the app. Where an app does not need an exact place, turn off precise location.
+Set games and social apps to Never, which Android calls Don't allow. Set the few that need it, like maps, to While using the app, which Android calls Allow only while using the app. Where an app does not need an exact place, turn off precise location.
 - iPhone: search Settings for Location Services, tap each app, and turn off Precise Location where it is not needed.
 - Android: search Settings for App location permissions, tap each app, and turn off Use precise location where it is not needed.
-On iPhone, Screen Time also has parental controls for the apps your child can use. Search Settings for Screen Time.
+On iPhone, Screen Time also has parental controls for the apps your child can use. Search Settings for Screen Time. On newer Android phones, search Settings for Parental controls, and when you set its PIN, add a recovery account so a forgotten PIN can be reset.
 
 Also check
 Family and find-my-device features share location between accounts. They are easy to set up once and forget.

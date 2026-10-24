@@ -40,6 +40,11 @@ threat_model_multipliers:
   targeted_individual: 1.5
   opportunistic: 0.1
   criminal_org: 0.2
+multiplier_reasons:
+  intimate_partner: 'Hidden tracking apps are most often put on by a partner with access to the phone, which is why this step exists.'
+  targeted_individual: 'A person after you who gets the phone for a few minutes can install one.'
+  opportunistic: 'Tracking apps need someone to hold your phone, which a bulk scammer never does.'
+  criminal_org: 'Groups rarely install tracking apps on one person, so hardly a reason.'
 compensating_controls: []
 depends_on:
   - id: device-screenlock-001
@@ -97,7 +102,7 @@ Check your phone for an app you never put there, and for apps with more access t
 ### all
 Before you start
 If you think you may be in danger, do not look into this on the device you suspect.
-Use a friend's phone, or a computer at a library.
+Use a friend's phone.
 Whoever is watching the phone can see what you look up on it.
 
 Do this
@@ -116,10 +121,9 @@ A shared account. Someone who knows your Apple or Google password can see your l
 
 Do not rush to delete it
 Removing it tells whoever installed it that you know.
-If that person could become dangerous, talk to a domestic abuse service before you change anything.
-They handle this every day and will help you plan the order.
+If whoever installed it could become dangerous, talk to a domestic abuse service before you change anything. Its staff help people whose phones are watched every day, and can help you plan what to change first.
 The same goes for stopping sharing in Safety Check or signing someone out of your account, because the other person may notice.
 The Coalition Against Stalkerware lists organisations that can help: stopstalkerware.org
 ## Law
 ### global
-Installing monitoring software on another person's device without their knowledge or consent is illegal in most countries.
+In some countries, putting monitoring software on someone's device without their consent is a crime.

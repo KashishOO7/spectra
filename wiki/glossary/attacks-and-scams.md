@@ -14,7 +14,7 @@ Tricking a person into giving away information, access or money, instead of brea
 
 ## ransomware
 
-Malware that encrypts the files on a device so they cannot be opened, then demands payment to unlock them.
+Malware that encrypts the files on a device so they cannot be opened. The criminals behind it then demand payment to unlock them.
 
 ## malware
 
@@ -47,4 +47,13 @@ Searching the web with a picture instead of words, to find other websites where 
 ## cryptocurrency
 also: crypto
 
-Money that exists only in digital form, kept in a digital wallet and sent from one wallet to another. Once you pay with it, you can usually get the money back only if the person you paid sends it back.
+Digital money that is usually not issued by a bank or a government, kept in a digital wallet and sent from one wallet to another. Once you pay with it, you can usually get the money back only if the person you paid sends it back.
+
+## remote access app
+also: remote access apps
+
+An app that lets someone in another place see your screen and control your computer or phone over the internet, as if they were sitting at it.
+
+## grooming
+
+An adult building a child's trust step by step, often with attention, gifts and secrets, so that they can abuse the child.

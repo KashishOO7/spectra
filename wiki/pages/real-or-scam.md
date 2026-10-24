@@ -100,7 +100,7 @@ The message says it is from your child, but it comes from a number you have neve
 Text message from "Your Bank"
 Your Bank
 We have stopped a payment of 950 from your account. If this was not you, call us now on 555 0199 to protect your money.
-The text tells you about a payment you did not make, to frighten you, and gives you a number to call. If you call that number, you speak to whoever sent the text, not to your bank. Call the number on the back of your card, or open your bank's app, instead.
+The text tells you about a payment you did not make, to frighten you, and gives you a number to call. If you call that number, you speak to whoever sent the text, not to your bank. Call the number on the back of your card, from another phone if you can, or open your bank's app, instead.
 
 ### msg-scarcity
 Advert in your social media feed

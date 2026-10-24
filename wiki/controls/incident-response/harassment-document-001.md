@@ -28,6 +28,8 @@ controls_implemented: []
 score_weight: 6
 threat_model_multipliers:
   targeted_individual: 1
+multiplier_reasons:
+  targeted_individual: 'Keeping a record is the same for anyone being harassed, so no rise; the weight already reflects it.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -87,14 +89,14 @@ Save your own replies too
 If you answered angrily, save that too. A record with your own replies removed can be used against you later, and you do not have to have behaved perfectly to be entitled to act.
 
 Let somebody else do it if you can
-Going through it repeatedly is its own harm. If there is someone you trust, ask them to collect it for you. Some services, Gmail among them, let you give another person access to your account for this without sharing your password.
+Going through it repeatedly is its own harm. If there is someone you trust, ask them to collect it for you. If it arrives by email, some services, Gmail among them, let you give another person access to your account for this without sharing your password. That person can then read, send and delete email in your account, so remove their access once the record is done.
 
 Why the record is worth the effort
 A record shows the pattern. One message can be dismissed, but forty from the same person are hard to ignore.
-A record also shows that a new account belongs to the same person, when someone who was blocked comes back under a different name.
+A record also helps show that a new account belongs to the same person, when someone who was blocked comes back under a different name.
 
 Then block, and tell the people close to you
-Block the account. Expect it not to be the end of it, and keep saving what arrives.
+Block the account. Expect it not to be the end of it, and keep saving what arrives from any new account.
 Tell the people around you what is happening. If it has reached your work, tell them before they hear it from somewhere else.
 
 If you feel unsafe

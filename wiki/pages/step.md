@@ -2,7 +2,7 @@
 {step} | Spectra
 
 ## essential
-Essential
+One of the basics
 
 ## sensitive
 Sensitive
@@ -19,14 +19,17 @@ Where to find one
 ## first
 Do this first
 
+## more-about
+More about this step
+
 ## more
 More detail
 
 ## description
-Description
+What
 
 ## applies-to
-Applies to
+Works on
 
 ## situation
 Written for a situation
@@ -53,7 +56,7 @@ Mark as done
 Done
 
 ## undo
-Undo
+Mark as not done
 
 ## not-now
 Not now
@@ -67,8 +70,8 @@ Doesn't apply to me
 ## set-aside
 You said this does not apply to you, so it is not counted as done.
 
-## bring-back
-Bring back
+## put-back
+Put back
 
 ## blocked
 Complete "{title}" first. {reason}

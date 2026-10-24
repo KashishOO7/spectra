@@ -7,7 +7,7 @@ Personal records held by a company or organisation are stolen or exposed, so tha
 ## session token
 also: session tokens
 
-A code your browser keeps after you sign in and sends back on each visit, so the site does not ask for your password again. Anyone who copies it can use your account as you, without your password.
+A code your browser keeps after you sign in and sends back on each visit, so the website does not ask for your password again. Anyone who copies it can use your account as you, without your password, until it expires or you sign out.
 
 ## data broker
 also: data brokers
@@ -22,12 +22,12 @@ A website where anyone can type in a name and see that person's address, phone n
 ## credit freeze
 also: credit freezes
 
-A block on your credit file, so no one can open a loan or card in your name until you lift it.
+In some countries, a block on your credit file. While it is on, lenders cannot check the file, so a loan or card applied for in your name is usually refused.
 
 ## opt-out
 also: opt-outs, opt out
 
-A request asking a company to remove your details or stop using them. On a people-search site it is the form that removes your page.
+A request asking a company to remove your details or stop using them. On a people-search site it is the form you use to ask the site to remove the page about you.
 
 ## metadata
 
@@ -36,7 +36,7 @@ Information about a message or call rather than what it says: who contacted whom
 ## tracker
 also: trackers, tracking
 
-Tools that websites and other companies use to record what you do online, such as cookies and scripts that follow your activity across sites.
+A tool that websites and other companies use to record what you do online, such as a cookie or a script that follows your activity across sites.
 
 ## fingerprinting
 
@@ -64,3 +64,17 @@ Choosing which ads to show you from what a company has recorded about you, such 
 ## privacy dashboard
 
 The page in an account's settings that shows what is saved about you, and where you can delete it or turn some of the saving off.
+
+## browser extension
+also: browser extensions
+
+A small add-on installed into a web browser that gives it a new feature, such as blocking ads or filling in passwords. Many can read the pages you open.
+
+## automatic content recognition
+also: ACR
+
+A feature on many smart TVs that identifies the shows, films and ads on the screen and sends a record of them to the TV's maker or its partners.
+
+## advertising ID
+
+A number on your phone or TV that apps and advertisers read, so they can link what you do on it into one profile.

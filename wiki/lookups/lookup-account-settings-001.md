@@ -10,12 +10,6 @@ sources: []
 
 
 
-
-
-
-
-
-
 # Where to look in any account
 Every company lays out its settings differently, but most use similar names for the same sections. These are the sections to open on any account you care about.
 

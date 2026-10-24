@@ -38,7 +38,12 @@ threat_model_multipliers:
   intimate_partner: 2
   targeted_individual: 1.6
   opportunistic: 0.2
-  data_broker: 0.5
+  data_broker: 1.2
+multiplier_reasons:
+  intimate_partner: 'Location sharing set up during a relationship often stays on afterwards, which is why this step exists.'
+  targeted_individual: 'A person after you can follow you through an app or account that shows where you are.'
+  opportunistic: 'Bulk scammers do not follow people, so hardly a reason.'
+  data_broker: 'Some apps that can see where you are pass that location on to brokers, and this step checks those apps, so a rise. Was 0.5 until 2026-10-19.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -102,7 +107,7 @@ Go through every app and account that can report where you are, and switch off t
 ## How
 ### all
 Before you start
-If you may be in danger, do not do this on a device that might be watched.
+If you may be in danger, talk to someone you trust before you change anything, because the person you are worried about may notice when sharing stops.
 
 Do this
 Check the five places that share your location, in your phone settings and your accounts, and switch off anything you did not choose.
@@ -110,7 +115,7 @@ Check the five places that share your location, in your phone settings and your 
 Five places to check
 - People you share with. iPhone: Safety Check lists everyone who can see your location. Search Settings for Safety Check, and look before you change anything. Google: open your Google Account. Location Sharing is under People & sharing, and it covers Maps, Messages and Find Hub.
 - Apps with location permission. Set games and shopping apps to Never, and the rest to While using the app. iPhone: search Settings for Location Services. Android: search Settings for App location permissions.
-- Location history, which is separate from sharing. A maps app can keep a record of the places you have been, often called Timeline or location history. Search the maps app's settings for Timeline to turn it off and delete it. Deleting it also deletes your own record of where you have been.
+- Location history, which is separate from sharing. A maps app can keep a record of the places you have been, often called Timeline or location history. On Android, search the Google Maps settings for Timeline; on iPhone, search Settings for Significant Locations. Turn it off and delete it there. Deleting it also deletes your own record of where you have been.
 - Photos you send. A photo can carry the place it was taken, and the person you send it to may be able to read it. To stop that, set your camera app's location permission to Never.
 - Devices signed in to your account. Safety Check on iPhone, or Your devices in your Google Account's security settings, shows every one. Remove anything you do not recognise or no longer use.
 

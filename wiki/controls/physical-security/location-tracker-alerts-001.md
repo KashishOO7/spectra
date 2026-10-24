@@ -27,6 +27,9 @@ score_weight: 7
 threat_model_multipliers:
   intimate_partner: 2
   targeted_individual: 1.6
+multiplier_reasons:
+  intimate_partner: 'A tracker hidden in a bag or car is most often used by a partner or ex, which is why this step exists.'
+  targeted_individual: 'A person after you can hide a tracker on you, and the alert is how you find it.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -95,8 +98,10 @@ On iPhone, the Find My app lists every tracker you were alerted about: open Item
 If you find the tracker
 Before you turn the tracker off, take a screenshot of what your phone shows about it.
 With an AirTag, hold the top of your iPhone, or of an Android phone that has NFC, near the AirTag's white side. A page opens with its serial number and the last four digits of the phone number of the person who registered it.
-To turn the tracker off, follow the steps your phone shows: Instructions to Disable on iPhone, Next steps on Android. Its owner then stops seeing where it is now, but may still see the last place it was.
 
 If you think someone you know put it there
-Once the tracker is off, that person stops seeing where you are, and they may notice. Some people become more dangerous when they feel they have lost that kind of access.
+Once the tracker is off, whoever put it there stops seeing where you are, and they may notice. Some people become more dangerous when they can no longer see where you are.
 Talk to the police, a domestic abuse service or someone you trust before you turn it off. They can help you decide what to do and in what order. Keep the tracker and its serial number for the police. With an AirTag, they can ask the company that made it for information about it.
+
+To turn it off
+To turn the tracker off, follow the steps your phone shows: Instructions to Disable on iPhone, Next steps on Android. Its owner then stops seeing where it is now, but may still see the last place it was.

@@ -3,13 +3,13 @@
 You | Spectra
 
 ## description
-How far you are in your playbook, which tricks have got past you, what your steps protect, and your setup. It all stays in this browser.
+How far you are in your playbook, which steps come first, which tricks have got past you, what your steps protect, and your setup. It all stays in this browser.
 
 ## heading
 You
 
 ## lead
-Everything Spectra keeps about you, in one place. It stays in this browser, and you can change any of it.
+Your progress and your choices, in one place. They are saved in this browser, and you can change any of them.
 
 ## where-heading
 Your progress
@@ -30,6 +30,15 @@ Last open
 Continue where you left off
 
 ## start
+Open your playbook
+
+## going-heading
+Which steps come first
+
+## going-lead
+Pick the risks that matter most to you, and the steps against them come first in your playbook. Every other step stays in it.
+
+## going-open
 Open your playbook
 
 ## past-heading
@@ -54,7 +63,7 @@ Nothing has got past you so far.
 What your steps protect
 
 ## protect-lead
-Each of the harms Spectra covers, and how many of its steps you have done.
+Each risk Spectra covers, and how many of its steps you have done.
 
 ## count
 {done} of {total}
@@ -69,7 +78,7 @@ Covered
 Your setup
 
 ## setup-lead
-Your setup decides which steps you see and in what order. You can also save a copy, move it to another device, or start over here.
+Your setup can add steps for your situation, such as looking after a child, and changes their order. You can also save a copy, move it to another device, or start over here.
 
 ## more-heading
 Your journey, and your playbook on paper

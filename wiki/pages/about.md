@@ -2,7 +2,7 @@
 About | Spectra
 
 ## description
-What Spectra is, what it deliberately does not do, how your data is handled, and who builds it.
+What Spectra is, how your data is handled, and who builds it.
 
 ## heading
 About Spectra
@@ -14,14 +14,14 @@ Open source · Educational · No commercial interests
 - [What is Spectra](#what)
 - [Disclaimer](#disclaimer)
 - [Privacy Policy](#privacy)
-- [Methodology](#methodology)
+- [Method and sources](#methodology)
 - [About FPS Zero](#fpszero)
 
 ## what-heading
 What is Spectra?
 
 ## what
-Spectra is a free checklist for your own safety, online and offline.
+Spectra is a free security playbook: guided steps for your accounts, money, devices and privacy, so you know what to do first, before something goes wrong and right after it does.
 
 Spectra began as a Notion template that Kashish made while studying for a master's degree in digital forensics and information security. The course covered how to protect data, and also how forensics can recover data that people believed was deleted. Learning how deleted data is recovered showed him that no security is permanent.
 
@@ -29,9 +29,9 @@ Friends, relatives and others kept calling and messaging him with the same probl
 
 He could not help everyone, so he built Spectra for people to learn digital hygiene for themselves: the everyday habits that look after their accounts, devices and personal details. After someone has lost an account, money or their privacy, reporting it to the police or filing a complaint is still worth doing, but it cannot always bring back what was lost. Knowing what to do before something happens, what to do after, and what never to do makes that situation less likely.
 
-So the steps cover your accounts, your devices, where you physically are, the ways people are tricked into giving away money or access, and what changes now that AI can copy a person's voice. Telling it what worries you changes the order of the list. Some situations you can choose, such as looking after someone else's safety or someone you know being a risk to you, also add steps written for them. Tick each step off as you do it. Nothing you enter leaves your browser: there is no account, and nothing you tap or type is sent to a server.
+So the steps cover your accounts, your devices, where you physically are, the ways people are tricked into giving away money or access, and what changes now that AI can copy a person's voice. Choosing what worries you in Your setup changes the order of the list. Some situations you can choose, such as looking after someone else's safety or someone you know being a risk to you, also add steps written for them. Tick each step off as you do it. Nothing you enter leaves your browser: there is no account, and nothing you choose or type is sent to a server.
 
-Scams that work by persuading a person to act, rather than by breaking into a device, have a category of their own here, called Spotting scams.
+Scams that work by persuading a person to act, rather than by breaking into a device, have a chapter of their own here, Spot a scam.
 
 Nobody pays to appear in Spectra, and it never tells you to buy or install a named product. To choose one, the guides explain what to look for and link to lists that other people maintain. Claims are sourced, and where no source holds up, Spectra tells you what to check for yourself instead.
 
@@ -61,20 +61,20 @@ Read the full disclaimer
 Privacy Policy
 
 ## privacy
-A privacy tool that violated your privacy would be indefensible. Here is exactly what Spectra does and does not collect:
+Here is exactly what Spectra does and does not collect:
 
 ## privacy-rows
-### What you tap
+### What you choose
 Stored only in this browser on this device, and never sent to a server. Anyone who can open this browser on this device can see it. Start over, in Your setup, deletes it, and so does clearing your browser data.
 
 ### Analytics
 None. No Google Analytics, no tracking pixels, no session recording. If that ever changes, this page will say so first.
 
 ### Cookies
-None set by this site. Browser storage holds what you ticked and told Spectra, your light or dark choice, and a copy of the pages so they open offline.
+None set by this site. Browser storage holds what you ticked, the choices you made in Your setup, your answers in the game and the quiz, the entries in Your journey, the light or dark theme you chose, and a copy of the pages so they open offline.
 
 ### External resources
-Clicking links to external sites takes you outside Spectra. Those sites have their own privacy policies. We link to them; we don't control them.
+Opening links to other sites takes you outside Spectra. Those sites have their own privacy policies. We link to them; we don't control them.
 
 ### GitHub
 This site is hosted on GitHub Pages. GitHub's privacy policy applies to server-level data (IP addresses, request logs). We do not have access to this data.
@@ -83,14 +83,14 @@ This site is hosted on GitHub Pages. GitHub's privacy policy applies to server-l
 Fonts are loaded from Google Fonts. This sends a request to Google's servers. If you block that request, the page uses your device's own fonts.
 
 ## methodology-heading
-Methodology
+Method and sources
 
 ## methodology
-How the order of your playbook is worked out, with the formula and the references behind it, is on [Under the hood](/methodology). Each step lists its own sources under it.
+[Method and sources](/methodology) shows how the order of your playbook is calculated, with the formula and the references behind it. Each step lists its own sources under it.
 
 ## methodology-links
 - [How Spectra works](/how-it-works)
-- [Under the hood](/methodology)
+- [Method and sources](/methodology)
 
 ## fpszero-heading
 About FPS Zero

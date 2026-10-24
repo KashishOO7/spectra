@@ -37,6 +37,11 @@ threat_model_multipliers:
   foreign_government: 2
   targeted_individual: 1.4
   intimate_partner: 1
+multiplier_reasons:
+  domestic_government: 'Border officers can ask to search devices, which is why this step exists.'
+  foreign_government: 'Border searches abroad are the reason for preparing devices before you cross.'
+  targeted_individual: 'Travel is a moment when a person after you could get at a device, so a rise.'
+  intimate_partner: 'About the same as for anyone.'
 compensating_controls: []
 depends_on:
   - id: device-encrypt-001
@@ -71,6 +76,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:@KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Updated with EFF's protocol for RAM clearing and biometric disabling. Removed non-taxonomy attack vector.
@@ -78,18 +87,18 @@ changelog:
 ---
 
 ## Why
-In some countries, border officers have the power to search your phone or laptop, and some can require your password. Refusing can mean the device is kept. Encryption stops protecting what is on a device once you have unlocked it, so what protects you at a border is what you leave off the device before you travel.
+In some countries, border officers have the power to search your phone or laptop, and some can require your password. Refusing can mean the device is kept. Say an officer asks you to unlock your phone at the airport: once it is unlocked, they can read whatever is on it, however strong its encryption is. Encryption stops protecting what is on a device once you have unlocked it, so what protects you at a border is what you leave off the device before you travel.
 
 ## What
-Before you cross a border, remove from your phone and laptop anything you would not want an officer to read, and turn them fully off. In some countries, officers at a border can look through a phone without a warrant or any reason.
+In some countries, officers at a border can look through a phone without a warrant or any reason, and once you unlock it they can read everything on it. So before you cross a border, remove from your phone and laptop anything you would not want an officer to read, and turn them fully off.
 ## How
 ### all
 Do this
-Do all of this at home before you travel, not at the border.
+Before you travel, at home: back up your devices, remove what you do not need on the trip, and sign out of the apps you would not want read. Then turn the devices fully off before the border.
 
 Before you go
 Back up at home first. Then remove from the device anything you will not need on the trip, since the backup is what makes removing it safe.
-A deleted file can often still be recovered from the device with the right tools, so for anything that must not be found, leave that device at home and travel with one that never held it.
+A deleted file can sometimes still be recovered from the device with the right tools, so for anything that must not be found, leave that device at home and travel with one that never held it.
 Sign out of the apps and websites you would not want read, including your password manager, so they cannot be opened from the device.
 Before you sign out, check that you can sign back in during the trip without anything you are leaving at home: your password manager's password from memory, and a second step that works abroad, such as an authenticator app, because text-message codes may not arrive if your phone has no service there.
 

@@ -1,5 +1,4 @@
 
-
 ## pending
 One moment…
 
@@ -7,4 +6,4 @@ One moment…
 {covered} of {total} covered
 
 ## means
-Covered means you've done the essentials for that one.
+A risk is covered once you have done its basic steps.

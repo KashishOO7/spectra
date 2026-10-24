@@ -2,7 +2,7 @@
 id: incident-breach-monitor-001
 schema_version: 1.0.0
 version: 1.2.0
-title: Set up breach monitoring for your email addresses
+title: Get a warning when your email is in a leak
 category: incident_response
 subcategory: breach_detection
 tracks:
@@ -36,6 +36,10 @@ threat_model_multipliers:
   opportunistic: 1.2
   criminal_org: 1.3
   targeted_individual: 1.1
+multiplier_reasons:
+  opportunistic: 'Leaked passwords are what the bulk attempts use, and an alert lets you change a password before it is tried.'
+  criminal_org: 'Fraud groups trade breach data and use it soonest, so early warning is worth most against them.'
+  targeted_individual: 'A person after you may look your address up in breach data, but they have other ways in, so a small rise only.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -61,6 +65,10 @@ tags:
 created_at: '2025-01-01'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.1.0
     date: '2026-04-01'
     changes: Firefox Monitor renamed to Mozilla Monitor. Updated URL and added 20-email limit detail. Monitor Plus shut down Dec 2025; free tier unaffected.
@@ -74,22 +82,22 @@ lookups:
 ---
 
 ## Why
-When a website is broken into, the email addresses and passwords taken from it can end up in lists that other people use to try those logins on other sites. If you hear about the leak, you can change the password before someone uses it.
+If a forum you joined years ago is broken into, the email addresses and passwords taken from it can end up in lists that other people use to try those logins on other sites. For example, say your address and password are on such a list. If you are told, you can change the password before anyone tries it on your email; if you are never told, nothing warns you.
 ## What
-Ask to be told when your email address shows up in a data breach, so you can change that password straight away. A breach checking service can tell you about leaks it already knows of and email you about new ones.
+If your email address and password turn up in a leak, someone can try them on your other accounts before you know. So ask to be told when your email address shows up in a data breach, and change that password straight away. For example, if a forum you joined years ago is broken into, an alert lets you change that password before anyone tries it on your email. A breach checking service can tell you about leaks it already knows of and email you about new ones.
 ## How
 ### all
 Do this
 Set up an alert so you hear about it when your email turns up in a leak.
 
-How
+Set it up
 Go to haveibeenpwned.com and put in each address you use. Searching is free, needs no account, and tells you which known leaks already include you.
-Searching does not sign you up for anything. Being told about future leaks is a separate step: use the notify option on the same site, give the address, and click the link in the mail it sends you. Repeat it for each address, because one signup covers one address.
+Searching does not sign you up for anything. To be told about future leaks, use the notify option on the same site, give the address, and click the link in the mail it sends you. Do that for each address, because one signup covers one address.
 The alert goes only to the address being watched, so you need to be able to open that inbox.
 Many password managers run the same check on the accounts they hold, so look there too if you use one.
 
 When one arrives
-Change that password, then change it anywhere else you used the same one, because a leaked password works on every account that shares it.
+Change that password, then give every other account where you used the same one its own new password, because a leaked password can be tried on every account that shares it.
 
 Test it
 Search an address you have had for a long time and see which leaks it was in. Not appearing does not prove it was never leaked, only that no leak the service knows of includes it.

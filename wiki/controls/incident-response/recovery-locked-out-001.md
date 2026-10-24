@@ -29,6 +29,8 @@ controls_implemented: []
 score_weight: 5.5
 threat_model_multipliers:
   opportunistic: 1
+multiplier_reasons:
+  opportunistic: 'Getting back in through the recovery page of the service is the same whoever locked you out.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -80,6 +82,10 @@ tags:
 created_at: '2026-09-06'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.1.0
     date: '2026-09-07'
     changes: Added the branch for a reader whose account may already be reachable by somebody they know. The research is explicit that ordinary account-change advice can be unsafe for that reader.
@@ -109,7 +115,7 @@ The service may ask for an old password, a recovery address or a code.
 Answer every question as well as you can rather than skipping it, and give the most recent password you remember.
 
 If no message arrives
-Look in the spam or junk folder first.
+If the code comes by email, look in the spam or junk folder first.
 The code goes to the address or number the account holds, so if that is an old address or a number you no longer have, it will not reach you. Try the other addresses and numbers you have used.
 
 Try your backup codes
@@ -123,15 +129,16 @@ An account from work or school is recovered through whoever runs it there.
 There is no guarantee you get the account back, and a service that cannot confirm the account is yours is right to refuse.
 
 While you wait
-Leave the account alone on your other devices, because on some services using it while you wait cancels the recovery.
-Any other account whose forgot password link sends to this one is locked with it, and if someone else has this account, they can reset those too. Move each one you can still sign in to over to an address you control.
+While a recovery request is open, leave the account alone on your other devices, because on some services using it during the wait cancels the recovery. Do not send a second recovery request either, because on some services that interrupts or cancels the first.
+Any other account that sends its password reset emails to this one cannot be reset by email while you are locked out, and if someone else has this account, they can reset those too. On each one you can still sign in to, change the recovery email to an address you control.
+If someone else has the account, tell the people you usually talk to through it not to trust messages from it for now, because whoever has it can write to them as you.
 Do not pay anyone who offers to get the account back, and never give anyone your password or a code.
 
 Afterwards
-Whether you get in or not, check the other accounts you can still sign in to now: the recovery address, the number and the backup codes. The step linked below, Check that you could still get into your important accounts, goes through each one.
+Whether you get in or not, check the other accounts you can still sign in to now: the recovery address, the number and the backup codes. The step linked below, Check you can get back into your accounts, goes through each one.
 ## By situation
 ### known_person_risk
 If a person you know may be behind it
 Somebody who took the account, or who set it up and chose its recovery address and number, may still be able to reach it, and the service's form cannot see that.
-If that person could be dangerous, talk to a domestic abuse service before you try to take the account back, because some people react badly when they lose access. They can help you decide what to do first.
-Use a device that person has never had, even though the service trusts your usual one more.
+If the person behind it could be dangerous, talk to a domestic abuse service before you try to take the account back, because some people react badly when they lose access. The abuse service can help you decide what to do first.
+Use a device the person behind it has never had access to, even though the service is more likely to accept a recovery request from your usual one.

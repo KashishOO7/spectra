@@ -2,7 +2,7 @@
 Five questions | Spectra
 
 ## description
-Five yes or no questions about habits most people need. Each Yes is marked done, and the first thing to fix opens straight away.
+Five short questions about habits most people need. Each Yes is marked done, and the first thing to fix opens straight away.
 
 ## heading
 Five questions

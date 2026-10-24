@@ -2,7 +2,7 @@
 id: auth-password-manager-001
 schema_version: 1.0.0
 version: 2.1.0
-title: Use a password manager with unique passwords everywhere
+title: Use a password manager
 category: account_security
 subcategory: authentication
 tracks:
@@ -39,6 +39,11 @@ threat_model_multipliers:
   targeted_individual: 1.2
   criminal_org: 1.4
   ai_automated: 1.3
+multiplier_reasons:
+  opportunistic: 'Passwords leaked from one site are tried on others in bulk, and a different password on every site is what stops that working.'
+  targeted_individual: 'A person who knows you can guess a password built from your life; a long random one cannot be guessed.'
+  criminal_org: 'Fraud groups buy lists of leaked passwords and test them against banks and email at scale, so reuse costs most here.'
+  ai_automated: 'A well-written fake sign-in page fools people, but the password manager fills a password only on the site it was saved for.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -71,6 +76,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Tiered recommendations (Cloud vs Local). Integrated Privacy Tools sourcing.
@@ -80,9 +89,9 @@ lookups:
 ---
 
 ## Why
-If you use the same password on more than one site, a data breach at any one of them exposes every account that shares it. Programs then try the stolen usernames and passwords on dozens or hundreds of other sites, which is called credential stuffing. A different password for every account means a breach at one site gives away only that one account.
+If you use the same password for two accounts, a break-in at one opens both. When a website is broken into, the email addresses and passwords taken from it are tried on other websites, by machine, on dozens or hundreds of sites, which is called credential stuffing. For example, say you used one password for a shopping site and for your email: the shopping site is broken into, and someone is now signing in to your email with that password. A different password for every account means a break-in gives away only that one account.
 ## What
-A password manager creates a different password for every account, stores them, and fills them in, so you only have to remember one. That ends the habit of using the same password on more than one site, which is how a breach at one site leads to stolen accounts on others. To pick one, see the guides.
+If you use the same password on more than one site, one break-in opens all of them. So use a password manager: it makes a different password for every account, remembers them all and fills them in, so you only have to remember one. For example, if your shopping site is broken into, a password manager means your email still has its own password, so the thief gets one account, not everything. To pick one, see the guides.
 ## How
 ### all
 Do this
@@ -90,12 +99,13 @@ Install the password manager's browser extension on your computer and its app on
 On the phone, also turn on autofill for it in the phone's settings, or it cannot fill anything in. Then each time you sign in to an account, let it save the login, and change that password to a new one it makes.
 
 Which kind
-One that syncs is easier for most people than an offline one. It keeps an encrypted copy of your passwords on the company's servers, so they are on every device you sign in on, and a lost phone does not lose them.
-An offline one has no account with a company. Your passwords are kept in one encrypted file on your device. To use them on your phone too, you keep that file in a cloud drive you already use, and open it from there on each device.
-Whichever kind you choose, only you should be able to unlock it. If the company can reset your one password and still give you back everything you saved, then it can read your passwords too.
+Two kinds exist, and you do not have to pay for either: some well-reviewed password managers that sync are free.
+A syncing one keeps an encrypted copy of your passwords on the company's servers, so they are on every device you sign in on, and a lost phone does not lose them. Most people find this the easier kind.
+An offline one has no account with a company. Your passwords are kept in one encrypted file on your device. To use them on your phone too, you keep that file in a cloud drive you already use and open it from there on each device.
+Either way, only you should be able to unlock it. If the company could reset your one password and still give you back everything you saved, it could read your passwords too.
 
 The one password you memorise
-Make it at least six random words, and let the password manager's generator pick them, because words you choose yourself are easier to guess. Each extra word multiplies the guesses someone needs by thousands, and real words stay easy to remember and type.
+This is the one password you remember. Make it at least six random words, and let the password manager's generator pick them, because words you choose yourself are easier to guess. Each extra word multiplies the guesses someone needs by thousands, and real words stay easy to remember and type.
 In the generator, choose passphrase and set it to six words. If yours only offers the generator once you are signed in, set a password to get in first, then change your one password to the six words it makes.
 If you forget it, nobody can reset it for you, because a company that cannot read your passwords cannot recover them either. That is what keeps them private, and it is also the risk: forget it and everything inside is gone.
 So write it down once, on paper, and keep it with your important documents. Do not keep it in a file on your computer, or inside the password manager it unlocks.

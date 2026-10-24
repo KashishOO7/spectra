@@ -1,6 +1,4 @@
 
-
-
 ## who
 ### opportunistic
 Automated bots & scammers
@@ -34,8 +32,6 @@ A foreign government
 Foreign intelligence services. Very capable, and they choose their targets.
 
 ## situations
-
-
 ### caring_for_someone
 I look after someone else's safety online
 A child, a parent, anyone in your care.
@@ -66,7 +62,7 @@ iOS
 ### web
 Web
 ### all
-All
+Any device
 ### any_mobile
 Mobile
 ### any_desktop
@@ -137,17 +133,6 @@ If something happens
 ### ai_threats
 AI and fakes
 
-## step-levels
-### 1
-Essential
-### 2
-Baseline
-### 3
-Hardened
-### 4
-Advanced
-### 5
-Expert
 
 ## progress-bands
 ### 1

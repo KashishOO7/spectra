@@ -41,6 +41,11 @@ threat_model_multipliers:
   data_broker: 1.6
   intimate_partner: 1.8
   opportunistic: 0.8
+multiplier_reasons:
+  targeted_individual: 'Seeing what a stranger finds about you is the defence against someone who has decided to find you.'
+  data_broker: 'Broker listings are much of what turns up, so searching shows what to remove.'
+  intimate_partner: 'An ex may search for your new address or work, and this shows what they would find.'
+  opportunistic: 'Bulk scammers use what is public less than a person who wants you, so slightly less.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -68,6 +73,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Explicit OSINT mapping steps added.
@@ -75,10 +84,10 @@ changelog:
 ---
 
 ## Why
-Someone who wants to find or trick you can start with what a search already shows: your address, your phone number, old accounts and past leaks. You cannot fix what you have not seen, and you see it by searching for yourself the way they would.
+Someone who wants to find or trick you can start with what a search already shows: your address, your phone number, old accounts and past leaks. Say you search your name and your town and a page shows your home address and phone number: that page is where someone who means you harm would start. You cannot fix what you have not seen, and you see it by searching for yourself the way they would.
 
 ## What
-Search for yourself the way a stranger would, and keep a list of what you find. Try your name and any old names, your email addresses, your phone number, and your name with each town you have lived in. What turns up is what anyone who means you harm starts with, and you cannot clean up a page you have not seen.
+Someone who wants to find you starts with a search, so search for yourself first, the way a stranger would, and keep a list of what you find. Try your name and any old names, your email addresses, your phone number, and your name with each town you have lived in. You cannot clean up a page you have not seen.
 ## How
 ### all
 Do this

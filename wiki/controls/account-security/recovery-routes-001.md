@@ -2,7 +2,7 @@
 id: recovery-routes-001
 schema_version: 1.0.0
 version: 1.1.0
-title: Check that you could still get into your important accounts
+title: Check you can get back into your accounts
 category: account_security
 subcategory: recovery
 tracks:
@@ -29,6 +29,8 @@ controls_implemented: []
 score_weight: 6.5
 threat_model_multipliers:
   opportunistic: 1
+multiplier_reasons:
+  opportunistic: 'It guards against being locked out, which happens to anyone, so no kind of attacker raises it.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -67,6 +69,10 @@ tags:
 created_at: '2026-09-06'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.2.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.1.0
     date: '2026-09-07'
     changes: Added the branch for a reader whose account may already be reachable by somebody they know. The research is explicit that ordinary account-change advice can be unsafe for that reader.
@@ -78,13 +84,13 @@ changelog:
 ---
 
 ## Why
-Two-factor authentication makes an account harder for other people to get into, and easier for you to lose. Losing your phone, changing your number, or travelling somewhere your number does not work can each lock you out, and none of them involves anyone attacking you. Backup codes exist for exactly that, and they help only if you saved them where you can still reach them.
+If you change your phone number and forget to tell your accounts, the next code they send goes to the old number and you cannot get in. Two-factor authentication makes an account harder for other people to get into, and easier for you to lose: losing your phone, changing your number, or travelling somewhere your number does not work can lock you out, and nobody attacked you. For example, say your bank still holds your old number: it texts its code there and you are locked out of your own bank. Backup codes are for exactly that, and they help only if you saved them where you can still reach them.
 ## What
-Check that your accounts can still reach you on the address and number they hold. If you have changed your phone number or email address, an account may still hold the old one. Every account keeps a second way in for the day the normal one fails. It sends a link to an address, texts a number, or asks for a code you saved. An old address or number gives no warning when it stops working, and you find out only on the day you need it.
+If an account still holds your old phone number or email address, it sends your recovery message there and you are locked out. So check that each important account holds an address and a phone number that reach you. For example, if your email still lists the phone number you had three years ago, the code it sends to recover it goes to a number you no longer have. Most accounts keep a second way in for the day the normal one fails: they send a link to an address, text a number, or ask for a code you saved. An old address or number gives no warning when it stops working, and you find out on the day you need it.
 ## How
 ### all
 Do this
-For each account you would hate to lose, open its security settings and check the way in is still true.
+For each account you would hate to lose, open its security settings and check that the recovery address, number and codes it holds are still yours and still work.
 
 What to look at
 The recovery address. If it is an old work address or one you closed, change it to one you read every week.
@@ -99,7 +105,7 @@ The address your other accounts send a reset link to when you press forgot passw
 
 
 Test it
-Press forgot password on one account and see where the message arrives. If it goes somewhere you no longer read, you have found the problem before it found you.
+Press forgot password on one account and see where the message arrives. If it goes to an address you no longer read, change the recovery address in that account's security settings to one you read.
 ## By situation
 ### known_person_risk
 Before you change anything

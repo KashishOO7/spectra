@@ -38,6 +38,11 @@ threat_model_multipliers:
   intimate_partner: 2
   targeted_individual: 1.5
   domestic_government: 1.8
+multiplier_reasons:
+  opportunistic: 'A lock stops whoever picks up a lost phone, which is about the same for anyone.'
+  intimate_partner: 'A partner has the phone in reach every day, and a lock they do not know is the first thing that keeps them out.'
+  targeted_individual: 'A person after you who gets the phone for a moment is stopped by a strong lock.'
+  domestic_government: 'A passcode is harder to force from you than a face or a finger, and in some countries officers can make you unlock with those, which is why this step warns about them.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -77,6 +82,10 @@ tags:
 created_at: '2026-02-25'
 created_by: github:@KashishOO7
 changelog:
+  - version: 2.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 2.0.0
     date: '2026-03-04'
     changes: Explicitly addressed the legal/compulsion risk of biometrics vs PINs.
@@ -84,9 +93,9 @@ changelog:
 ---
 
 ## Why
-Anyone who gets hold of your phone, whether a thief, a partner or someone at a repair shop, can read it if the code is easy to guess, or open it with your finger while you are asleep. In some countries the law also lets officers make you unlock with your face or finger more easily than make you tell them a code. In others you can be ordered to give the code as well.
+Say your phone is stolen, or someone at a repair shop picks it up: they can read it if the code is easy to guess. And a partner can open it with your finger while you are asleep. In some countries the law also lets officers make you unlock with your face or finger more easily than make you tell them a code. In others you can be ordered to give the code as well.
 ## What
-Set a PIN of at least six digits, or a longer password, and use your face or fingerprint only as a shortcut on top of it. The code is what protects the phone's encrypted storage, and a longer code takes far more guesses to find than a shorter one. A four-digit PIN has only 10,000 possible codes. If someone with the equipment to try code after code against your phone might get hold of it, such as the police or border officers in some countries, use a password of 8 to 12 random letters and numbers, as EFF recommends.
+Anyone who gets hold of your phone can read it if the code is easy to guess, and can open it with your face or finger while you are asleep. So set a PIN of at least six digits, or a longer password, and use your face or fingerprint only as a shortcut on top of it. The code is what protects the phone's encrypted storage, and a longer code takes far more guesses to find than a shorter one. A four-digit PIN has only 10,000 possible codes. If someone with the equipment to try code after code against your phone might get hold of it, such as the police or border officers in some countries, use a password of 8 to 12 random letters and numbers, as EFF recommends.
 ## How
 ### all
 Do this
@@ -94,7 +103,7 @@ Set a six digit PIN or a passphrase, not just your face or your thumb.
 
 Why not only a fingerprint
 Face and fingerprint unlock are quicker than a code, but they can be used on you without your help: someone can press your finger to the phone while you are asleep, or hold the phone up to your face.
-And in some countries you can be made to unlock with a finger more easily than you can be made to give a code.
+And in some countries you can be made to unlock with a finger more easily than you can be made to give a code. So set a code as well, and use your face or finger only as a shortcut on top of it.
 
 What to look for
 - iPhone: search Settings for Passcode.
@@ -104,7 +113,7 @@ If you forget it, you may have to erase the phone to get back in, and only a bac
 
 The shortcut worth learning
 iPhone and Android can both switch face and fingerprint unlock off at once, so the next unlock needs your code. Learn how on your phone now, before you need it.
-- iPhone: press and hold the side button and either volume button until the sliders appear, then let go and tap Cancel.
+- iPhone with Face ID: press and hold the side button and either volume button until the sliders appear, then let go and tap Cancel.
 - Android: open the power menu and tap Lockdown. On many phones the power menu opens when you hold the power button and a volume button together, or from the power icon in the quick settings panel. If Lockdown is not in the menu, search Settings for lockdown and switch on the option that shows it.
 If you cannot find it, restarting the phone does the same: after a restart, iPhone and Android ask for the code before face or fingerprint will work.
 Practise it once while looking at the screen. On an iPhone, let go as soon as the sliders appear: holding on starts an Emergency SOS countdown that calls emergency services.

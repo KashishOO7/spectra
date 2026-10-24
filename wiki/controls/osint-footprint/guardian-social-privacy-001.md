@@ -35,6 +35,9 @@ score_weight: 7.5
 threat_model_multipliers:
   opportunistic: 1.2
   targeted_individual: 1.5
+multiplier_reasons:
+  opportunistic: 'Private accounts get fewer messages from strangers, so a rise.'
+  targeted_individual: 'A private account stops a stranger seeing and contacting a child, so a large rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -75,9 +78,9 @@ lookups:
 ---
 
 ## Why
-A public profile lets anyone see a child's posts, friend list and name, and message them, including people who want to trick or hurt them. A private account shows those only to people the child has accepted.
+A public profile lets anyone see a child's posts, friend list and name, and often message them, including people who want to trick or hurt them. A private account shows posts and the friend list only to people the child has accepted, though the name and profile picture often stay visible, and who can message the child is often a separate setting.
 ## What
-Set your child's gaming and social accounts to private, so only people they have accepted can see their posts and friend list or message them. A private account does not stop someone your child has already accepted.
+Set your child's gaming and social accounts to private, so only people they have accepted can see their posts and friend list, and limit who can message them, which is often a separate setting. A private account does not stop someone your child has already accepted.
 ## How
 ### all
 Do this
@@ -87,13 +90,13 @@ What to change
 Look under Privacy in each app.
 Set the account to private. Limit who can message them.
 Limit who can see posts and stories, and turn off anything that suggests their account to strangers.
-Gaming accounts have the same controls under Account or Privacy. Set who can see what they play and who can send friend requests.
+Gaming accounts have the same controls under Account or Privacy. Set who can see what they play, who can send friend requests, and who can chat or voice chat with them. On a games console, these controls are often in the family settings of a parent's account.
 
 Do it together
 Change it with them rather than behind them. Anything they do not understand, they will undo.
 
 Test it
-Search for their username while logged out. If you can see their posts, so can anyone.
+Open their profile in a web browser while signed out of every account. If you can see their posts, so can anyone.
 
 If someone is already in touch
 If someone is already contacting your child in a way that worries you, the step on warning signs, linked below, says who to tell, including the police.

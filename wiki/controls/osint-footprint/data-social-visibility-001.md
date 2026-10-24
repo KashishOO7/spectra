@@ -50,6 +50,13 @@ threat_model_multipliers:
   opportunistic: 1
   ai_automated: 1.5
   employer: 1.4
+multiplier_reasons:
+  targeted_individual: 'Public profiles are where a person after you starts, so limiting who sees them matters most.'
+  data_broker: 'Brokers copy public profiles into the files they sell, so a private profile takes away one of their main sources.'
+  intimate_partner: 'An ex can keep watching a public profile, so restricting it matters a lot.'
+  opportunistic: 'About the same for anyone.'
+  ai_automated: 'Public photos and posts feed AI scams that copy your face, voice and friends, so a rise.'
+  employer: 'An employer or school may look at public profiles, so a rise.'
 compensating_controls: []
 depends_on: []
 related_items:
@@ -82,6 +89,10 @@ tags:
 created_at: '2026-04-01'
 created_by: github:@KashishOO7
 changelog:
+  - version: 1.1.0
+    date: '2026-10-21'
+    changes: Rewritten so each block opens on the reader's situation, then what to do, then an example.
+    author: github:@KashishOO7
   - version: 1.0.0
     date: '2026-04-01'
     changes: Initial item.
@@ -91,9 +102,9 @@ lookups:
 ---
 
 ## Why
-Anything on a public profile can be seen by anyone, including someone trying to find you or to pretend to be you. Your photos, your friend list and where you say you work or live can each tell a stranger where you are or who to contact.
+Anything on a public profile can be seen by anyone, including someone trying to find you or to pretend to be you. Say your profile is public: a stranger can read your friend list for names to pretend to be, and your photos and workplace for where to find you. Your photos, your friend list and where you say you work or live can each tell a stranger where you are or who to contact.
 ## What
-Change the settings on each social media account so your posts, photos and friend list are seen only by people you approve, and so strangers cannot find you by your phone number or email address. Many apps have a privacy check-up that goes through these settings one by one.
+On a public profile, anyone can see your photos, your friends and where you say you work. So change the settings on each social media account so your posts, photos and friend list are seen only by people you approve, and so strangers cannot find you by your phone number or email address. Many apps have a privacy check-up that goes through these settings one by one.
 ## How
 ### all
 Do this
@@ -110,4 +121,4 @@ If you need to be found
 If you use an account for work or so people can find you, keep that one public and keep your personal accounts private.
 
 Test it
-Open your profile's web address in a private browser window, where you are not signed in. What you can see there is what a stranger sees.
+Open your profile's web address in a private browser window, where you are not signed in. What you can see there is roughly what a stranger sees, though some apps show more to anyone who is signed in.

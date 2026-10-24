@@ -8,10 +8,10 @@ Hacked, stolen, or something feels wrong? Start here.
 Something happened
 
 ## lead
-What happened? Pick the closest match and you will get the steps for right now.
+Pick the closest match to get the steps to take right now.
 
 ## skip
-Skip this and go to your full list
+Skip this and go to your full playbook
 
 ## back-to-scenarios
 ← Back to Something happened

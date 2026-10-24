@@ -8,7 +8,7 @@ Family setup | Spectra
 Your playbook | Spectra
 
 ## description
-Your safety checklist, ordered for you. Plain steps with sources. Saying what is going on changes the order, and saying nothing still gets you the steps.
+Your playbook, ordered for you. Plain steps with sources. What you choose in Your setup changes the order, and choosing nothing still gets you the steps.
 
 ## loading
 Loading your playbook…

@@ -11,9 +11,6 @@ sources:
 ---
 
 
-
-
-
 # Three questions before you act on a message
 Spelling mistakes used to be a common sign of a scam message. Scammers now use AI tools that write with correct spelling, so these three questions look at the situation you are in rather than at how the message is written.
 
