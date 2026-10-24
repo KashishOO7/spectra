@@ -221,7 +221,7 @@ npm run dev
 | `npm run check` | `svelte-check` over `src/` |
 | `npm run build` | Static production build |
 | `npm run maintain` | Content-health report |
-| `npm run new:item` | Scaffold a new checklist item |
+| `npm run new:item` | Scaffold a new step |
 | `npm run check:links` | Resolve every source URL |
 
 The last three are run locally rather than on a cron.

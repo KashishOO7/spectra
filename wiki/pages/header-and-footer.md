@@ -91,7 +91,7 @@ Open source
 - [Open source on GitHub](https://github.com/KashishOO7/spectra)
 
 ## footer-licence
-Spectra v2.0.0 · AGPL-3.0 · CC BY-SA 4.0 (content)
+Spectra v2.1.0 · AGPL-3.0 · CC BY-SA 4.0 (content)
 
 ## footer-groups
 ### Help

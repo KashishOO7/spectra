@@ -1,6 +1,6 @@
 {
   "name": "spectra",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A free security playbook by FPS Zero",
   "license": "AGPL-3.0-only AND CC-BY-SA-4.0",
   "private": true,
