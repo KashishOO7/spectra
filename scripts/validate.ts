@@ -335,6 +335,21 @@ for (const { file, item } of allChecklistItems) {
     }
   }
 
+  if (item.status === 'active') {
+    const reasons: Record<string, unknown> = item.multiplier_reasons ?? {};
+    for (const [adv, mult] of Object.entries(item.threat_model_multipliers ?? {})) {
+      if (typeof mult === 'number' && mult !== 1 && !(typeof reasons[adv] === 'string' && String(reasons[adv]).trim())) {
+        fail('MULTIPLIER_REASONED', file,
+          `threat_model_multipliers.${adv} = ${mult} has no reason in multiplier_reasons.${adv}. Write why this kind of attacker raises or lowers the step, against the bands on Method and sources`, id);
+      }
+    }
+    for (const adv of Object.keys(reasons)) {
+      if (!(adv in (item.threat_model_multipliers ?? {}))) {
+        fail('MULTIPLIER_REASONED', file, `multiplier_reasons.${adv} has no value in threat_model_multipliers`, id);
+      }
+    }
+  }
+
   for (const source of (item.sources ?? [])) {
     if (source?.url && TRACKING_PARAMS.some(p => source.url.includes(p))) {
       fail('NO_TRACKING_URLS', file, `Source URL contains tracking parameter: ${source.url}`, id);

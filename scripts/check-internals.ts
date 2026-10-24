@@ -21,7 +21,8 @@ const ALLOWED_EXPRESSIONS: Record<string, RegExp[]> = {
 };
 
 const ALLOWED_HTML: Record<string, RegExp[]> = {
-  'src/lib/components/SetupPanel.svelte': [/^shareQr$/]
+  'src/lib/components/SetupPanel.svelte': [/^shareQr$/],
+  'src/routes/faq/+page.svelte': [/^ldTag$/]
 };
 
 const INTERNAL_PATTERNS: Array<{ re: RegExp; what: string }> = [

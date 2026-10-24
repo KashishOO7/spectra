@@ -15,14 +15,22 @@ SINGLE_ITEM_DIRS = [
     Path("content/threats"),
 ]
 
+# Guides moved from content/resources/tools.yaml to one note each in wiki/resources/ on 2026-09-18.
+# The file is kept here while it exists, so a guide still written as YAML is audited too.
 COLLECTION_FILES = [
     Path("content/resources/tools.yaml"),
 ]
 
+# A guide note: frontmatter, then "# title", then the description. Format and round-trip proof are
+# src/lib/content/resource-md.ts.
 RESOURCE_NOTE_DIRS = [
     Path("wiki/resources"),
 ]
 
+# Controls moved from content/items/*.yaml to Obsidian notes on 2026-09-16. A note's frontmatter is
+# the YAML every check below reads; its body holds the prose, which no check here reads, except
+# `## Where`, whose `### <id>` rows are the control's resources and feed check_cross_references.
+# The full format, and its round-trip proof, is src/lib/content/control-md.ts.
 NOTE_DIRS = [
     Path("wiki/controls"),
 ]
@@ -136,6 +144,9 @@ def load_all_items_raw() -> list[dict]:
             raw.extend(extract_items_from_file(path, load_resource_note(path)))
     for directory in SINGLE_ITEM_DIRS:
         if not directory.exists():
+            # content/items is empty since every control became a note, and git keeps no empty
+            # folder, so its absence is normal. The zero-items warning in main() still fires if
+            # controls go missing altogether.
             if directory != Path("content/items"):
                 print(f"  WARN  Directory not found: {directory}", flush=True)
             continue
@@ -144,6 +155,8 @@ def load_all_items_raw() -> list[dict]:
             raw.extend(extract_items_from_file(path, data))
     for filepath in COLLECTION_FILES:
         if not filepath.exists():
+            # tools.yaml is gone since every guide became a note; its absence is normal. The
+            # zero-items warning in main() still fires if content goes missing altogether.
             if filepath != Path("content/resources/tools.yaml"):
                 print(f"  WARN  Collection file not found: {filepath}", flush=True)
             continue
