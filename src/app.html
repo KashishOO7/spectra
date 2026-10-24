@@ -5,6 +5,7 @@
     <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f6f4ef" />
+    <meta name="color-scheme" content="only light" />
     <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
     <script>
       (function () {
@@ -14,6 +15,8 @@
         } catch (e) {
         }
         document.documentElement.setAttribute('data-theme', theme);
+        var scheme = document.querySelector('meta[name="color-scheme"]');
+        if (scheme) scheme.setAttribute('content', theme === 'dark' ? 'dark' : 'only light');
         var meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute('content', theme === 'light' ? '#f6f4ef' : '#0f1217');
       })();

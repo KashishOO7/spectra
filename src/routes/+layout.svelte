@@ -60,6 +60,7 @@
       localStorage.setItem('spectra-theme', theme);
     } catch (e) {
     }
+    document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', theme === 'dark' ? 'dark' : 'only light');
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
       const channels = getComputedStyle(document.documentElement)

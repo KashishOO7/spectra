@@ -131,10 +131,12 @@ Full contract in [SCORING.md](SCORING.md), and on the on-site
 
 | | |
 |---|---|
-| **Your list** | One step at a time, not the whole list at once. Each carries a sentence written for someone who was never taught this, a how-to written as steps, and a primary source. You never see the engine's numbers, and a lint gate makes that permanent rather than a habit. |
-| **Say it in your own words** | Type *"my ex knows where I am"* and the step that covers it comes first. Below its threshold it says **Spectra does not cover that, and stops**, instead of handing you the closest thing on the shelf. No model, no download, nothing generated. |
+| **Your playbook** | Five short questions put the step worth doing first at the top, then one step at a time, in nine chapters from Lock your accounts to Smart home. Each step opens on what is happening to you, says what to do, gives an everyday example, and lists its sources. You never see the engine's numbers, and a lint gate makes that permanent rather than a habit. |
+| **Say it in your own words** | Type *"my ex knows where I am"* into the box on Get help or in your playbook, and the step that covers it comes first. Below its threshold it says **Spectra does not cover that, and stops**, instead of handing you the closest thing on the shelf. No model, no download, nothing generated. |
 | **Your map** | Who might try, the steps that help, and what those steps protect, drawn as a graph. Tap a person and the steps against them are picked out. |
-| **Something happened** | Five incident paths for the reader already in trouble, in the order that matters when the device in your hand may be the compromised one. Reachable from every page, because that reader cannot start with a checklist. |
+| **Get help** | Six guides for the reader already in trouble, from a hacked account to having just paid a scammer, in the order that matters when the device in your hand may be the compromised one. One tap from every page, because that reader cannot start with a list of steps. |
+| **Built for the phone** | On a phone the pages are laid out for the phone: lists you read from top to bottom instead of cards you swipe, every button big enough for a thumb, and Mark as done kept at the bottom of the screen while you read a step. |
+| **FAQ** | Forty-two questions people ask, each answered in a few lines, with a link to the step that has the detail. |
 | **Move it to another device** | Your setup in seven characters, short enough to read down a phone or write on paper, and it does not get longer as the list grows. A link or a QR carries your progress as well. Both ride in the URL fragment, which browsers never transmit, so we never receive either. Both are a fixed width, so the length of a code cannot leak how far through the list you are, and both carry a checksum, so a mis-heard character is refused rather than quietly loading somebody else's setup. |
 | **Print** | `/playbook` turns the list into paper with tick boxes, via the browser's own Save as PDF. Choose still to do, already done (which prints ticked, as a record), or set aside. No PDF library, so nobody downloads 300KB for it. |
 | **Guides, not a catalogue** | Spectra names no app to go and get, and rates nobody, because a recommendation that suits us is worth nothing to you. It teaches what to look for and links a directory someone else maintains. |
@@ -231,7 +233,7 @@ The last three are run locally rather than on a cron.
 ```
 spectra/
 ├── wiki/                   # CC BY-SA 4.0 · every word the site shows, one note each
-│   ├── controls/           # the 60 checklist steps, one note each, by category
+│   ├── controls/           # the 60 steps, one note each, by category
 │   ├── resources/          # the guides our steps point at
 │   ├── lookups/            # vocabulary many steps share, authored once, printed in each
 │   ├── pages/              # each page's own words, and the names of every list option
